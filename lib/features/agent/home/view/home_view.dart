@@ -132,15 +132,26 @@ class _FreeAgentHomeViewState extends State<FreeAgentHomeView> {
             if (state.getOrdersState == RequestState.error && cubit.items.isEmpty) {
               return Center(child: CustomErrorWidget(title: state.msg));
             }
-            if (state.getOrdersState == RequestState.done && cubit.items.isEmpty) {
-              return Center(child: Text(LocaleKeys.no_orders.tr(), style: context.mediumText.copyWith(fontSize: 14)));
-            }
+            
             return ListView.builder(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 15.h),
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: cubit.items.length + (state.paginationState == RequestState.loading ? 1 : 0),
+              itemCount: cubit.items.isEmpty && state.getOrdersState == RequestState.done ? 1 : 
+                         cubit.items.length + (state.paginationState == RequestState.loading ? 1 : 0),
               itemBuilder: (context, index) {
+                if (cubit.items.isEmpty && state.getOrdersState == RequestState.done) {
+                  return Container(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: Center(
+                      child: Text(
+                        LocaleKeys.no_orders.tr(), 
+                        style: context.mediumText.copyWith(fontSize: 14)
+                      )
+                    ),
+                  );
+                }
+                
                 if (index == cubit.items.length) {
                   return Center(child: CircularProgressIndicator());
                 }
