@@ -5,4 +5,5 @@
   Arabic localization
 */
 
-"CFBundleDisplayName" = "سينار"; 
+"CFBundleDisplayName" = "سينار";
+"CFBundleName" = "سينار"; 
