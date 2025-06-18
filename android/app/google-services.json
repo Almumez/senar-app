@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "342596830197",
+    "project_id": "gas-app-345b6",
+    "storage_bucket": "gas-app-345b6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:342596830197:android:b457501d5544014d4cd6bc",
+        "android_client_info": {
+          "package_name": "com.alalmiyaalhoura.gasapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvLDETWANAijGWUxdHaV7F_ph3PyQsHho"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:342596830197:android:d5a586bc5cd0a6714cd6bc",
+        "android_client_info": {
+          "package_name": "com.alalmiyaalhoura.gasapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvLDETWANAijGWUxdHaV7F_ph3PyQsHho"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

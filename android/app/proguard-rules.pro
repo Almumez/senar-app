@@ -1,0 +1,2 @@
+-keep class com.yourpackage.** { *; }
+-dontwarn com.yourpackage.**

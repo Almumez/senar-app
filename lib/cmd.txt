@@ -1,0 +1,37 @@
+
+  
+
+  
+  
+  fluttergen -c pubspec.yaml;fvm flutter pub run easy_localization:generate -S assets/translations -f keys -O lib/gen -o locale_keys.g.dart
+  
+
+  flutter packages pub run build_runner build
+
+
+  fluttergen -c pubspec.yaml 
+
+
+  flutter build apk --release --target-platform android-arm --analyze-size
+
+
+  ./gradlew signingReport
+  
+  
+
+
+  git init;
+  git add README.md;
+  git commit -m "first commit";
+  git branch -M main;
+  git remote add origin https://github.com/3almya-flutter-team/gaz_app.git;
+  git push -u origin main;
+  
+
+  git config --global user.email ao25332@gmail.com ; git config --global user.name Abdallah Kddah
+  git add .;
+  git commit -m "agent and free agent flow";
+  git push ;
+
+  keytool -genkey -v -keystore /Users/abdallah/work/alalmiya/doctor_client/android/app/src/upload-keystore.jks -keyalg RSA \
+        -keysize 2048 -validity 10000 -alias upload
