@@ -134,12 +134,14 @@ class BuildProfileList {
       onTap: () => push(NamedRoutes.information),
     ),
     
+    if (UserModel.i.isAuth)
     ProfileItemModel(
       image: 'assets/svg/receipt-disscount.svg', 
       title: LocaleKeys.offers, 
       onTap: () => showComingSoonPopup(navigator.currentContext!, LocaleKeys.offers.tr()),
     ),
     
+    if (UserModel.i.isAuth)
     ProfileItemModel(
       image: Assets.svg.walletIcon, 
       title: LocaleKeys.financial, 
