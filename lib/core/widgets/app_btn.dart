@@ -38,7 +38,7 @@ class AppBtn extends StatelessWidget {
           if (!loading && enable) onPressed?.call();
         },
         style: ButtonStyle(
-          elevation: !enable || backgroundColor == Colors.transparent || loading ? WidgetStateProperty.all(0) : null,
+          elevation: !enable || backgroundColor == Colors.transparent || loading ? WidgetStateProperty.all(0) : WidgetStateProperty.all(0),
           side: WidgetStateProperty.all(BorderSide(style: BorderStyle.solid, color: textColor ?? Colors.transparent, width: 1.0)),
           shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius ?? 50.0))),
           backgroundColor: WidgetStatePropertyAll(backgroundColor == Colors.transparent
