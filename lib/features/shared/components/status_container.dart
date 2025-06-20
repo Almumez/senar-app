@@ -15,15 +15,24 @@ class StatusContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      height: double.infinity,
+      constraints: BoxConstraints(
+        minWidth: 80.w,
+        maxWidth: 120.w,
+        minHeight: 30.h,
+      ),
       alignment: Alignment.center,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.r), color: color.withValues(alpha: .1)),
-      child: Text(
-        title,
-        style: context.mediumText.copyWith(fontSize: 14.sp, color: color),
-        textAlign: TextAlign.center,
-        overflow: TextOverflow.ellipsis,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4.r), 
+        color: color.withValues(alpha: .1)
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+        child: Text(
+          title,
+          style: context.mediumText.copyWith(fontSize: 14.sp, color: color),
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
   }

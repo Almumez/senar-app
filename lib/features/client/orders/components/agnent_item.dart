@@ -85,12 +85,14 @@ class ClientOrderAgentItem extends StatelessWidget {
         //   style: context.semiboldText.copyWith(fontSize: 16),
         // ).withPadding(bottom: 10.h),
         Container(
+          width: MediaQuery.of(context).size.width - 64.w,
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8.r),
             color: Colors.white,
           ),
           child: Row(
+            mainAxisSize: MainAxisSize.max,
             children: [
               SvgPicture.asset(
                 'assets/svg/delivry.svg',
@@ -117,7 +119,7 @@ class ClientOrderAgentItem extends StatelessWidget {
                       onTap: () => _openWhatsApp(data.agent.phoneNumber, context),
                       child: Container(
                         padding: EdgeInsets.all(8.h),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Color(0xfff5f5f5),
                           shape: BoxShape.circle,
                         ),
@@ -125,7 +127,7 @@ class ClientOrderAgentItem extends StatelessWidget {
                           'assets/svg/chatbox.svg',
                           height: 20.h,
                           width: 20.w,
-                          colorFilter: ColorFilter.mode(
+                          colorFilter: const ColorFilter.mode(
                             Colors.black,
                             BlendMode.srcIn,
                           ),
@@ -146,7 +148,7 @@ class ClientOrderAgentItem extends StatelessWidget {
                       },
                       child: Container(
                         padding: EdgeInsets.all(8.h),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Color(0xfff5f5f5),
                           shape: BoxShape.circle,
                         ),
@@ -154,7 +156,7 @@ class ClientOrderAgentItem extends StatelessWidget {
                           'assets/svg/call.svg',
                           height: 20.h,
                           width: 20.w,
-                          colorFilter: ColorFilter.mode(
+                          colorFilter: const ColorFilter.mode(
                             Colors.black,
                             BlendMode.srcIn,
                           ),
@@ -168,7 +170,7 @@ class ClientOrderAgentItem extends StatelessWidget {
                 StatusContainer(
                   title: data.statusTrans,
                   color: data.color,
-                ).toEnd
+                )
             ],
           ),
         ).withPadding(bottom: 16.h),

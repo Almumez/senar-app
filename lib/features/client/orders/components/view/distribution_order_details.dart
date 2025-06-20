@@ -45,39 +45,42 @@ class ClientDistributionOrderDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildAgentInfoCard(context),
-          
-          ...List.generate(
-            data.orderServices.length,
-            (index) {
-              final service = data.orderServices[index];
-              if (!service.isService) return SizedBox();
-              return _buildServiceCard(context, service, isFirst: index == 0);
-            },
-          ),
-          if (data.orderServices.any((e) => !e.isService)) ...[
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildAgentInfoCard(context),
+            
             ...List.generate(
               data.orderServices.length,
               (index) {
                 final service = data.orderServices[index];
-                if (service.isService) return SizedBox();
-                return _buildAdditionalServiceCard(context, service);
+                if (!service.isService) return const SizedBox();
+                return _buildServiceCard(context, service, isFirst: index == 0);
               },
             ),
-          ],
-          
-          _buildAddressCard(context),
+            if (data.orderServices.any((e) => !e.isService)) ...[
+              ...List.generate(
+                data.orderServices.length,
+                (index) {
+                  final service = data.orderServices[index];
+                  if (service.isService) return const SizedBox();
+                  return _buildAdditionalServiceCard(context, service);
+                },
+              ),
+            ],
+            
+            _buildAddressCard(context),
 
-          OrderPaymentItem(data: data).withPadding(start: 16.w, end: 16.w, bottom: 16.h),
-          ClientBillWidget(data: data),
-         
-        ],
+            OrderPaymentItem(data: data).withPadding(start: 16.w, end: 16.w, bottom: 16.h),
+            ClientBillWidget(data: data),
+           
+          ],
+        ),
       ),
     );
   }
@@ -85,20 +88,18 @@ class ClientDistributionOrderDetails extends StatelessWidget {
 
   Widget _buildAgentInfoCard(BuildContext context) {
     return Container(
-      width: double.infinity,
-     
-      padding: EdgeInsets.symmetric( horizontal: 16.w),
-    
+      width: MediaQuery.of(context).size.width - 32.w,
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: ClientOrderAgentItem(data: data),
     );
   }
 
   Widget _buildServiceCard(BuildContext context, dynamic service, {bool isFirst = false}) {
     return Container(
-      width: context.w,
+      width: MediaQuery.of(context).size.width - 32.w,
       margin: EdgeInsets.zero,
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
       ),
       child: Row(
@@ -150,7 +151,7 @@ class ClientDistributionOrderDetails extends StatelessWidget {
   
   Widget _buildAdditionalServiceCard(BuildContext context, dynamic service) {
     return Container(
-      width: context.w,
+      width: MediaQuery.of(context).size.width - 32.w,
       margin: EdgeInsets.zero,
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
@@ -196,7 +197,7 @@ class ClientDistributionOrderDetails extends StatelessWidget {
   
   Widget _buildAddressCard(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: MediaQuery.of(context).size.width - 32.w,
       margin: EdgeInsets.only(bottom: 20.h),
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(

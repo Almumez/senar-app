@@ -23,9 +23,10 @@ class OrderDetailsAddressItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: context.w,
+          width: MediaQuery.of(context).size.width - 64.w,
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
           child: Row(
+            mainAxisSize: MainAxisSize.max,
             children: [
               SvgPicture.asset(
                 'assets/svg/location.svg',
@@ -37,9 +38,11 @@ class OrderDetailsAddressItem extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 8.w),
-              Text(
-                title, 
-                style: context.mediumText.copyWith(fontSize: 14)
+              Expanded(
+                child: Text(
+                  title, 
+                  style: context.mediumText.copyWith(fontSize: 14.sp)
+                ),
               ),
             ],
           ),

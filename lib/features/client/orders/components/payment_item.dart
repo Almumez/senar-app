@@ -17,7 +17,7 @@ class OrderPaymentItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (data.paymentMethod == '') return Container();
+    if (data.paymentMethod == '') return const SizedBox();
     
     String paymentText = data.paymentMethod.toLowerCase() == 'cash' ? "كاش" : "الكتروني";
     
@@ -25,7 +25,7 @@ class OrderPaymentItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: context.w,
+          width: MediaQuery.of(context).size.width - 32.w,
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,

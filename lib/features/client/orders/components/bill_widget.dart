@@ -19,13 +19,14 @@ class ClientBillWidget extends StatelessWidget {
     if (data.price == 0) return const SizedBox();
 
     return Container(
-      width: context.w,
+      width: MediaQuery.of(context).size.width - 32.w,
       padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildServiceRow(context, data.price).withPadding(start: 15.w),
           if (isMaintenanceOrSupply) _buildRow(LocaleKeys.check_fee.tr(), data.checkFee, context).withPadding(start: 30.w),
@@ -49,6 +50,7 @@ class ClientBillWidget extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.h),
       child: Row(
+        mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
             child: Row(
@@ -103,6 +105,7 @@ class ClientBillWidget extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.h),
       child: Row(
+        mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
             child: Text(
