@@ -45,6 +45,11 @@
 		<true/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
+		<!-- Google Maps API Key -->
+		<key>io.flutter.embedded_views_preview</key>
+		<true/>
+		<key>GMSApiKey</key>
+		<string>AIzaSyCvLDETWANAijGWUxdHaV7F_ph3PyQsHho</string>
 		<!-- Permisos de localización -->
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>يحتاج التطبيق إلى الوصول إلى موقعك لتوصيل الطلبات بدقة</string>
