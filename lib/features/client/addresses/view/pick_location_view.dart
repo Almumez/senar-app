@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:developer';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -75,14 +76,13 @@ class _PickLocationViewState extends State<PickLocationView> {
   //   }
   // }
 
-  FloatingActionButton buildLocationButton() {
-    return FloatingActionButton(
-      onPressed: () {
-        getLocationWithErrorHandling();
-      },
+  Widget buildLocationButton() {
+    return CustomRadiusIcon(
+      onTap: getLocationWithErrorHandling,
+      size: 60.h,
       backgroundColor: context.primaryColorLight,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.r)),
-      child: const Icon(CupertinoIcons.location),
+      borderRadius: BorderRadius.circular(18.r),
+      child: Icon(Icons.my_location, color: context.primaryColor, size: 28),
     );
   }
 
@@ -95,13 +95,15 @@ class _PickLocationViewState extends State<PickLocationView> {
         addressesCubit.checkZoneLocation(LatLng(position.latitude, position.longitude));
       } else {
         FlashHelper.showToast(value.msg);
-        // If on iOS, show more detailed guidance
-        if (Platform.isIOS && value.status == LocationPermission.deniedForever) {
+        
+        // إذا كان الخطأ بسبب تعطيل خدمة الموقع أو رفض الإذن بشكل دائم
+        if (value.status == LocationPermission.deniedForever) {
           showLocationPermissionDialog();
         }
       }
     } catch (e) {
       FlashHelper.showToast("Error accessing location: ${e.toString()}");
+      log("Location error: ${e.toString()}");
     }
   }
 
@@ -119,7 +121,8 @@ class _PickLocationViewState extends State<PickLocationView> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              Geolocator.openAppSettings();
+              // استخدام openLocationSettings بدلاً من openAppSettings
+              Geolocator.openLocationSettings();
             },
             child: Text(LocaleKeys.open_settings.tr()),
           ),
@@ -311,6 +314,7 @@ class _PickLocationViewState extends State<PickLocationView> {
         ),
       ),
       floatingActionButton: buildLocationButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 

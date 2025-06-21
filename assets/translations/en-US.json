@@ -315,7 +315,7 @@
   "view": "View",
   "order_price": "Order Price",
   "delivery": "Delivery",
-  "location_access_required": "Location Access Required",
-  "enable_location_in_settings": "To use location services, you need to enable location access in your device settings",
-  "open_settings": "Open Settings"
+  "location_access_required": "Enable Location Services",
+  "enable_location_in_settings": "You need to enable location services in your device settings to use this feature",
+  "open_settings": "Open Location Settings"
 }

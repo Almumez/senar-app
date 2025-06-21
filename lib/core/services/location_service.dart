@@ -19,17 +19,20 @@ class LocationService {
     // First check if location service is enabled
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
+      String message = "Location services are disabled. Please enable location services in settings.";
+      log("Location service disabled: $message");
+      
       _locationCompleter?.complete(
         CustomPosition(
-          status: LocationPermission.denied,
-          msg: "Location services are disabled. Please enable location services in settings.",
+          status: LocationPermission.deniedForever,  // Use deniedForever to trigger settings dialog
+          msg: message,
           success: false,
         ),
       );
       _locationCompleter = null;
-      return position = CustomPosition(
-        status: LocationPermission.denied,
-        msg: "Location services are disabled. Please enable location services in settings.",
+      return CustomPosition(
+        status: LocationPermission.deniedForever,  // Use deniedForever to trigger settings dialog
+        msg: message,
         success: false,
       );
     }
@@ -84,14 +87,19 @@ class LocationService {
     } else if (status == LocationPermission.deniedForever) {
       // Handle permanent denial
       String message = Platform.isIOS
-          ? "Location permission is permanently denied. Please enable it in your device settings."
-          : "Location permission is permanently denied.";
+          ? "Location permission is permanently denied. Please enable it in your device location settings."
+          : "Location permission is permanently denied. Please enable it in app settings.";
+      
+      log("Location permission deniedForever: $message");
       
       _locationCompleter?.complete(CustomPosition(status: status, msg: message, success: false));
       _locationCompleter = null;
       return CustomPosition(status: status, msg: message, success: false);
     } else {
-      position = CustomPosition(status: status, msg: "Location permission is $status", success: false);
+      String message = "Location permission is $status";
+      log("Location permission status: $message");
+      
+      position = CustomPosition(status: status, msg: message, success: false);
       _locationCompleter?.complete(position);
       _locationCompleter = null;
       return position!;
