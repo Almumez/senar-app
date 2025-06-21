@@ -39,5 +39,19 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    
+    # Add permissions for location
+    target.build_configurations.each do |config|
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
+        'PERMISSION_LOCATION=1',
+      ]
+      
+      # Enable all available permissions
+      config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -D PERMISSION_LOCATION'
+      
+      # Increase minimum iOS deployment target to avoid warnings
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
+    end
   end
 end

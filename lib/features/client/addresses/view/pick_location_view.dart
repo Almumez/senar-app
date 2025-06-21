@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../models/address.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/utils/extensions.dart';
@@ -72,6 +74,59 @@ class _PickLocationViewState extends State<PickLocationView> {
   //     });
   //   }
   // }
+
+  FloatingActionButton buildLocationButton() {
+    return FloatingActionButton(
+      onPressed: () {
+        getLocationWithErrorHandling();
+      },
+      backgroundColor: context.primaryColorLight,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.r)),
+      child: const Icon(CupertinoIcons.location),
+    );
+  }
+
+  void getLocationWithErrorHandling() async {
+    try {
+      final value = await location.getCurrentLocation();
+      final position = value.position;
+      if (position != null) {
+        _goToTheLake(LatLng(position.latitude, position.longitude));
+        addressesCubit.checkZoneLocation(LatLng(position.latitude, position.longitude));
+      } else {
+        FlashHelper.showToast(value.msg);
+        // If on iOS, show more detailed guidance
+        if (Platform.isIOS && value.status == LocationPermission.deniedForever) {
+          showLocationPermissionDialog();
+        }
+      }
+    } catch (e) {
+      FlashHelper.showToast("Error accessing location: ${e.toString()}");
+    }
+  }
+
+  void showLocationPermissionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(LocaleKeys.location_access_required.tr()),
+        content: Text(LocaleKeys.enable_location_in_settings.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(LocaleKeys.cancel.tr()),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Geolocator.openAppSettings();
+            },
+            child: Text(LocaleKeys.open_settings.tr()),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -255,23 +310,7 @@ class _PickLocationViewState extends State<PickLocationView> {
           ),
         ),
       ),
-      floatingActionButton: CustomRadiusIcon(
-        onTap: () {
-          location.getCurrentLocation().then((value) {
-            final position = value.position;
-            if (position != null) {
-              _goToTheLake(LatLng(position.latitude, position.longitude));
-              addressesCubit.checkZoneLocation(LatLng(position.latitude, position.longitude));
-            } else {
-              FlashHelper.showToast(value.msg);
-            }
-          });
-        },
-        size: 60.h,
-        backgroundColor: context.primaryColorLight,
-        borderRadius: BorderRadius.circular(18.r),
-        child: const Icon(CupertinoIcons.location),
-      ),
+      floatingActionButton: buildLocationButton(),
     );
   }
 

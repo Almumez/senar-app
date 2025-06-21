@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io' show Platform;
 
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -14,43 +15,83 @@ class LocationService {
       return _locationCompleter!.future;
     }
     _locationCompleter = Completer<CustomPosition>();
-    final status = await Geolocator.requestPermission();
-    if (status == LocationPermission.whileInUse || status == LocationPermission.always) {
-      position = CustomPosition(
-        status: status,
-        msg: "",
-        success: true,
-        position: await Geolocator.getCurrentPosition(),
+    
+    // First check if location service is enabled
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _locationCompleter?.complete(
+        CustomPosition(
+          status: LocationPermission.denied,
+          msg: "Location services are disabled. Please enable location services in settings.",
+          success: false,
+        ),
       );
-      if (position?.position != null) {
-        final address = await getAddressFromLatLng(position: position!.position!);
-        position = position?.copyWith(address: address);
-      }
-      _locationCompleter?.complete(position);
       _locationCompleter = null;
-      return position!;
-    } else if (status == LocationPermission.denied) {
-      final status = await Geolocator.requestPermission();
-      if (status == LocationPermission.whileInUse || status == LocationPermission.always) {
-        position = CustomPosition(status: status, msg: "", success: true, position: await Geolocator.getCurrentPosition());
+      return position = CustomPosition(
+        status: LocationPermission.denied,
+        msg: "Location services are disabled. Please enable location services in settings.",
+        success: false,
+      );
+    }
+    
+    // Then check for permission
+    LocationPermission status = await Geolocator.checkPermission();
+    
+    // If permission is denied, request it
+    if (status == LocationPermission.denied) {
+      status = await Geolocator.requestPermission();
+    }
+    
+    if (status == LocationPermission.whileInUse || status == LocationPermission.always) {
+      try {
+        // Handle position retrieval with error handling
+        Position currentPosition = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+          timeLimit: const Duration(seconds: 15),
+        );
+        
+        position = CustomPosition(
+          status: status,
+          msg: "",
+          success: true,
+          position: currentPosition,
+        );
+        
         if (position?.position != null) {
           final address = await getAddressFromLatLng(position: position!.position!);
           position = position?.copyWith(address: address);
         }
+        
         _locationCompleter?.complete(position);
         _locationCompleter = null;
         return position!;
-      } else {
-        _locationCompleter?.complete(position);
+      } catch (e) {
+        log("Error getting current position: $e");
+        _locationCompleter?.complete(
+          CustomPosition(
+            status: status,
+            msg: "Could not get current position: ${e.toString()}",
+            success: false,
+          ),
+        );
         _locationCompleter = null;
-        return position = CustomPosition(status: status, msg: "Location permission is permanently denied", success: false);
+        return CustomPosition(
+          status: status,
+          msg: "Could not get current position: ${e.toString()}",
+          success: false,
+        );
       }
+    } else if (status == LocationPermission.deniedForever) {
+      // Handle permanent denial
+      String message = Platform.isIOS
+          ? "Location permission is permanently denied. Please enable it in your device settings."
+          : "Location permission is permanently denied.";
+      
+      _locationCompleter?.complete(CustomPosition(status: status, msg: message, success: false));
+      _locationCompleter = null;
+      return CustomPosition(status: status, msg: message, success: false);
     } else {
       position = CustomPosition(status: status, msg: "Location permission is $status", success: false);
-      if (position?.position != null) {
-        final address = await getAddressFromLatLng(position: position!.position!);
-        position = position?.copyWith(address: address);
-      }
       _locationCompleter?.complete(position);
       _locationCompleter = null;
       return position!;

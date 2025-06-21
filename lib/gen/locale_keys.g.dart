@@ -315,4 +315,7 @@ abstract class  LocaleKeys {
   static const view = 'view';
   static const order_price = 'order_price';
   static const delivery = 'delivery';
+  static const location_access_required = 'location_access_required';
+  static const enable_location_in_settings = 'enable_location_in_settings';
+  static const open_settings = 'open_settings';
 }

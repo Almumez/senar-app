@@ -52,7 +52,7 @@
 		<string>AIzaSyCvLDETWANAijGWUxdHaV7F_ph3PyQsHho</string>
 		<!-- Permisos de localización -->
 		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>يحتاج التطبيق إلى الوصول إلى موقعك لتوصيل الطلبات بدقة</string>
+		<string>يحتاج التطبيق إلى الوصول إلى موقعك الحالي لتحديد موقعك على الخريطة وتوصيل الطلبات بدقة</string>
 		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 		<string>يحتاج التطبيق إلى الوصول إلى موقعك لتوصيل الطلبات بدقة وتتبع سائقي التوصيل</string>
 		<key>NSLocationAlwaysUsageDescription</key>

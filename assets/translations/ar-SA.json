@@ -325,5 +325,8 @@
   "live_order_tracking": "تتبع الطلب",
   "view": "عرض",
   "order_price": "قيمة الطلب",
-  "delivery": "توصيل"
+  "delivery": "توصيل",
+  "location_access_required": "الوصول للموقع مطلوب",
+  "enable_location_in_settings": "للاستفادة من خدمة تحديد الموقع، يجب السماح بالوصول إلى موقعك من إعدادات التطبيق في جهازك",
+  "open_settings": "فتح الإعدادات"
 }

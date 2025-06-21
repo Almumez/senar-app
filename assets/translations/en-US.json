@@ -314,5 +314,8 @@
   "live_order_tracking": "Live Order Tracking",
   "view": "View",
   "order_price": "Order Price",
-  "delivery": "Delivery"
+  "delivery": "Delivery",
+  "location_access_required": "Location Access Required",
+  "enable_location_in_settings": "To use location services, you need to enable location access in your device settings",
+  "open_settings": "Open Settings"
 }
