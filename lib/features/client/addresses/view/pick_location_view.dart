@@ -54,7 +54,17 @@ class _PickLocationViewState extends State<PickLocationView> {
           if (position != null) {
             _goToTheLake(LatLng(position.latitude, position.longitude));
           } else {
-            FlashHelper.showToast(value.msg);
+            // عرض رسالة خطأ أكثر وضوحًا للمستخدم
+            if (value.status == LocationPermission.deniedForever) {
+              // في حالة رفض الإذن بشكل دائم
+              FlashHelper.showToast(
+                "تم رفض إذن الموقع بشكل دائم. يرجى تمكينه من إعدادات التطبيق في جهازك.",
+                duration: const Duration(seconds: 5),
+              );
+            } else {
+              // في حالة وجود خطأ آخر
+              FlashHelper.showToast(value.msg, duration: const Duration(seconds: 3));
+            }
           }
         },
       );
@@ -263,7 +273,17 @@ class _PickLocationViewState extends State<PickLocationView> {
               _goToTheLake(LatLng(position.latitude, position.longitude));
               addressesCubit.checkZoneLocation(LatLng(position.latitude, position.longitude));
             } else {
-              FlashHelper.showToast(value.msg);
+              // عرض رسالة خطأ أكثر وضوحًا للمستخدم
+              if (value.status == LocationPermission.deniedForever) {
+                // في حالة رفض الإذن بشكل دائم
+                FlashHelper.showToast(
+                  "تم رفض إذن الموقع بشكل دائم. يرجى تمكينه من إعدادات التطبيق في جهازك.",
+                  duration: const Duration(seconds: 5),
+                );
+              } else {
+                // في حالة وجود خطأ آخر
+                FlashHelper.showToast(value.msg, duration: const Duration(seconds: 3));
+              }
             }
           });
         },

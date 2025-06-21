@@ -50,19 +50,19 @@
 		<true/>
 		<key>GMSApiKey</key>
 		<string>AIzaSyCvLDETWANAijGWUxdHaV7F_ph3PyQsHho</string>
-		<!-- Permisos de localización -->
+		<!-- أذونات الموقع -->
 		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>يحتاج التطبيق إلى الوصول إلى موقعك لتوصيل الطلبات بدقة</string>
+		<string>نحتاج إلى موقعك لتحديد عنوان التوصيل بدقة وضمان وصول طلبك إلى العنوان الصحيح</string>
 		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>يحتاج التطبيق إلى الوصول إلى موقعك لتوصيل الطلبات بدقة وتتبع سائقي التوصيل</string>
+		<string>نحتاج إلى موقعك لتحديد عنوان التوصيل بدقة وضمان وصول طلبك إلى العنوان الصحيح</string>
 		<key>NSLocationAlwaysUsageDescription</key>
-		<string>يحتاج التطبيق إلى الوصول إلى موقعك لتوصيل الطلبات بدقة وتتبع سائقي التوصيل</string>
-		<!-- Permisos de cámara y fotos -->
+		<string>نحتاج إلى موقعك لتحديد عنوان التوصيل بدقة وضمان وصول طلبك إلى العنوان الصحيح</string>
+		<!-- أذونات الكاميرا والصور -->
 		<key>NSCameraUsageDescription</key>
 		<string>يحتاج التطبيق إلى الوصول إلى الكاميرا لالتقاط الصور وتحميلها</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>يحتاج التطبيق إلى الوصول إلى معرض الصور لاختيار الصور وتحميلها</string>
-		<!-- Permisos de notificaciones -->
+		<!-- أذونات الإشعارات -->
 		<key>NSUserNotificationUsageDescription</key>
 		<string>نحتاج إلى إرسال إشعارات لإعلامك بحالة طلباتك وتحديثات التطبيق المهمة</string>
 		<key>NSMicrophoneUsageDescription</key>
