@@ -68,7 +68,7 @@ class LocationTrackingService {
     debugPrint('بدء تتبع الموقع في الخلفية...');
     
     // استخدام Timer بدلاً من Isolate للحصول على تحديثات الموقع
-    _locationTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+    _locationTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
       try {
         Position position = await Geolocator.getCurrentPosition();
         debugPrint('تم الحصول على موقع جديد: ${position.latitude}, ${position.longitude}');
