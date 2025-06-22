@@ -71,8 +71,13 @@ void main() async {
     if (UserModel.i.userType == 'free_agent') {
       debugPrint('المستخدم هو مندوب حر، بدء خدمة تتبع الموقع...');
       try {
-        await sl<LocationTrackingService>().startTracking();
-        debugPrint('تم بدء خدمة تتبع الموقع عند بدء التطبيق');
+        // بدء التتبع فقط إذا كان المستخدم "متاح"
+        if (UserModel.i.isAvailable) {
+          await sl<LocationTrackingService>().startTracking();
+          debugPrint('تم بدء خدمة تتبع الموقع عند بدء التطبيق (المستخدم متاح)');
+        } else {
+          debugPrint('لم يتم بدء تتبع الموقع لأن المستخدم غير متاح');
+        }
       } catch (e) {
         debugPrint('خطأ عند بدء خدمة تتبع الموقع: $e');
       }
@@ -112,14 +117,21 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       switch (state) {
         case AppLifecycleState.resumed:
           // App is in the foreground
-          sl<LocationTrackingService>().startTracking();
+          // فقط إذا كان المستخدم متاح، ابدأ تتبع الموقع
+          if (UserModel.i.isAvailable) {
+            sl<LocationTrackingService>().startTracking();
+          } else {
+            // تأكد من إيقاف التتبع إذا كان المستخدم غير متاح
+            sl<LocationTrackingService>().stopTracking();
+          }
           break;
         case AppLifecycleState.detached:
         case AppLifecycleState.hidden:
         case AppLifecycleState.inactive:
         case AppLifecycleState.paused:
           // App is in the background or inactive
-          // Keep location tracking running for agents
+          // Keep location tracking running for agents if they are available
+          // لا تغير حالة التتبع في الخلفية
           break;
       }
     }

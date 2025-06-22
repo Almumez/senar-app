@@ -1,6 +1,9 @@
 {
   "lang": "ar",
   "app_name": "سينار",
+  "location_service_disabled": "خدمة الموقع معطلة",
+  "enable_location_service": "يرجى تفعيل خدمة الموقع لتتمكن من استخدام ميزة تتبع الموقع",
+  "cancel": "إلغاء",
   "sorry_something_went_wrong": "آسف، حدث خطأ",
   "something_went_wrong_please_try_again": "حدث خطأ. يرجى المحاولة مرة أخرى",
   "the_login_session_has_expired": "انتهت صلاحية الجلسة الدخول",

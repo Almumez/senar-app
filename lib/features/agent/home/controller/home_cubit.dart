@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../../core/utils/enums.dart';
 import '../../../../../core/services/server_gate.dart';
+import '../../../../../core/services/location_tracking_service.dart';
+import '../../../../../core/services/service_locator.dart';
 import '../../../../models/agent_order.dart';
 import '../../../../models/user_model.dart';
 import 'home_states.dart';
@@ -74,9 +76,24 @@ class AgentHomeCubit extends Cubit<AgentHomeState> {
     emit(state.copyWith(activeState: RequestState.loading));
     final result = await ServerGate.i.sendToServer(url: 'general/profile/toggle-availability');
     if (result.success) {
+      final isAvailable = result.data?['data']?['is_available'] == true;
       UserModel.i
-        ..isAvailable = result.data?['data']?['is_available'] == true
+        ..isAvailable = isAvailable
         ..save();
+        
+      // إذا كان متاح، ابدأ تتبع الموقع، وإلا أوقف التتبع
+      if (UserModel.i.userType == 'free_agent') {
+        if (isAvailable) {
+          // بدء تتبع الموقع
+          await sl<LocationTrackingService>().startTracking();
+
+        } else {
+          // إيقاف تتبع الموقع
+          sl<LocationTrackingService>().stopTracking();
+
+        }
+      }
+      
       emit(state.copyWith(activeState: RequestState.done));
     } else {
       emit(state.copyWith(activeState: RequestState.error, msg: result.msg, errorType: result.errType));

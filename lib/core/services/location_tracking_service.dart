@@ -3,11 +3,15 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../utils/enums.dart';
 import '../../models/user_model.dart';
+import '../routes/app_routes_fun.dart';
+import '../../gen/locale_keys.g.dart';
 import 'server_gate.dart';
 
 /// خدمة تتبع موقع المستخدم في الخلفية وإرسال التحديثات إلى الخادم.
@@ -22,6 +26,61 @@ class LocationTrackingService {
   ReceivePort? _receivePort;
   Timer? _locationTimer;
   bool _isTracking = false;
+
+  /// عرض حوار لطلب تفعيل خدمة الموقع
+  Future<bool> showLocationServiceDialog() async {
+    debugPrint('التحقق من خدمات الموقع...');
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    
+    // إذا كانت خدمة الموقع مفعلة، ارجع true
+    if (serviceEnabled) {
+      return true;
+    }
+    
+    // إذا كانت غير مفعلة، اعرض dialog للمستخدم
+    debugPrint('خدمات الموقع معطلة، عرض حوار للمستخدم...');
+    
+    bool? result = await showDialog<bool>(
+      context: navigator.currentContext!,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text(LocaleKeys.location_service_disabled.tr()),
+        content: Text(LocaleKeys.enable_location_service.tr()),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+            child: Text(LocaleKeys.cancel.tr()),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop(true);
+            },
+            child: Text(LocaleKeys.settings.tr()),
+          ),
+        ],
+      ),
+    );
+    
+    // إذا اختار المستخدم فتح الإعدادات
+    if (result == true) {
+      try {
+        await Geolocator.openLocationSettings();
+        
+        // انتظر لحظة لإتاحة الوقت للمستخدم لتفعيل الخدمة
+        await Future.delayed(const Duration(seconds: 2));
+        
+        // تحقق مرة أخرى
+        return await Geolocator.isLocationServiceEnabled();
+      } catch (e) {
+        debugPrint('خطأ عند محاولة فتح إعدادات الموقع: $e');
+        return false;
+      }
+    }
+    
+    return false;
+  }
 
   // بدلاً من استخدام Isolate، سنستخدم Timer في الخلفية
   Future<void> startTracking() async {
@@ -40,12 +99,16 @@ class LocationTrackingService {
       debugPrint('لن يتم بدء تتبع الموقع لأن المستخدم ليس مندوب حر');
       return;
     }
+    
+    if (!UserModel.i.isAvailable) {
+      debugPrint('لن يتم بدء تتبع الموقع لأن المستخدم غير متاح حاليًا');
+      return;
+    }
 
-    // طلب أذونات الموقع
-    debugPrint('التحقق من خدمات الموقع...');
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      debugPrint('خدمات الموقع معطلة على الجهاز');
+    // التحقق من خدمة الموقع وطلب تفعيلها إذا كانت مغلقة
+    bool locationEnabled = await showLocationServiceDialog();
+    if (!locationEnabled) {
+      debugPrint('لم يتم تفعيل خدمة الموقع، لذا لن يتم بدء التتبع');
       return;
     }
 
@@ -147,9 +210,28 @@ class LocationTrackingService {
   Future<bool> checkAndStart() async {
     checkUserType();
     
-    if (!_isTracking && UserModel.i.userType == 'free_agent') {
+    if (!_isTracking && UserModel.i.userType == 'free_agent' && UserModel.i.isAvailable) {
       await startTracking();
       return _isTracking;
+    }
+    
+    return _isTracking;
+  }
+  
+  /// طريقة للتحقق من حالة "متاح" وبدء أو إيقاف التتبع تلقائيًا
+  Future<bool> checkAvailabilityAndUpdateTracking() async {
+    debugPrint('التحقق من حالة المتاح: ${UserModel.i.isAvailable}');
+    
+    if (UserModel.i.userType == 'free_agent') {
+      if (UserModel.i.isAvailable && !_isTracking) {
+        // المستخدم متاح ولكن التتبع متوقف - ابدأ التتبع
+        await startTracking();
+        debugPrint('تم تفعيل التتبع بناءً على حالة المتاح');
+      } else if (!UserModel.i.isAvailable && _isTracking) {
+        // المستخدم غير متاح والتتبع مفعل - أوقف التتبع
+        stopTracking();
+        debugPrint('تم إيقاف التتبع بناءً على حالة المتاح');
+      }
     }
     
     return _isTracking;

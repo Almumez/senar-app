@@ -3,6 +3,9 @@
 abstract class  LocaleKeys {
   static const lang = 'lang';
   static const app_name = 'app_name';
+  static const location_service_disabled = 'location_service_disabled';
+  static const enable_location_service = 'enable_location_service';
+  static const cancel = 'cancel';
   static const sorry_something_went_wrong = 'sorry_something_went_wrong';
   static const something_went_wrong_please_try_again = 'something_went_wrong_please_try_again';
   static const the_login_session_has_expired = 'the_login_session_has_expired';
@@ -303,7 +306,6 @@ abstract class  LocaleKeys {
   static const reject_order = 'reject_order';
   static const reject_reason = 'reject_reason';
   static const enter_reject_reason = 'enter_reject_reason';
-  static const cancel = 'cancel';
   static const checking_location = 'checking_location';
   static const location_available = 'location_available';
   static const location_not_available = 'location_not_available';

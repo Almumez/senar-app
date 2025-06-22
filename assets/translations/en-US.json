@@ -1,6 +1,9 @@
 {
   "lang": "en",
   "app_name": "SENAR",
+  "location_service_disabled": "Location Service Disabled",
+  "enable_location_service": "Please enable location service to use location tracking feature",
+  "cancel": "Cancel",
   "sorry_something_went_wrong": "Sorry, something went wrong",
   "something_went_wrong_please_try_again": "Something went wrong. Please try again",
   "the_login_session_has_expired": "The login session has expired",
