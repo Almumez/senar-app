@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../utils/enums.dart';
+import '../utils/extensions.dart';
 import '../../models/user_model.dart';
 import '../routes/app_routes_fun.dart';
 import '../../gen/locale_keys.g.dart';
@@ -42,24 +44,96 @@ class LocationTrackingService {
     
     bool? result = await showDialog<bool>(
       context: navigator.currentContext!,
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (context) => AlertDialog(
-        title: Text(LocaleKeys.location_service_disabled.tr()),
-        content: Text(LocaleKeys.enable_location_service.tr()),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-            child: Text(LocaleKeys.cancel.tr()),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(25.r),
+        ),
+        backgroundColor: Colors.white,
+        content: Container(
+          padding: EdgeInsets.all(20.r),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 70.w,
+                height: 70.h,
+                decoration: BoxDecoration(
+                  color: "#d68243".color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.location_on,
+                  color: "#d68243".color,
+                  size: 35.r,
+                ),
+              ),
+              SizedBox(height: 20.h),
+              Text(
+                LocaleKeys.location_service_disabled.tr(),
+                style: context.mediumText.copyWith(
+                  fontSize: 14.sp,
+                  color: "#090909".color,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 15.h),
+              Text(
+                LocaleKeys.enable_location_service.tr(),
+                style: context.mediumText.copyWith(
+                  fontSize: 14.sp,
+                  color: "#9E968F".color,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 25.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.grey[200],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                        ),
+                        minimumSize: Size(0, 50.h),
+                      ),
+                      child: Text(
+                        LocaleKeys.cancel.tr(),
+                        style: context.mediumText.copyWith(
+                          fontSize: 14.sp,
+                          color: "#090909".color,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      style: TextButton.styleFrom(
+                        backgroundColor: "#090909".color,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                        ),
+                        minimumSize: Size(0, 50.h),
+                      ),
+                      child: Text(
+                        LocaleKeys.settings.tr(),
+                        style: context.mediumText.copyWith(
+                          fontSize: 14.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(context).pop(true);
-            },
-            child: Text(LocaleKeys.settings.tr()),
-          ),
-        ],
+        ),
       ),
     );
     
