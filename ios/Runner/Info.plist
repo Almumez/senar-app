@@ -1,75 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-	<dict>
-		<key>CFBundleDevelopmentRegion</key>
-		<string>$(DEVELOPMENT_LANGUAGE)</string>
-		<key>CFBundleDisplayName</key>
-		<string>SENAR</string>
-		<key>CFBundleExecutable</key>
-		<string>$(EXECUTABLE_NAME)</string>
-		<key>CFBundleIdentifier</key>
-		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-		<key>CFBundleInfoDictionaryVersion</key>
-		<string>6.0</string>
-		<key>CFBundleName</key>
-		<string>SENAR</string>
-		<key>CFBundlePackageType</key>
-		<string>APPL</string>
-		<key>CFBundleShortVersionString</key>
-		<string>$(FLUTTER_BUILD_NAME)</string>
-		<key>CFBundleSignature</key>
-		<string>????</string>
-		<key>CFBundleVersion</key>
-		<string>$(FLUTTER_BUILD_NUMBER)</string>
-		<key>LSRequiresIPhoneOS</key>
-		<true/>
-		<key>UILaunchStoryboardName</key>
-		<string>LaunchScreen</string>
-		<key>UIMainStoryboardFile</key>
-		<string>Main</string>
-		<key>UISupportedInterfaceOrientations</key>
-		<array>
-			<string>UIInterfaceOrientationPortrait</string>
-			<string>UIInterfaceOrientationLandscapeLeft</string>
-			<string>UIInterfaceOrientationLandscapeRight</string>
-		</array>
-		<key>UISupportedInterfaceOrientations~ipad</key>
-		<array>
-			<string>UIInterfaceOrientationPortrait</string>
-			<string>UIInterfaceOrientationPortraitUpsideDown</string>
-			<string>UIInterfaceOrientationLandscapeLeft</string>
-			<string>UIInterfaceOrientationLandscapeRight</string>
-		</array>
-		<key>CADisableMinimumFrameDurationOnPhone</key>
-		<true/>
-		<key>UIApplicationSupportsIndirectInputEvents</key>
-		<true/>
-		<!-- Google Maps API Key -->
-		<key>io.flutter.embedded_views_preview</key>
-		<true/>
-		<key>GMSApiKey</key>
-		<string>AIzaSyCvLDETWANAijGWUxdHaV7F_ph3PyQsHho</string>
-		<!-- Permisos de localización -->
-		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>يحتاج التطبيق إلى الوصول إلى موقعك الحالي لتحديد موقعك على الخريطة وتوصيل الطلبات بدقة</string>
-		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>يحتاج التطبيق إلى الوصول إلى موقعك لتوصيل الطلبات بدقة وتتبع سائقي التوصيل</string>
-		<key>NSLocationAlwaysUsageDescription</key>
-		<string>يحتاج التطبيق إلى الوصول إلى موقعك لتوصيل الطلبات بدقة وتتبع سائقي التوصيل</string>
-		<!-- Permisos de cámara y fotos -->
-		<key>NSCameraUsageDescription</key>
-		<string>يحتاج التطبيق إلى الوصول إلى الكاميرا لالتقاط الصور وتحميلها</string>
-		<key>NSPhotoLibraryUsageDescription</key>
-		<string>يحتاج التطبيق إلى الوصول إلى معرض الصور لاختيار الصور وتحميلها</string>
-		<!-- Permisos de notificaciones -->
-		<key>NSUserNotificationUsageDescription</key>
-		<string>نحتاج إلى إرسال إشعارات لإعلامك بحالة طلباتك وتحديثات التطبيق المهمة</string>
-		<key>NSMicrophoneUsageDescription</key>
-		<string>يحتاج التطبيق إلى الوصول إلى الميكروفون للتواصل مع خدمة العملاء</string>
-		<key>UIStatusBarHidden</key>
-		<true/>
-		<key>UIViewControllerBasedStatusBarAppearance</key>
-		<false/>
-	</dict>
+<dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>SENAR</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>SENAR</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>GMSApiKey</key>
+	<string>AIzaSyCvLDETWANAijGWUxdHaV7F_ph3PyQsHho</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>يحتاج التطبيق إلى الوصول إلى الكاميرا لالتقاط الصور وتحميلها</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>يحتاج التطبيق إلى الوصول إلى موقعك لتوصيل الطلبات بدقة وتتبع سائقي التوصيل</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>يحتاج التطبيق إلى الوصول إلى موقعك لتوصيل الطلبات بدقة وتتبع سائقي التوصيل</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>يحتاج التطبيق إلى الوصول إلى موقعك الحالي لتحديد موقعك على الخريطة وتوصيل الطلبات بدقة</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>يحتاج التطبيق إلى الوصول إلى الميكروفون للتواصل مع خدمة العملاء</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>يحتاج التطبيق إلى الوصول إلى معرض الصور لاختيار الصور وتحميلها</string>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>نحتاج إلى إرسال إشعارات لإعلامك بحالة طلباتك وتحديثات التطبيق المهمة</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIStatusBarHidden</key>
+	<true/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
+</dict>
 </plist>
