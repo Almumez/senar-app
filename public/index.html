@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سينار - Senar</title>
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <style>
+        :root {
+            --primary-color: #090909;
+            --secondary-color: #A07855;
+            --accent-color: #F4BD5B;
+            --text-color: #040404;
+            --light-bg: #FFFFFF;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .logo-container {
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 150px;
+            height: auto;
+            margin: 0 auto;
+            display: block;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+        }
+        
+        .language-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .language-btn {
+            padding: 15px 25px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .arabic-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .arabic-btn:hover {
+            background-color: #1a1a1a;
+        }
+        
+        .english-btn {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+        }
+        
+        .english-btn:hover {
+            background-color: #e0ad4e;
+        }
+        
+        footer {
+            margin-top: 50px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .language-btn {
+                padding: 12px 20px;
+                font-size: 1.1rem;
+            }
+            
+            .logo {
+                width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="images/logo.png" alt="Senar Logo" class="logo">
+        </div>
+        
+        <h1>سياسة الخصوصية | Privacy Policy</h1>
+        
+        <div class="language-selector">
+            <a href="privacy_policy.html" class="language-btn arabic-btn">العربية</a>
+            <a href="privacy_policy_en.html" class="language-btn english-btn">English</a>
+        </div>
+        
+        <footer>
+            <p>&copy; 2024 سينار | Senar</p>
+        </footer>
+    </div>
+</body>
+</html> 
