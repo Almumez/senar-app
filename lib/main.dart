@@ -43,6 +43,19 @@ void main() async {
   
   // Configurar el manejador de mensajes en segundo plano
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  
+  // Request iOS notifications permission
+  if (Platform.isIOS) {
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+  }
 
   // Crear e inicializar canales de notificación
   await GlobalNotification.flutterLocalNotificationsPlugin
