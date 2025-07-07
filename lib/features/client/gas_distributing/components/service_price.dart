@@ -56,24 +56,24 @@ class _ServicePriceWidgetState extends State<ServicePriceWidget> {
             children: [
               ServiceItem(
                 title: LocaleKeys.service_price.tr(), 
-                price: double.parse(cubit.state.orderPrices!.price.toString()).toStringAsFixed(2)
+                price: cubit.state.orderPrices!.servicesTotal.toStringAsFixed(2)
               ),
               ServiceItem(
                 title: LocaleKeys.additional_options.tr(), 
-                price: double.parse(cubit.state.orderPrices!.additionalServicesFees.toString()).toStringAsFixed(2)
+                price: cubit.state.orderPrices!.additionalTotal.toStringAsFixed(2)
               ),
               ServiceItem(
                 title: LocaleKeys.delivery.tr(), 
-                price: double.parse(cubit.state.orderPrices!.deliveryFees.toString()).toStringAsFixed(2)
+                price: cubit.state.orderPrices!.deliveryPrice.toStringAsFixed(2)
               ),
               ServiceItem(
                 title: LocaleKeys.tax.tr(), 
-                price: double.parse(cubit.state.orderPrices!.tax.toString()).toStringAsFixed(2)
+                price: cubit.state.orderPrices!.tax.toStringAsFixed(2)
               ),
               Divider(height: 24.h, thickness: 1, color: context.borderColor.withOpacity(0.3)),
               ServiceItem(
                 title: LocaleKeys.total.tr(), 
-                price: double.parse(cubit.state.orderPrices!.totalPrice.toString()).toStringAsFixed(2),
+                price: cubit.state.orderPrices!.total.toStringAsFixed(2),
                 isTotal: true
               ),
             ],

@@ -8,6 +8,7 @@ import '../../../../core/services/service_locator.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_btn.dart';
 import '../../../../core/widgets/flash_helper.dart';
+import '../../../../core/widgets/loading.dart';
 import '../../../../core/widgets/successfully_sheet.dart';
 import '../../../../gen/locale_keys.g.dart';
 import '../../../shared/components/appbar.dart';
@@ -83,13 +84,47 @@ class _ClientDistributingCreateOrderViewState extends State<ClientDistributingCr
             _buildInstructionsSection(context).withPadding(bottom: 25.h),
             
             MyAddressWidgets(
+              initialId: cubit.addressId,
               callback: (val) {
                 setState(() {
                   cubit.addressId = val;
+                  
+                  // If we have selected services, recalculate the order with the new address
+                  if (cubit.hasChosenServices()) {
+                    cubit.calculateOrder();
+                  }
                 });
               },
             ).withPadding(bottom: 10.h),
-            ServicePriceWidget().withPadding(bottom: 15.h),
+            
+            // Price Widget or Loading Indicator
+            BlocBuilder<ClientDistributeGasCubit, ClientDistributeGasState>(
+              bloc: cubit,
+              buildWhen: (previous, current) => 
+                previous.calculationsState != current.calculationsState ||
+                previous.orderPrices != current.orderPrices,
+              builder: (context, state) {
+                if (state.calculationsState.isLoading) {
+                  return Center(
+                    child: Column(
+                      children: [
+                        CustomProgress(size: 30.w),
+                        SizedBox(height: 10.h),
+                        Text(
+                          "جاري حساب السعر...",
+                          style: context.mediumText.copyWith(fontSize: 14.sp),
+                        ),
+                      ],
+                    ),
+                  ).withPadding(vertical: 20.h);
+                } else if (state.orderPrices != null) {
+                  return ServicePriceWidget().withPadding(bottom: 15.h);
+                } else {
+                  return SizedBox.shrink();
+                }
+              },
+            ),
+            
             PaymentMethodsView(
               callback: (v) {
                 cubit.paymentMethod = v;

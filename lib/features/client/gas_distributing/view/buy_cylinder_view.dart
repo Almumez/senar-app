@@ -17,6 +17,7 @@ import '../../../../gen/locale_keys.g.dart';
 import '../../../../models/buy_cylinder.dart';
 import '../../../shared/components/appbar.dart';
 import '../../../shared/components/increment_widget.dart';
+import '../../addresses/controller/cubit.dart';
 import '../controller/cubit.dart';
 import '../controller/states.dart';
 
@@ -38,7 +39,7 @@ class _BuyCylinderViewState extends State<BuyCylinderView> {
   void initState() {
     sl.resetLazySingleton<ClientDistributeGasCubit>();
     cubit = sl<ClientDistributeGasCubit>();
-    cubit.fetchServices();
+    cubit.init(); // Initialize with default address and services
     super.initState();
   }
 
@@ -50,6 +51,48 @@ class _BuyCylinderViewState extends State<BuyCylinderView> {
 
   Future<void> _refresh() async {
     await cubit.fetchServices();
+  }
+  
+  // Show dialog when no addresses are available
+  void _showAddAddressDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("إضافة عنوان", style: context.mediumText),
+          content: Text(
+            "يجب إضافة عنوان لإكمال الطلب. هل تريد إضافة عنوان جديد؟", 
+            style: context.regularText
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("لاحقاً", style: context.mediumText.copyWith(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                push(NamedRoutes.pickLocation);
+              },
+              child: Text("إضافة عنوان", style: context.mediumText.copyWith(color: context.primaryColor)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  
+  // Check if addresses are available before calculating order
+  Future<bool> _checkAddresses() async {
+    final addressesCubit = sl<AddressesCubit>();
+    
+    // If addresses haven't been loaded yet, load them
+    if (addressesCubit.addresses.isEmpty) {
+      await addressesCubit.getAddresses();
+    }
+    
+    // Return true if we have addresses, false otherwise
+    return addressesCubit.addresses.isNotEmpty;
   }
 
   @override
@@ -72,7 +115,16 @@ class _BuyCylinderViewState extends State<BuyCylinderView> {
                 loading: state.calculationsState.isLoading,
                 enable: state.serviceChosen!,
                 title: "طلب",
-                onPressed: () => cubit.calculateOrder(),
+                onPressed: () async {
+                  // Check if addresses are available before calculating order
+                  bool hasAddresses = await _checkAddresses();
+                  
+                  if (hasAddresses) {
+                    cubit.calculateOrder();
+                  } else {
+                    _showAddAddressDialog();
+                  }
+                },
               ).withPadding(horizontal: 16.w, bottom: 16.h),
             );
           },

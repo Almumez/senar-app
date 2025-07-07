@@ -3,6 +3,8 @@ import '../../../../../../core/services/server_gate.dart';
 import '../../../../../../core/utils/enums.dart';
 import '../../../../models/buy_cylinder.dart';
 import '../../../../models/order_prices.dart';
+import '../../../../core/services/service_locator.dart';
+import '../../addresses/controller/cubit.dart';
 import 'states.dart';
 
 class ClientDistributeGasCubit extends Cubit<ClientDistributeGasState> {
@@ -14,6 +16,32 @@ class ClientDistributeGasCubit extends Cubit<ClientDistributeGasState> {
 
   String addressId = '';
   String paymentMethod = '';
+
+  // Initialize by checking for default address
+  Future<void> init() async {
+    await fetchServices();
+    await loadDefaultAddress();
+  }
+
+  // Load default address if available
+  Future<void> loadDefaultAddress() async {
+    if (addressId.isEmpty) {
+      final addressesCubit = sl<AddressesCubit>();
+      
+      // If addresses haven't been loaded yet, load them
+      if (addressesCubit.addresses.isEmpty) {
+        await addressesCubit.getAddresses();
+      }
+      
+      // Check if we have any addresses
+      if (addressesCubit.addresses.isNotEmpty) {
+        // Use default address or first address
+        addressId = addressesCubit.defaultAddressId.isNotEmpty 
+            ? addressesCubit.defaultAddressId 
+            : addressesCubit.addresses.first.id;
+      }
+    }
+  }
 
   Future<void> fetchServices() async {
     emit(state.copyWith(requestState: RequestState.loading));
@@ -53,12 +81,16 @@ class ClientDistributeGasCubit extends Cubit<ClientDistributeGasState> {
   }
 
   Future<void> calculateOrder() async {
-    _resetOrderDetails();
-    final params = <String, dynamic>{};
+    // Reset selected services
+    selectedAdditionalServices.clear();
+    selectedSubServices.clear();
+    
+    // Build services object for request
+    final servicesMap = <String, dynamic>{};
     for (final service in services) {
       for (final subService in service.sub) {
         if (subService.count > 0) {
-          params[subService.type] = subService.count;
+          servicesMap[subService.type] = subService.count;
           if (service.key == 'additional') {
             selectedAdditionalServices.add(subService);
           } else {
@@ -68,10 +100,29 @@ class ClientDistributeGasCubit extends Cubit<ClientDistributeGasState> {
       }
     }
 
+    // Get address ID - if not set, try to get default address
+    String currentAddressId = addressId;
+    if (currentAddressId.isEmpty) {
+      await loadDefaultAddress();
+      currentAddressId = addressId;
+    }
+
+    // Check if we have a valid address ID
+    if (currentAddressId.isEmpty) {
+      emit(state.copyWith(calculationsState: RequestState.error, msg: 'يرجى إضافة عنوان أولاً'));
+      return;
+    }
+
+    // Create the request body
+    final body = {
+      'address_id': int.tryParse(currentAddressId) ?? 0,
+      'services': servicesMap,
+    };
+
     emit(state.copyWith(calculationsState: RequestState.loading));
-    final response = await ServerGate.i.getFromServer(
+    final response = await ServerGate.i.sendToServer(
       url: 'client/order/distribution-calculations',
-      params: params,
+      body: body,
     );
 
     if (response.success) {
@@ -83,10 +134,19 @@ class ClientDistributeGasCubit extends Cubit<ClientDistributeGasState> {
   }
 
   Future<void> completeOrder() async {
+    final servicesMap = <String, dynamic>{};
+    for (final service in services) {
+      for (final subService in service.sub) {
+        if (subService.count > 0) {
+          servicesMap[subService.type] = subService.count;
+        }
+      }
+    }
+
     final body = <String, dynamic>{
-      'address_id': addressId,
+      'address_id': int.tryParse(addressId) ?? 0,
       'payment_method': paymentMethod,
-      ..._buildOrderParams(),
+      'services': servicesMap,
     };
 
     emit(state.copyWith(createOrderState: RequestState.loading, calculationsState: RequestState.initial));
@@ -99,20 +159,8 @@ class ClientDistributeGasCubit extends Cubit<ClientDistributeGasState> {
     }
   }
 
-  Map<String, dynamic> _buildOrderParams() {
-    final params = <String, dynamic>{};
-    for (final service in services) {
-      for (final subService in service.sub) {
-        if (subService.count > 0) {
-          params[subService.type] = subService.count;
-        }
-      }
-    }
-    return params;
-  }
-
   void _resetOrderDetails() {
-    addressId = '';
+    // Don't reset addressId here anymore since we need it for calculations
     paymentMethod = '';
     selectedAdditionalServices.clear();
     selectedSubServices.clear();

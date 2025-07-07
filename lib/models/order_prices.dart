@@ -1,22 +1,22 @@
 import 'base.dart';
 
 class OrderPricesModel extends Model {
-  late final String price, tax, deliveryFees, totalPrice, additionalServicesFees;
+  late final double servicesTotal, additionalTotal, deliveryPrice, tax, total;
 
   OrderPricesModel.fromJson([Map<String, dynamic>? json]) {
-    price = stringFromJson(json, "price");
-    tax = stringFromJson(json, "tax");
-    deliveryFees = stringFromJson(json, "delivery_fee");
-    totalPrice = stringFromJson(json, "total_price");
-    additionalServicesFees = stringFromJson(json, "additional_services_price");
+    servicesTotal = doubleFromJson(json, "ServicesTotal");
+    additionalTotal = doubleFromJson(json, "additionalTotal");
+    deliveryPrice = doubleFromJson(json, "deliveryPrice");
+    tax = doubleFromJson(json, "tax");
+    total = doubleFromJson(json, "total");
   }
 
   @override
   Map<String, dynamic> toJson() => {
-        "price": price,
+        "ServicesTotal": servicesTotal,
+        "additionalTotal": additionalTotal,
+        "deliveryPrice": deliveryPrice,
         "tax": tax,
-        "delivery_fee": deliveryFees,
-        "total_price": totalPrice,
-        "additional_services_price": additionalServicesFees,
+        "total": total,
       };
 }
