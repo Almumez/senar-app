@@ -69,7 +69,7 @@ class AgentOrderDetailsCubit extends Cubit<AgentOrderDetailsState> {
   changeStatus() async {
     emit(state.copyWith(changeStatus: RequestState.loading));
     final result = await ServerGate.i.putToServer(
-      url: '${UserModel.i.accountType.isFreeAgent ? "free-" : ""}agent/order/${order?.id}',
+      url: '${UserModel.i.accountType.isFreeAgent ? "free-" : ""}agent/order/${order?.id}/change-status',
       body: {'status': order?.nextStatus},
     );
     if (result.success) {
