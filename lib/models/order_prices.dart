@@ -2,6 +2,7 @@ import 'base.dart';
 
 class OrderPricesModel extends Model {
   late final double servicesTotal, additionalTotal, deliveryPrice, tax, total;
+  late final double kilometers;
 
   OrderPricesModel.fromJson([Map<String, dynamic>? json]) {
     servicesTotal = doubleFromJson(json, "ServicesTotal");
@@ -9,6 +10,7 @@ class OrderPricesModel extends Model {
     deliveryPrice = doubleFromJson(json, "deliveryPrice");
     tax = doubleFromJson(json, "tax");
     total = doubleFromJson(json, "total");
+    kilometers = doubleFromJson(json, "kilometers");
   }
 
   @override
@@ -18,5 +20,6 @@ class OrderPricesModel extends Model {
         "deliveryPrice": deliveryPrice,
         "tax": tax,
         "total": total,
+        "kilometers": kilometers,
       };
 }

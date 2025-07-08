@@ -70,6 +70,11 @@ class _ServicePriceWidgetState extends State<ServicePriceWidget> {
                 title: LocaleKeys.tax.tr(), 
                 price: cubit.state.orderPrices!.tax.toStringAsFixed(2)
               ),
+              ServiceItem(
+                title: "المسافة", 
+                price: cubit.state.orderPrices!.kilometers.toStringAsFixed(2),
+                unit: "كم"
+              ),
               Divider(height: 24.h, thickness: 1, color: context.borderColor.withOpacity(0.3)),
               ServiceItem(
                 title: LocaleKeys.total.tr(), 
@@ -86,12 +91,14 @@ class _ServicePriceWidgetState extends State<ServicePriceWidget> {
 
 class ServiceItem extends StatelessWidget {
   final String title, price;
+  final String? unit;
   final bool isTotal;
   
   const ServiceItem({
     super.key, 
     required this.title, 
     required this.price, 
+    this.unit,
     this.isTotal = false
   });
 
@@ -116,7 +123,7 @@ class ServiceItem extends StatelessWidget {
                 : context.regularText.copyWith(fontSize: 14.sp, color: Colors.black),
               children: [
                 TextSpan(
-                  text: ' ${LocaleKeys.currency.tr()}', 
+                  text: ' ${unit ?? LocaleKeys.currency.tr()}', 
                   style: isTotal 
                     ? context.semiboldText.copyWith(fontSize: 14.sp, color: context.primaryColor)
                     : context.regularText.copyWith(fontSize: 14.sp, color: Colors.black)
