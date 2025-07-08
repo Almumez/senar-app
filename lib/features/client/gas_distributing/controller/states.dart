@@ -7,6 +7,7 @@ class ClientDistributeGasState {
   final ErrorType errorType;
   bool? serviceChosen;
   OrderPricesModel? orderPrices;
+  final bool isRequestingOrder;
 
   ClientDistributeGasState({
     this.requestState = RequestState.initial,
@@ -17,6 +18,7 @@ class ClientDistributeGasState {
     this.errorType = ErrorType.none,
     this.serviceChosen = false,
     this.orderPrices,
+    this.isRequestingOrder = false,
   });
 
   ClientDistributeGasState copyWith({
@@ -28,6 +30,7 @@ class ClientDistributeGasState {
     ErrorType? errorType,
     bool? serviceChosen,
     OrderPricesModel? orderPrices,
+    bool? isRequestingOrder,
   }) =>
       ClientDistributeGasState(
         requestState: requestState ?? this.requestState,
@@ -38,5 +41,6 @@ class ClientDistributeGasState {
         errorType: errorType ?? this.errorType,
         serviceChosen: serviceChosen ?? this.serviceChosen,
         orderPrices: orderPrices ?? this.orderPrices,
+        isRequestingOrder: isRequestingOrder ?? this.isRequestingOrder,
       );
 }

@@ -133,6 +133,11 @@ class ClientDistributeGasCubit extends Cubit<ClientDistributeGasState> {
     }
   }
 
+  // Método para establecer si estamos solicitando una orden nueva
+  void setRequestingOrder(bool value) {
+    emit(state.copyWith(isRequestingOrder: value));
+  }
+
   Future<void> completeOrder() async {
     final servicesMap = <String, dynamic>{};
     for (final service in services) {

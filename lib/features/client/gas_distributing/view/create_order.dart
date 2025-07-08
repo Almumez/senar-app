@@ -90,6 +90,7 @@ class _ClientDistributingCreateOrderViewState extends State<ClientDistributingCr
                   cubit.addressId = val;
                   
                   // If we have selected services, recalculate the order with the new address
+                  // but don't set isRequestingOrder to avoid navigation
                   if (cubit.hasChosenServices()) {
                     cubit.calculateOrder();
                   }

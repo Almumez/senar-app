@@ -103,8 +103,10 @@ class _BuyCylinderViewState extends State<BuyCylinderView> {
           bloc: cubit,
           listenWhen: (previous, current) => previous.calculationsState != current.calculationsState,
           listener: (context, state) {
-            if (state.calculationsState.isDone) {
+            if (state.calculationsState.isDone && state.isRequestingOrder) {
               push(NamedRoutes.clientDistributingCreateOrder);
+              // Restablecer la bandera después de navegar
+              cubit.setRequestingOrder(false);
             } else if (state.calculationsState.isError) {
               FlashHelper.showToast(state.msg);
             }
@@ -120,6 +122,8 @@ class _BuyCylinderViewState extends State<BuyCylinderView> {
                   bool hasAddresses = await _checkAddresses();
                   
                   if (hasAddresses) {
+                    // Establecer la bandera para indicar que estamos solicitando una orden
+                    cubit.setRequestingOrder(true);
                     cubit.calculateOrder();
                   } else {
                     _showAddAddressDialog();
