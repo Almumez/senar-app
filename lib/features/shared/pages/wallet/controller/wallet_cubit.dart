@@ -13,6 +13,7 @@ class WalletCubit extends Cubit<WalletState> {
 
   WalletModel? data;
   List<TransactionModel> transcations = [];
+  List<WithdrawalRequestModel> withdrawalRequests = [];
   String? next;
 
   final scrollController = ScrollController();
@@ -21,8 +22,20 @@ class WalletCubit extends Cubit<WalletState> {
     emit(state.copyWith(getWaletState: RequestState.loading));
     final result = await ServerGate.i.getFromServer(url: 'general/wallet');
     if (result.success) {
-      data = WalletModel.fromJson(result.data['data']);
-      emit(state.copyWith(getWaletState: RequestState.done));
+      try {
+        // Create a safe version of the data with empty transactions if null
+        final walletData = {
+          'balance': result.data['data']['balance'] ?? 0.0,
+          'transactions': result.data['data']['transactions'] ?? [],
+        };
+        data = WalletModel.fromJson(walletData);
+        emit(state.copyWith(getWaletState: RequestState.done));
+      } catch (e) {
+        print('Error parsing wallet data: $e');
+        // Create a default wallet model with empty data
+        data = WalletModel(balance: 0.0, transactions: []);
+        emit(state.copyWith(getWaletState: RequestState.done));
+      }
     } else {
       emit(state.copyWith(getWaletState: RequestState.error, msg: result.msg, errorType: result.errType));
     }
@@ -89,6 +102,37 @@ class WalletCubit extends Cubit<WalletState> {
     } else {
       FlashHelper.showToast(result.msg);
       emit(state.copyWith(withdrowState: RequestState.error, msg: result.msg, errorType: result.errType));
+    }
+  }
+  
+  Future<CustomResponse> requestWithdrawal(double amount) async {
+    emit(state.copyWith(requestWithdrawalState: RequestState.loading));
+    final result = await ServerGate.i.sendToServer(
+      url: 'free-agent/withdrawals/request',
+      body: {
+        'amount': amount.toString()
+      },
+    );
+    if (result.success) {
+      getWallet(); // Refresh wallet data after successful request
+      getWithdrawalRequests(); // Refresh withdrawal requests list
+      emit(state.copyWith(requestWithdrawalState: RequestState.done));
+    } else {
+      emit(state.copyWith(requestWithdrawalState: RequestState.error, msg: result.msg, errorType: result.errType));
+    }
+    return result;
+  }
+
+  Future<void> getWithdrawalRequests() async {
+    emit(state.copyWith(getWithdrawalRequestsState: RequestState.loading));
+    final result = await ServerGate.i.getFromServer(url: 'free-agent/withdrawals');
+    if (result.success) {
+      withdrawalRequests = List<WithdrawalRequestModel>.from(
+        result.data['data'].map((x) => WithdrawalRequestModel.fromJson(x))
+      );
+      emit(state.copyWith(getWithdrawalRequestsState: RequestState.done));
+    } else {
+      emit(state.copyWith(getWithdrawalRequestsState: RequestState.error, msg: result.msg, errorType: result.errType));
     }
   }
 }

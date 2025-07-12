@@ -17,6 +17,7 @@ abstract class  LocaleKeys {
   static const yes = 'yes';
   static const no = 'no';
   static const confirm = 'confirm';
+  static const request = 'request';
   static const login = 'login';
   static const phone_number = 'phone_number';
   static const password = 'password';
@@ -122,6 +123,7 @@ abstract class  LocaleKeys {
   static const withdraw = 'withdraw';
   static const latest_transactions = 'latest_transactions';
   static const see_all = 'see_all';
+  static const request_money = 'request_money';
   static const add_address = 'add_address';
   static const services = 'services';
   static const distribution = 'distribution';
@@ -251,6 +253,8 @@ abstract class  LocaleKeys {
   static const withdraw_confirmation = 'withdraw_confirmation';
   static const withdraw_balance_prompt = 'withdraw_balance_prompt';
   static const withdraw_request_success = 'withdraw_request_success';
+  static const withdrawal_requests = 'withdrawal_requests';
+  static const request_number = 'request_number';
   static const insufficient_balance = 'insufficient_balance';
   static const additional_options_value = 'additional_options_value';
   static const client_location = 'client_location';

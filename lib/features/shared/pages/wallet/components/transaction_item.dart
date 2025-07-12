@@ -18,6 +18,15 @@ class TransactionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Parse the date string to DateTime
+    DateTime dateTime;
+    try {
+      dateTime = DateTime.parse(data.date);
+    } catch (e) {
+      // Fallback to current date if parsing fails
+      dateTime = DateTime.now();
+    }
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r), border: Border.all(color: context.borderColor)),
@@ -32,15 +41,15 @@ class TransactionItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(data.title, style: context.mediumText).withPadding(bottom: 10.h),
+                Text(data.type, style: context.mediumText).withPadding(bottom: 10.h),
                 Row(
                   children: [
                     Icon(Icons.calendar_month, size: 20.h, color: context.hintColor).withPadding(end: 4.w),
-                    Text(DateFormat("d MMM yyyy", context.locale.languageCode).format(data.date),
+                    Text(DateFormat("d MMM yyyy", context.locale.languageCode).format(dateTime),
                             style: context.regularText.copyWith(fontSize: 12, color: context.hintColor))
                         .withPadding(end: 15.w),
                     Icon(Icons.access_time, size: 20.h, color: context.hintColor).withPadding(end: 4.w),
-                    Text(DateFormat("hh:mm a", context.locale.languageCode).format(data.date),
+                    Text(DateFormat("hh:mm a", context.locale.languageCode).format(dateTime),
                         style: context.regularText.copyWith(fontSize: 12, color: context.hintColor)),
                   ],
                 )

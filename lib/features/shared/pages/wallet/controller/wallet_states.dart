@@ -5,32 +5,41 @@ class WalletState {
   final RequestState getTransactionsState;
   final RequestState getTransactionsPagingState;
   final RequestState withdrowState;
+  final RequestState requestWithdrawalState;
+  final RequestState getWithdrawalRequestsState;
   final String msg;
-  final ErrorType errorType;
+  final ErrorType? errorType;
 
   WalletState({
     this.getWaletState = RequestState.initial,
-    this.withdrowState = RequestState.initial,
-    this.getTransactionsPagingState = RequestState.initial,
     this.getTransactionsState = RequestState.initial,
+    this.getTransactionsPagingState = RequestState.initial,
+    this.withdrowState = RequestState.initial,
+    this.requestWithdrawalState = RequestState.initial,
+    this.getWithdrawalRequestsState = RequestState.initial,
     this.msg = '',
-    this.errorType = ErrorType.none,
+    this.errorType,
   });
 
   WalletState copyWith({
     RequestState? getWaletState,
+    RequestState? getTransactionsState,
     RequestState? getTransactionsPagingState,
     RequestState? withdrowState,
-    RequestState? getTransactionsState,
+    RequestState? requestWithdrawalState,
+    RequestState? getWithdrawalRequestsState,
     String? msg,
     ErrorType? errorType,
-  }) =>
-      WalletState(
-        withdrowState: withdrowState ?? this.withdrowState,
-        getWaletState: getWaletState ?? this.getWaletState,
-        getTransactionsState: getTransactionsState ?? this.getTransactionsState,
-        getTransactionsPagingState: getTransactionsPagingState ?? this.getTransactionsPagingState,
-        msg: msg ?? this.msg,
-        errorType: errorType ?? this.errorType,
-      );
+  }) {
+    return WalletState(
+      getWaletState: getWaletState ?? this.getWaletState,
+      getTransactionsState: getTransactionsState ?? this.getTransactionsState,
+      getTransactionsPagingState: getTransactionsPagingState ?? this.getTransactionsPagingState,
+      withdrowState: withdrowState ?? this.withdrowState,
+      requestWithdrawalState: requestWithdrawalState ?? this.requestWithdrawalState,
+      getWithdrawalRequestsState: getWithdrawalRequestsState ?? this.getWithdrawalRequestsState,
+      msg: msg ?? this.msg,
+      errorType: errorType ?? this.errorType,
+    );
+  }
 }
