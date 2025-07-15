@@ -51,7 +51,14 @@ class ClientOrderDetailsCubit extends Cubit<ClientOrderDetailsState> {
       body: {
         "payment_method": paymentMethod,
         "total_price": data?.totalPrice,
-        "transaction_code": transactionId,
+        "transaction_id": transactionId,
+        "gateway_response": transactionId != null && transactionId!.isNotEmpty && paymentMethod != 'cash' ? {
+          'transaction_id': transactionId,
+          'payment_method': paymentMethod,
+          'amount': data?.totalPrice,
+          'currency': 'SAR',
+          'status': 'success'
+        } : null,
       },
     );
     if (result.success) {

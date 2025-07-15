@@ -16,6 +16,7 @@ class ClientDistributeGasCubit extends Cubit<ClientDistributeGasState> {
 
   String addressId = '';
   String paymentMethod = '';
+  String transactionId = ''; // معرف معاملة الدفع
 
   // Initialize by checking for default address
   Future<void> init() async {
@@ -171,8 +172,19 @@ class ClientDistributeGasCubit extends Cubit<ClientDistributeGasState> {
     if (paymentMethod != 'cash') {
       body['paid_amount'] = state.orderPrices?.total ?? 0;
       
-      // يمكن إضافة gateway_response هنا إذا كان متاحاً
-      // body['gateway_response'] = {...};
+      // إضافة معرف المعاملة كمعامل منفصل
+      if (transactionId.isNotEmpty) {
+        body['transaction_code'] = transactionId;
+        
+        // إرسال استجابة البوابة كاملة
+        body['gateway_response'] = {
+          'transaction_id': transactionId,
+          'payment_method': paymentMethod,
+          'amount': state.orderPrices?.total ?? 0,
+          'currency': 'SAR',
+          'status': 'success'
+        };
+      }
     }
 
     emit(state.copyWith(createOrderState: RequestState.loading, calculationsState: RequestState.initial));

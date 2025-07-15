@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../core/routes/app_routes_fun.dart';
+import '../../../../core/routes/routes.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_btn.dart';
@@ -67,7 +69,18 @@ class _ClientDistributingCreateOrderViewState extends State<ClientDistributingCr
                   FlashHelper.showToast(LocaleKeys.choose_address_first.tr());
                 } else if (cubit.paymentMethod == '') {
                   FlashHelper.showToast(LocaleKeys.choose_payment_method_first.tr());
+                } else if (cubit.paymentMethod == 'visa') {
+                  // إذا كانت طريقة الدفع هي الفيزا، انتقل إلى صفحة الدفع
+                  push(NamedRoutes.paymentService, arg: {
+                    "amount": cubit.state.orderPrices?.total.toString() ?? "0",
+                    "on_success": (String transactionId) {
+                      // تخزين معرف المعاملة وإكمال الطلب
+                      cubit.transactionId = transactionId;
+                      cubit.completeOrder();
+                    }
+                  });
                 } else {
+                  // إذا كانت طريقة الدفع هي الكاش، قم بإكمال الطلب مباشرة
                   cubit.completeOrder();
                 }
               },
