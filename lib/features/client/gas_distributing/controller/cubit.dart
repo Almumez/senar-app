@@ -148,11 +148,32 @@ class ClientDistributeGasCubit extends Cubit<ClientDistributeGasState> {
       }
     }
 
+    // التأكد من وجود بيانات الأسعار
+    if (state.orderPrices == null) {
+      emit(state.copyWith(createOrderState: RequestState.error, msg: "لم يتم حساب السعر بشكل صحيح"));
+      return;
+    }
+
     final body = <String, dynamic>{
       'address_id': int.tryParse(addressId) ?? 0,
       'payment_method': paymentMethod,
       'services': servicesMap,
+      'station_id': state.orderPrices?.stationId ?? 0,
+      // إضافة الحقول الجديدة من الحسابات
+      'services_total': state.orderPrices?.servicesTotal ?? 0,
+      'additional_total': state.orderPrices?.additionalTotal ?? 0,
+      'delivery_fee': state.orderPrices?.deliveryPrice ?? 0,
+      'tax': state.orderPrices?.tax ?? 0,
+      'total': state.orderPrices?.total ?? 0,
     };
+
+    // إذا كانت طريقة الدفع ليست نقداً، أضف المبلغ المدفوع
+    if (paymentMethod != 'cash') {
+      body['paid_amount'] = state.orderPrices?.total ?? 0;
+      
+      // يمكن إضافة gateway_response هنا إذا كان متاحاً
+      // body['gateway_response'] = {...};
+    }
 
     emit(state.copyWith(createOrderState: RequestState.loading, calculationsState: RequestState.initial));
     final response = await ServerGate.i.sendToServer(url: 'client/order/distribution', body: body);

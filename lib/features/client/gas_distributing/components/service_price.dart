@@ -75,6 +75,10 @@ class _ServicePriceWidgetState extends State<ServicePriceWidget> {
                 price: cubit.state.orderPrices!.kilometers.toStringAsFixed(2),
                 unit: "كم"
               ),
+              ServiceItem(
+                title: "رقم المحطة", 
+                price: cubit.state.orderPrices!.stationId.toString(),
+              ),
               Divider(height: 24.h, thickness: 1, color: context.borderColor.withOpacity(0.3)),
               ServiceItem(
                 title: LocaleKeys.total.tr(), 
