@@ -55,7 +55,7 @@ dependencies:
   url_launcher: ^6.3.1
   photo_view: ^0.15.0
   flutter_rating_bar: ^4.0.1
-  myfatoorah_flutter: ^3.1.5
+  myfatoorah_flutter: ^3.2.3
 
 
 dev_dependencies:

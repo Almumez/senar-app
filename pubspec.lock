@@ -881,10 +881,10 @@ packages:
     dependency: "direct main"
     description:
       name: myfatoorah_flutter
-      sha256: d93ce58f617cd354c164622bf96bc5b7879dc1b430c7be6253e47c35b43e44f4
+      sha256: "7cb2117e30809b477a358cc5f38ad18b2d13cf30c28b99b11592bdbf73be1edf"
       url: "https://pub.dev"
     source: hosted
-    version: "3.2.2"
+    version: "3.2.3"
   nested:
     dependency: transitive
     description:
