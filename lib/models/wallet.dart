@@ -75,8 +75,8 @@ class WithdrawalRequestModel {
 
   factory WithdrawalRequestModel.fromJson(Map<String, dynamic> json) => WithdrawalRequestModel(
     requestNumber: json["request_number"],
-    amount: json["amount"],
-    approvedAmount: json["approved_amount"],
+    amount: json["amount"].toString(),
+    approvedAmount: json["approved_amount"].toString(),
     status: json["status"],
     createdAt: DateTime.parse(json["created_at"]),
     processedAt: json["processed_at"] != null ? DateTime.parse(json["processed_at"]) : null,
