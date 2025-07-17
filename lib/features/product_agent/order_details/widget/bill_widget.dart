@@ -53,7 +53,7 @@ class ProductAgentBillWidget extends StatelessWidget {
                 ),
                 Text.rich(
                   TextSpan(children: [
-                    TextSpan(text: '${data.deliveryFee}', style: context.mediumText.copyWith(fontSize: 14)),
+                    TextSpan(text: '${data.deliveryFee - data.tax}', style: context.mediumText.copyWith(fontSize: 14)),
                     TextSpan(text: LocaleKeys.sar.tr(), style: context.mediumText.copyWith(fontSize: 14)),
                   ]),
                 )
