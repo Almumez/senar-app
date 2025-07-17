@@ -26,6 +26,7 @@ class PlatformPaymentButton extends StatefulWidget {
 class _PlatformPaymentButtonState extends State<PlatformPaymentButton> {
   late MFApplePayButton? mfApplePayButton;
   bool isLoading = false;
+  bool isApplePayConfigured = false;
   int? googlePayMethodId=1661616161616;
 
   @override
@@ -36,10 +37,13 @@ class _PlatformPaymentButtonState extends State<PlatformPaymentButton> {
     if (Platform.isIOS) {
       // تخصيص مظهر زر Apple Pay
       MFApplePayStyle applePayStyle = MFApplePayStyle();
-     
       
       mfApplePayButton = MFApplePayButton(applePayStyle: applePayStyle);
-      _setupApplePay();
+      
+      // تهيئة Apple Pay بعد تأخير قصير للتأكد من بناء الواجهة
+      Future.delayed(Duration(milliseconds: 500), () {
+        _setupApplePay();
+      });
     } else if (Platform.isAndroid) {
       // للأندرويد، نحتاج إلى الحصول على معرف طريقة الدفع لـ Google Pay
       _getPaymentMethods();
@@ -101,24 +105,32 @@ class _PlatformPaymentButtonState extends State<PlatformPaymentButton> {
           .displayApplePayButton(widget.session, executePaymentRequest, MFLanguage.ENGLISH)
           .then((value) {
             log("Apple Pay button displayed successfully");
+            setState(() {
+              isApplePayConfigured = true;
+              isLoading = false;
+            });
           })
           .catchError((error) {
             log('Error displaying Apple Pay button: ${error.message}');
+            setState(() {
+              isApplePayConfigured = false;
+              isLoading = false;
+            });
           });
-      
-      setState(() {
-        isLoading = false;
-      });
     } catch (e) {
       log('Error setting up Apple Pay: $e');
       setState(() {
+        isApplePayConfigured = false;
         isLoading = false;
       });
     }
   }
 
   void _executeApplePay() async {
-    if (mfApplePayButton == null) return;
+    if (mfApplePayButton == null || !isApplePayConfigured) {
+      log('Apple Pay غير مهيأ بشكل صحيح');
+      return;
+    }
     
     try {
       setState(() {
@@ -228,10 +240,26 @@ class _PlatformPaymentButtonState extends State<PlatformPaymentButton> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return Container(
+        height: 45.h,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: const Center(
+          child: SizedBox(
+            height: 24,
+            width: 24,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+            ),
+          ),
+        ),
+      );
     }
     
-    if (Platform.isIOS && mfApplePayButton != null) {
+    if (Platform.isIOS && mfApplePayButton != null && isApplePayConfigured) {
       // استخدام زر Apple Pay المخصص
       return Container(
         width: double.infinity,
@@ -242,6 +270,43 @@ class _PlatformPaymentButtonState extends State<PlatformPaymentButton> {
         child: GestureDetector(
           onTap: _executeApplePay,
           child: mfApplePayButton,
+        ),
+      );
+    } else if (Platform.isIOS && !isApplePayConfigured) {
+      // إذا لم يتم تهيئة Apple Pay بنجاح، عرض زر بديل
+      return GestureDetector(
+        onTap: () {
+          // محاولة إعادة تهيئة Apple Pay
+          _setupApplePay();
+        },
+        child: Container(
+          height: 45.h,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.apple,
+                  color: Colors.white,
+                  size: 20.sp,
+                ),
+                SizedBox(width: 8.w),
+                Text(
+                  'Apple Pay',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16.sp,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     } else if (Platform.isAndroid) {
