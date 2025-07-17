@@ -8,6 +8,7 @@ import '../../../../core/routes/routes.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../gen/locale_keys.g.dart';
 import '../../../shared/components/appbar.dart';
+import '../../../shared/components/payment_bottom_sheet.dart';
 import '../../../shared/components/payment_methods.dart';
 import '../controller/order_details/cubit.dart';
 
@@ -29,14 +30,13 @@ class _ClientOrderDetailsSelectPaymentViewState extends State<ClientOrderDetails
           title: LocaleKeys.confirm.tr(),
           onPressed: () {
             if (widget.cubit.paymentMethod == 'visa') {
-              push(
-                NamedRoutes.paymentService,
-                arg: {
-                  "amount": widget.cubit.data?.totalPrice.toString(),
-                  "on_success": (v) {
-                    widget.cubit.transactionId = v;
-                    Navigator.pop(context);
-                  }
+              // استخدام bottom sheet للدفع بدلاً من الانتقال إلى صفحة جديدة
+              showPaymentBottomSheet(
+                context: context,
+                amount: widget.cubit.data?.totalPrice.toString() ?? "0",
+                onSuccess: (String paymentId) {
+                  widget.cubit.paymentId = paymentId;
+                  Navigator.pop(context);
                 },
               );
             } else {

@@ -14,6 +14,7 @@ import '../../../../core/widgets/loading.dart';
 import '../../../../core/widgets/successfully_sheet.dart';
 import '../../../../gen/locale_keys.g.dart';
 import '../../../shared/components/appbar.dart';
+import '../../../shared/components/payment_bottom_sheet.dart';
 import '../../../shared/pages/navbar/cubit/navbar_cubit.dart';
 import '../../addresses/components/my_addresses.dart';
 // import '../components/additional_services.dart';
@@ -70,15 +71,16 @@ class _ClientDistributingCreateOrderViewState extends State<ClientDistributingCr
                 } else if (cubit.paymentMethod == '') {
                   FlashHelper.showToast(LocaleKeys.choose_payment_method_first.tr());
                 } else if (cubit.paymentMethod == 'visa') {
-                  // إذا كانت طريقة الدفع هي الفيزا، انتقل إلى صفحة الدفع
-                  push(NamedRoutes.paymentService, arg: {
-                    "amount": cubit.state.orderPrices?.total.toString() ?? "0",
-                    "on_success": (String transactionId) {
+                  // استخدام bottom sheet للدفع الإلكتروني بدلاً من الانتقال إلى صفحة جديدة
+                  showPaymentBottomSheet(
+                    context: context,
+                    amount: cubit.state.orderPrices?.total.toString() ?? "0",
+                    onSuccess: (String paymentId) {
                       // تخزين معرف المعاملة وإكمال الطلب
-                      cubit.transactionId = transactionId;
+                      cubit.paymentId = paymentId;
                       cubit.completeOrder();
-                    }
-                  });
+                    },
+                  );
                 } else {
                   // إذا كانت طريقة الدفع هي الكاش، قم بإكمال الطلب مباشرة
                   cubit.completeOrder();

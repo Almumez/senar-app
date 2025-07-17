@@ -29,6 +29,9 @@ import '../controller/order_details/cubit.dart';
 import '../controller/order_details/states.dart';
 import '../../../../core/widgets/flash_helper.dart';
 
+// إضافة استيراد مكون bottom sheet الدفع
+import '../../../shared/components/payment_bottom_sheet.dart';
+
 class ClientOrderDetailsView extends StatefulWidget {
   final String id, type;
   const ClientOrderDetailsView({super.key, required this.id, required this.type});
@@ -401,17 +404,19 @@ class _ClientOrderDetailsActionsState extends State<ClientOrderDetailsActions> {
                 if (isDistribution) {
                   widget.cubit.paymentMethod = data?.paymentMethod;
                   if (widget.cubit.paymentMethod == 'visa') {
-                    push(NamedRoutes.paymentService, arg: {
-                      "amount": widget.cubit.data?.totalPrice.toString(),
-                      "on_success": (v) {
-                        widget.cubit.transactionId = v;
+                    // استخدام bottom sheet للدفع بدلاً من الانتقال إلى صفحة جديدة
+                    showPaymentBottomSheet(
+                      context: context,
+                      amount: widget.cubit.data?.totalPrice.toString() ?? "0",
+                      onSuccess: (String paymentId) {
+                        widget.cubit.paymentId = paymentId;
                         widget.cubit.pay();
-                      }
-                    });
+                      },
+                    );
                   }
                 } else {
                   push(NamedRoutes.clientOrderDetailsSelectPayment, arg: {"cubit": widget.cubit}).then((value) {
-                    if ((widget.cubit.paymentMethod == 'visa' && widget.cubit.transactionId != '') || widget.cubit.paymentMethod == 'cash') {
+                    if ((widget.cubit.paymentMethod == 'visa' && widget.cubit.paymentId != '') || widget.cubit.paymentMethod == 'cash') {
                       widget.cubit.pay();
                     }
                   });
@@ -426,7 +431,7 @@ class _ClientOrderDetailsActionsState extends State<ClientOrderDetailsActions> {
               title: LocaleKeys.choose_payment_method.tr(),
               onPressed: () {
                 push(NamedRoutes.clientOrderDetailsSelectPayment, arg: {"cubit": widget.cubit}).then((value) {
-                  if ((widget.cubit.paymentMethod == 'visa' && widget.cubit.transactionId != '') || widget.cubit.paymentMethod == 'cash') {
+                  if ((widget.cubit.paymentMethod == 'visa' && widget.cubit.paymentId != '') || widget.cubit.paymentMethod == 'cash') {
                     widget.cubit.pay();
                   }
                 });

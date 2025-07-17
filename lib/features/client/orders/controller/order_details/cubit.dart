@@ -19,7 +19,7 @@ class ClientOrderDetailsCubit extends Cubit<ClientOrderDetailsState> {
   ClientOrderModel? data;
   String? paymentMethod;
   TextEditingController cancelReasonController = TextEditingController();
-  String? transactionId = '';
+  String? paymentId = '';
 
   CancelReasonsModel? cancelReason;
   Future<void> getDetails({required String id, required String type}) async {
@@ -51,9 +51,9 @@ class ClientOrderDetailsCubit extends Cubit<ClientOrderDetailsState> {
       body: {
         "payment_method": paymentMethod,
         "total_price": data?.totalPrice,
-        "transaction_id": transactionId,
-        "gateway_response": transactionId != null && transactionId!.isNotEmpty && paymentMethod != 'cash' ? {
-          'transaction_id': transactionId,
+        "transaction_id": paymentId,
+        "gateway_response": paymentId != null && paymentId!.isNotEmpty && paymentMethod != 'cash' ? {
+          'transaction_id': paymentId,
           'payment_method': paymentMethod,
           'amount': data?.totalPrice,
           'currency': 'SAR',
