@@ -32,7 +32,7 @@ class AgentBillWidget extends StatelessWidget {
         child: Column(
           children: [
             _buildServiceRow(context, item.price).withPadding(start: 15.w),
-            if (!isMaintenanceOrSupply) _buildRow("توصيل", item.deliveryFee, context).withPadding(start: 43.w),
+            if (!isMaintenanceOrSupply) _buildRow("توصيل", (item.deliveryFee - item.tax), context).withPadding(start: 43.w),
             _buildRow("ضريبة", item.tax, context).withPadding(start: 43.w),
             _buildRow("اجمالي", item.totalPrice, context, isBold: true).withPadding(start: 43.w),
           ],

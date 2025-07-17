@@ -64,21 +64,21 @@ class _ServicePriceWidgetState extends State<ServicePriceWidget> {
               ),
               ServiceItem(
                 title: LocaleKeys.delivery.tr(), 
-                price: cubit.state.orderPrices!.deliveryPrice.toStringAsFixed(2)
+                price: (cubit.state.orderPrices!.deliveryPrice - cubit.state.orderPrices!.tax).toStringAsFixed(2)
               ),
               ServiceItem(
                 title: LocaleKeys.tax.tr(), 
                 price: cubit.state.orderPrices!.tax.toStringAsFixed(2)
               ),
-              ServiceItem(
-                title: "المسافة", 
-                price: cubit.state.orderPrices!.kilometers.toStringAsFixed(2),
-                unit: "كم"
-              ),
-              ServiceItem(
-                title: "رقم المحطة", 
-                price: cubit.state.orderPrices!.stationId.toString(),
-              ),
+              // ServiceItem(
+              //   title: "المسافة", 
+              //   price: cubit.state.orderPrices!.kilometers.toStringAsFixed(2),
+              //   unit: "كم"
+              // ),
+              // ServiceItem(
+              //   title: "رقم المحطة", 
+              //   price: cubit.state.orderPrices!.stationId.toString(),
+              // ),
               Divider(height: 24.h, thickness: 1, color: context.borderColor.withOpacity(0.3)),
               ServiceItem(
                 title: LocaleKeys.total.tr(), 

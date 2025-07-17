@@ -30,7 +30,7 @@ class ClientBillWidget extends StatelessWidget {
         children: [
           _buildServiceRow(context, data.price).withPadding(start: 15.w),
           if (isMaintenanceOrSupply) _buildRow(LocaleKeys.check_fee.tr(), data.checkFee, context).withPadding(start: 30.w),
-          if (!isMaintenanceOrSupply) _buildRow("توصيل", data.deliveryFee, context).withPadding(start: 43.w),
+          if (!isMaintenanceOrSupply) _buildRow("توصيل", (data.deliveryFee - data.tax), context).withPadding(start: 43.w),
           if (!isMaintenanceOrSupply) _buildRow("ضريبة", data.tax, context).withPadding(start: 43.w),
           if (isMaintenanceOrSupply) _buildRow("ضريبة", data.tax, context).withPadding(start: 43.w),
         
