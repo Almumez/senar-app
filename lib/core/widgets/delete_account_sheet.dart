@@ -22,7 +22,9 @@ class DeleteAccountSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomAppSheet(
       title: LocaleKeys.delete_account.tr(),
+      titleStyle: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold, color: Colors.black),
       subtitle: LocaleKeys.account_deactivated_msg.tr(),
+      subtitleStyle: TextStyle(fontSize: 16.sp, color: Colors.black),
       children: [
         SafeArea(
           child: Row(
@@ -42,6 +44,7 @@ class DeleteAccountSheet extends StatelessWidget {
                       loading: state.deleteAccountState.isLoading,
                       onPressed: () => cubit.deleteAccount(),
                       title: LocaleKeys.yes.tr(),
+                      textStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: Colors.white),
                     );
                   },
                 ),
@@ -49,10 +52,11 @@ class DeleteAccountSheet extends StatelessWidget {
               SizedBox(width: 12.w),
               Expanded(
                 child: AppBtn(
-                  textColor: context.primaryColor,
+                  textColor: Colors.black,
                   backgroundColor: Colors.transparent,
                   onPressed: () => Navigator.pop(context, true),
                   title: LocaleKeys.no.tr(),
+                  textStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                 ),
               ),
             ],

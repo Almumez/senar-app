@@ -8,8 +8,18 @@ class CustomAppSheet extends StatelessWidget {
   final String? title, subtitle;
   final List<Widget>? children;
   final EdgeInsetsGeometry? padding;
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
 
-  const CustomAppSheet({super.key, this.title, this.children, this.padding, this.subtitle});
+  const CustomAppSheet({
+    super.key, 
+    this.title, 
+    this.children, 
+    this.padding, 
+    this.subtitle, 
+    this.titleStyle,
+    this.subtitleStyle
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +60,7 @@ class CustomAppSheet extends StatelessWidget {
                   Center(
                     child: Text(
                       title ?? "",
-                      style: context.mediumText.copyWith(fontSize: 14.sp),
+                      style: titleStyle ?? context.mediumText.copyWith(fontSize: 14.sp),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -58,7 +68,7 @@ class CustomAppSheet extends StatelessWidget {
               ).withPadding(bottom: 0.h),
               Text(
                 subtitle ?? "",
-                style: context.mediumText.copyWith(fontSize: 14, color: '#f5f5f5'.color),
+                style: subtitleStyle ?? context.mediumText.copyWith(fontSize: 14, color: '#f5f5f5'.color),
               ).withPadding(horizontal: 24.w, bottom: 16.h),
               Flexible(
                 child: Padding(

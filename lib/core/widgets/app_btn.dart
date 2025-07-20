@@ -12,6 +12,8 @@ class AppBtn extends StatelessWidget {
   final Widget? icon;
   final bool saveArea;
   final double? height, width, fontSize, radius;
+  final TextStyle? textStyle;
+  
   const AppBtn({
     super.key,
     this.title,
@@ -26,6 +28,7 @@ class AppBtn extends StatelessWidget {
     this.fontSize,
     this.saveArea = true,
     this.radius,
+    this.textStyle,
   });
 
   @override
@@ -65,7 +68,7 @@ class AppBtn extends StatelessWidget {
                           if (icon != null) icon!.withPadding(end: 4.w),
                           Text(
                             title ?? "",
-                            style: context.mediumText.copyWith(
+                            style: textStyle ?? context.mediumText.copyWith(
                               fontSize: fontSize ?? 14,
                               height: 0,
                               color: textColor ?? context.primaryColorLight,
