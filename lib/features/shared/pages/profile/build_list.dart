@@ -141,12 +141,12 @@ class BuildProfileList {
       onTap: () => showComingSoonPopup(navigator.currentContext!, LocaleKeys.offers.tr()),
     ),
     
-    if (UserModel.i.isAuth)
-    ProfileItemModel(
-      image: Assets.svg.walletIcon, 
-      title: LocaleKeys.financial, 
-      onTap: () => push(NamedRoutes.wallet)
-    ),
+    // if (UserModel.i.isAuth)
+    // ProfileItemModel(
+    //   image: Assets.svg.walletIcon, 
+    //   title: LocaleKeys.financial, 
+    //   onTap: () => push(NamedRoutes.wallet)
+    // ),
     
     if (!UserModel.i.isAuth) 
       ProfileItemModel(
@@ -182,11 +182,11 @@ class BuildProfileList {
       title: LocaleKeys.financial, 
       onTap: () => push(NamedRoutes.profits)
     ),
-    ProfileItemModel(
-      image: 'assets/svg/receipt-disscount.svg', 
-      title: LocaleKeys.offers, 
-      onTap: () => showComingSoonPopup(navigator.currentContext!, LocaleKeys.offers.tr()),
-    ),
+    // ProfileItemModel(
+    //   image: 'assets/svg/receipt-disscount.svg', 
+    //   title: LocaleKeys.offers, 
+    //   onTap: () => showComingSoonPopup(navigator.currentContext!, LocaleKeys.offers.tr()),
+    // ),
     ProfileItemModel(
       image: 'assets/svg/user-add.svg', 
       title: LocaleKeys.join, 
