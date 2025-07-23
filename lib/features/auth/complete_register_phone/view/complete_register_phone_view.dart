@@ -73,29 +73,34 @@ class _CompleteRegisterPhoneViewState extends State<CompleteRegisterPhoneView> {
                     style: context.mediumText.copyWith(fontSize: 16, color: Colors.black),
                   ),
                   SizedBox(height: 8.h),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: RadioListTile<String>(
-                          title: Text("ذكر", style: context.mediumText.copyWith(fontSize: 14)),
-                          value: 'male',
-                          groupValue: cubit.gender,
-                          onChanged: (value) {
-                            if (value != null) cubit.setGender(value);
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: RadioListTile<String>(
-                          title: Text("أنثى", style: context.mediumText.copyWith(fontSize: 14)),
-                          value: 'female',
-                          groupValue: cubit.gender,
-                          onChanged: (value) {
-                            if (value != null) cubit.setGender(value);
-                          },
-                        ),
-                      ),
-                    ],
+                  BlocBuilder<CompleteRegisterPhoneCubit, CompleteRegisterPhoneState>(
+                    bloc: cubit,
+                    builder: (context, state) {
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: RadioListTile<String>(
+                              title: Text("ذكر", style: context.mediumText.copyWith(fontSize: 14)),
+                              value: 'male',
+                              groupValue: cubit.gender,
+                              onChanged: (value) {
+                                if (value != null) cubit.setGender(value);
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: RadioListTile<String>(
+                              title: Text("أنثى", style: context.mediumText.copyWith(fontSize: 14)),
+                              value: 'female',
+                              groupValue: cubit.gender,
+                              onChanged: (value) {
+                                if (value != null) cubit.setGender(value);
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   SizedBox(height: 32.h),
                   BlocConsumer<CompleteRegisterPhoneCubit, CompleteRegisterPhoneState>(

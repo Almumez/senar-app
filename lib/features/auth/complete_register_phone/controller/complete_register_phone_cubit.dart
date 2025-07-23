@@ -16,7 +16,8 @@ class CompleteRegisterPhoneCubit extends Cubit<CompleteRegisterPhoneState> {
 
   void setGender(String value) {
     gender = value;
-    emit(state.copyWith());
+    // Emitir un nuevo estado con el género actualizado para notificar a la UI
+    emit(state.copyWith(genderValue: value));
   }
 
   Map<String, dynamic> get body => {
