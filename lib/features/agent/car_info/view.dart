@@ -32,7 +32,10 @@ class _FreeAgentCarInfoViewState extends State<FreeAgentCarInfoView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppbar(title: LocaleKeys.edit_car_info.tr()),
+      backgroundColor: Colors.white,
+      appBar: CustomAppbar(
+        title: LocaleKeys.edit_car_info.tr(),
+      ),
       bottomNavigationBar: SafeArea(
         child: BlocConsumer<FreeAgentCarInfoCubit, FreeAgentCarInfoState>(
           bloc: cubit,
@@ -51,20 +54,26 @@ class _FreeAgentCarInfoViewState extends State<FreeAgentCarInfoView> {
           },
           builder: (context, state) {
             if (state.getState.isDone) {
-              return AppBtn(
-                loading: state.editState.isLoading,
-                title: LocaleKeys.save_changes.tr(),
-                onPressed: () {
-                  if (cubit.validateSave) {
-                    cubit.editCarInfo();
-                  }
-                },
+              return Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                child: AppBtn(
+                  loading: state.editState.isLoading,
+                  title: LocaleKeys.save_changes.tr(),
+                  backgroundColor: Colors.black,
+                  textColor: Colors.white,
+                  radius: 30.r,
+                  onPressed: () {
+                    if (cubit.validateSave) {
+                      cubit.editCarInfo();
+                    }
+                  },
+                ),
               );
             } else {
               return const SizedBox.shrink();
             }
           },
-        ).withPadding(horizontal: 16.w, vertical: 16.h),
+        ),
       ),
       body: BlocBuilder<FreeAgentCarInfoCubit, FreeAgentCarInfoState>(
         buildWhen: (previous, current) => previous.getState != current.getState,
@@ -75,28 +84,58 @@ class _FreeAgentCarInfoViewState extends State<FreeAgentCarInfoView> {
               child: Column(
                 spacing: 16.h,
                 children: [
-                  UploadImage(
+                  _buildUploadCard(
                     title: LocaleKeys.driving_license.tr(),
-                    model: 'FreeAgent',
                     data: cubit.license,
+                    context: context,
                   ),
-                  UploadImage(
+                  SizedBox(height: 16.h),
+                  _buildUploadCard(
                     title: LocaleKeys.vehicle_registration_form.tr(),
-                    model: 'FreeAgent',
                     data: cubit.vehicleForm,
+                    context: context,
                   ),
-                  UploadImage(
+                  SizedBox(height: 16.h),
+                  _buildUploadCard(
                     title: LocaleKeys.health_certificate.tr(),
-                    model: 'FreeAgent',
                     data: cubit.healthCertificate,
+                    context: context,
                   )
                 ],
               ).withPadding(horizontal: 16.w, vertical: 16.h),
             );
           } else {
-            return Center(child: CustomProgress(size: 30.h));
+            return Center(
+              child: CustomProgress(
+                size: 30.h,
+                color: Colors.black,
+              ),
+            );
           }
         },
+      ),
+    );
+  }
+  
+  Widget _buildUploadCard({
+    required String title,
+    required dynamic data,
+    required BuildContext context,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+      ),
+      child: UploadImage(
+        title: title,
+        model: 'FreeAgent',
+        data: data,
+        titleStyle: context.mediumText.copyWith(
+          fontSize: 16,
+          color: Colors.black,
+        ),
       ),
     );
   }

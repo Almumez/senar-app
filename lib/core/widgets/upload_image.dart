@@ -19,6 +19,7 @@ import 'app_btn.dart';
 class UploadImage extends StatefulWidget {
   final String title, model;
   final AttachmentModel data;
+  final TextStyle? titleStyle;
 
   // final Function(String) callback;
   const UploadImage({
@@ -27,6 +28,7 @@ class UploadImage extends StatefulWidget {
     // required this.callback,
     required this.model,
     required this.data,
+    this.titleStyle,
   });
 
   @override
@@ -103,7 +105,7 @@ class _UploadImageState extends State<UploadImage> {
         SizedBox(height: 16.h),
         Text(
           "${LocaleKeys.upload.tr()} ${widget.title}",
-          style: context.mediumText.copyWith(color: context.secondaryHeaderColor),
+          style: widget.titleStyle ?? context.mediumText.copyWith(color: context.secondaryHeaderColor),
         )
       ],
     );

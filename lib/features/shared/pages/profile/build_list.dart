@@ -120,6 +120,17 @@ void switchAccountType() {
   );
 }
 
+// Function to handle join button click
+void handleJoinButtonClick() {
+  if (!UserModel.i.isAuth) {
+    // إذا لم يكن المستخدم مسجلاً، وجهه إلى صفحة التسجيل كمندوب
+    push(NamedRoutes.register, arg: {"type": UserType.freeAgent});
+  } else {
+    // إذا كان المستخدم مسجلاً بالفعل، وجهه إلى صفحة بيانات السيارة
+    push(NamedRoutes.freeAgentCarInfo);
+  }
+}
+
 class BuildProfileList {
   static List<ProfileItemModel> clientItems = [
     ProfileItemModel(
@@ -148,12 +159,11 @@ class BuildProfileList {
     //   onTap: () => push(NamedRoutes.wallet)
     // ),
     
-    if (!UserModel.i.isAuth) 
-      ProfileItemModel(
-        image: 'assets/svg/user-add.svg', 
-        title: LocaleKeys.join, 
-        onTap: () => push(NamedRoutes.register, arg: {"type": UserType.freeAgent}),
-      ),
+    ProfileItemModel(
+      image: 'assets/svg/user-add.svg', 
+      title: LocaleKeys.join, 
+      onTap: () => handleJoinButtonClick(),
+    ),
     
     if (UserModel.i.isAuth) 
       ProfileItemModel(
@@ -190,7 +200,7 @@ class BuildProfileList {
     ProfileItemModel(
       image: 'assets/svg/user-add.svg', 
       title: LocaleKeys.join, 
-      onTap: () => push(NamedRoutes.register, arg: {"type": UserType.freeAgent}),
+      onTap: () => handleJoinButtonClick(),
     ),
     ProfileItemModel(
       image: 'assets/svg/profile-2user.svg', 
