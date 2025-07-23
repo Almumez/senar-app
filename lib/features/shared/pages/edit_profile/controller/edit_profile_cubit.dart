@@ -9,7 +9,10 @@ import '../../../../../models/user_model.dart';
 import 'edit_profile_state.dart';
 
 class EditProfileCubit extends Cubit<EditProfileState> {
-  EditProfileCubit() : super(EditProfileState());
+  EditProfileCubit() : super(EditProfileState()) {
+    // Cargar los datos del perfil al iniciar
+    getProfileData();
+  }
 
   final phone = TextEditingController(text: UserModel.i.phone);
   final email = TextEditingController(text: UserModel.i.email);
@@ -22,9 +25,15 @@ class EditProfileCubit extends Cubit<EditProfileState> {
   CountryModel? country = UserModel.i.country;
   String? image = UserModel.i.image;
   XFile? pickedImage;
+  String gender = UserModel.i.gender;
 
-  bool get canUpdate => name.text != UserModel.i.fullname || image != UserModel.i.image || email.text != UserModel.i.email;
+  bool get canUpdate => name.text != UserModel.i.fullname || image != UserModel.i.image || email.text != UserModel.i.email || gender != UserModel.i.gender;
   bool get canUpdatePhone => phone.text != UserModel.i.phone || country?.phoneCode != UserModel.i.phoneCode;
+
+  void setGender(String value) {
+    gender = value;
+    emit(state.copyWith(genderValue: value));
+  }
 
   passwordsClean() {
     oldPassword.clear();
@@ -35,16 +44,66 @@ class EditProfileCubit extends Cubit<EditProfileState> {
   Map<String, dynamic> get body => {
         "full_name": name.text,
         "email": email.text,
+        "gender": gender,
         if (pickedImage != null) "image": image,
       };
 
+  Future<void> getProfileData() async {
+    emit(state.copyWith(profileDataState: RequestState.loading));
+    final result = await ServerGate.i.getFromServer(url: 'general/profile');
+    if (result.success) {
+      if (result.data['data'] != null) {
+        // Guardar el token actual antes de actualizar
+        String currentToken = UserModel.i.token;
+        
+        // Actualizar el modelo de usuario con los datos recibidos
+        UserModel.i.fromJson(result.data['data']);
+        
+        // Restaurar el token ya que la API no lo devuelve
+        UserModel.i.token = currentToken;
+        
+        // Actualizar los controladores con los nuevos datos
+        name.text = UserModel.i.fullname;
+        phone.text = UserModel.i.phone;
+        email.text = UserModel.i.email;
+        gender = UserModel.i.gender;
+        image = UserModel.i.image;
+        country = UserModel.i.country;
+        
+        // Guardar los datos actualizados
+        UserModel.i.save();
+      }
+      emit(state.copyWith(profileDataState: RequestState.done));
+    } else {
+      emit(state.copyWith(profileDataState: RequestState.error, msg: result.msg, errorType: result.errType));
+    }
+  }
+
   Future<void> updateProfile() async {
     emit(state.copyWith(requestState: RequestState.loading));
-    final result = await ServerGate.i.sendToServer(url: 'general/profile', body: body);
+    final result = await ServerGate.i.putToServer(
+      url: 'general/profile', 
+      body: body
+    );
     if (result.success) {
-      result.data['data']['token'] = UserModel.i.token;
-      UserModel.i.fromJson(result.data['data']);
+      // Guardar el token actual antes de actualizar
+      String currentToken = UserModel.i.token;
+      
+      // Actualizar el modelo de usuario con los datos recibidos
+      if (result.data['data'] != null) {
+        UserModel.i.fromJson(result.data['data']);
+      } else {
+        // Si no devuelve datos, actualizar manualmente los campos
+        UserModel.i.fullname = name.text;
+        UserModel.i.gender = gender;
+      }
+      
+      // Restaurar el token
+      UserModel.i.token = currentToken;
+      
+      // Guardar los cambios
       UserModel.i.save();
+      
       emit(state.copyWith(requestState: RequestState.done, msg: result.msg));
     } else {
       emit(state.copyWith(requestState: RequestState.error, msg: result.msg, errorType: result.errType));

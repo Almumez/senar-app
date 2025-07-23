@@ -10,7 +10,7 @@ class UserModel extends Model {
   UserModel._();
   static UserModel i = UserModel._();
 
-  late String token, fullname, image, phoneCode, phone, email, userType, locale, license, vehicleForm, healthCertificate, civilStatusNumber, address, wallet;
+  late String token, fullname, image, phoneCode, phone, email, userType, locale, license, vehicleForm, healthCertificate, civilStatusNumber, address, wallet, gender;
   late bool isActive, adminApproved, isAvailable, isNotified, completeRegistration;
   late CountryModel country;
 
@@ -54,6 +54,7 @@ class UserModel extends Model {
     address = stringFromJson(json, "address");
     completeRegistration = boolFromJson(json, "complete_registeratin_form");
     wallet = stringFromJson(json, "wallet");
+    gender = stringFromJson(json, "gender", defaultValue: "male");
     country = CountryModel.fromJson(json?["country"] ?? {});
   }
 
@@ -93,6 +94,7 @@ class UserModel extends Model {
         "address": address,
         "complete_registeratin_form": completeRegistration,
         "wallet": wallet,
+        "gender": gender,
         "country": country.toJson(),
       };
 }
