@@ -84,13 +84,11 @@ class _LoginViewState extends State<LoginView> {
                   AppField(
                     controller: cubit.phone,
                     margin: EdgeInsets.symmetric(vertical: 8.h),
-                    keyboardType: TextInputType.text,
+                    keyboardType: TextInputType.number,
                     labelText: "هاتف",
-                    direction: "right",
-
+                    direction: "left",
                     suffixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
-
                       children: [
                         Container(
                           height: 25.h,
@@ -107,31 +105,16 @@ class _LoginViewState extends State<LoginView> {
                             style: context.mediumText.copyWith(fontSize: 14),
                           ),
                         ),
-
                       ],
                     ),
                   ),
-                  AppField(
-                    controller: cubit.password,
-                    margin: EdgeInsets.symmetric(vertical: 8.h),
-                    keyboardType: TextInputType.visiblePassword,
-                    labelText: "رمز",
-                  ),
-                  Text.rich(
-                    TextSpan(
-                      text: "نسيت ",
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () => push(NamedRoutes.forgetPassword),
-                    ),
-                    style: context.mediumText.copyWith(fontSize: 14),
-                  ).withPadding(vertical: 8.h,horizontal: 8.w),
                   SizedBox(height: 24.h),
                   BlocConsumer<LoginCubit, LoginState>(
                     bloc: cubit,
                     listener: (context, state) {
                       switch (state.requestState) {
                         case RequestState.done:
-                          _navigateUserBasedOnType();
+                          _navigateToVerifyPhone();
                           break;
 
                         case RequestState.error:
@@ -149,7 +132,7 @@ class _LoginViewState extends State<LoginView> {
                           borderRadius: BorderRadius.circular(30.r),),
                         child: AppBtn(
                           loading: state.requestState == RequestState.loading,
-                          onPressed: () => form.isValid ? cubit.login() : null,
+                          onPressed: () => form.isValid ? cubit.requestOtp() : null,
                           title: LocaleKeys.confirm.tr(),
                           backgroundColor: Colors.transparent,
                           textColor: Colors.white,
@@ -189,8 +172,6 @@ class _LoginViewState extends State<LoginView> {
               ),
             ),
           ),
-          // زر العودة سيظهر فقط إذا كان هناك صفحة سابقة يمكن العودة إليها
-          // فصفحة تسجيل الدخول عادة هي أول صفحة ولا تحتاج لزر عودة
         ],
       ),
       bottomNavigationBar: Padding(
@@ -206,73 +187,15 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  void _navigateUserBasedOnType() {
-    final user = UserModel.i;
-
-    if (user.accountType == UserType.client) {
-      _handleClientNavigation(user);
-      return;
-    }
-
-    if (user.accountType == UserType.freeAgent ||
-        user.accountType == UserType.agent ||
-        user.accountType == UserType.productAgent ||
-        user.accountType == UserType.technician) {
-      _handleAgentNavigation(user);
-      return;
-    }
-
-    _navigateToHome();
-  }
-
-  void _handleClientNavigation(UserModel user) {
-    if (user.isActive) {
-      _navigateToHome();
-    } else {
-      _navigateToVerifyPhone();
-    }
-  }
-
-  void _handleAgentNavigation(UserModel user) {
-    if (!user.isActive) {
-      _navigateToVerifyPhone();
-    } else if (user.accountType == UserType.freeAgent) {
-      if (!user.completeRegistration) {
-        _navigateToCompleteData();
-      } else if (!user.adminApproved) {
-        push(NamedRoutes.successCompleteData);
-      } else {
-        _navigateToHome();
-      }
-    } else {
-      _navigateToHome();
-    }
-  }
-
   void _navigateToVerifyPhone() {
     push(
       NamedRoutes.verifyPhone,
       arg: {
-        'type': VerifyType.register,
+        'type': VerifyType.login,
         'phone': cubit.phone.text,
         'phone_code': cubit.country!.phoneCode,
       },
     );
-  }
-
-  void _navigateToCompleteData() {
-    push(
-      NamedRoutes.completeData,
-      arg: {
-        'phone': cubit.phone.text,
-        'phone_code': cubit.country!.phoneCode,
-      },
-    );
-  }
-
-  void _navigateToHome() {
-    sl<NavbarCubit>().changeTap(0);
-    pushAndRemoveUntil(NamedRoutes.navbar);
   }
 }
 

@@ -6,6 +6,7 @@ import '../../features/agent/order_details/cubit/order_details_cubit.dart';
 import '../../features/agent/orders/cubit/orders_cubit.dart';
 import '../../features/agent/select_merchent/cubit/select_merchent_cubit.dart';
 import '../../features/auth/complete_data/controller/complete_data_cubit.dart';
+import '../../features/auth/complete_register_phone/controller/complete_register_phone_cubit.dart';
 import '../../features/auth/forget_password/controller/forget_password_cubit.dart';
 import '../../features/auth/login/controller/login_cubit.dart';
 import '../../features/auth/logout/logout_cubit.dart';
@@ -56,6 +57,7 @@ class ServicesLocator {
     sl.registerFactory(() => LogoutCubit());
     sl.registerFactory(() => RegisterCubit());
     sl.registerFactory(() => CompleteDataCubit());
+    sl.registerFactory(() => CompleteRegisterPhoneCubit());
     sl.registerFactory(() => ForgetPasswordCubit());
     sl.registerFactory(() => ResetPasswordCubit());
     sl.registerFactory(() => CountriesCubit());

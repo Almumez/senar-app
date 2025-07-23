@@ -18,6 +18,7 @@ import '../../../../core/widgets/resend_timer_widget.dart';
 import '../../../../gen/assets.gen.dart';
 import '../../../../gen/locale_keys.g.dart';
 import '../../../../models/user_model.dart';
+import '../../../shared/pages/navbar/cubit/navbar_cubit.dart';
 import '../controller/verify_phone_bloc.dart';
 import '../controller/verify_phone_states.dart';
 import '../widgets/edit_email_sheet.dart';
@@ -137,14 +138,18 @@ class _VerifyPhoneViewState extends State<VerifyPhoneView> {
                     listenWhen: (previous, current) => previous.verifyState != current.verifyState,
                     listener: (context, state) {
                       if (state.verifyState.isDone) {
-                        if (widget.type == VerifyType.register) {
-                          if (UserModel.i.accountType == UserType.freeAgent) {
-                            replacement(NamedRoutes.completeData, arg: {'phone': widget.phone, 'phone_code': widget.phoneCode});
-                          } else {
-                            pushAndRemoveUntil(NamedRoutes.navbar);
-                          }
+                        if (!bloc.userExists) {
+                          // Si el usuario no existe, dirigirlo a la página de completar registro
+                          debugPrint('Usuario no existe, redirigiendo a completar registro');
+                          replacement(NamedRoutes.completeRegisterPhone, arg: {
+                            'phone': widget.phone,
+                            'phone_code': widget.phoneCode
+                          });
                         } else {
-                          replacement(NamedRoutes.resetPassword, arg: {'phone': widget.phone, 'code': bloc.code.text, 'phone_code': widget.phoneCode});
+                          // Si el usuario existe, dirigirlo a la página principal
+                          debugPrint('Usuario existe, redirigiendo a la página principal');
+                          sl<NavbarCubit>().changeTap(0);
+                          pushAndRemoveUntil(NamedRoutes.navbar);
                         }
                       } else if (state.verifyState.isError) {
                         FlashHelper.showToast(state.msg);

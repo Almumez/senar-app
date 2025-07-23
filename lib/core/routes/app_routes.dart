@@ -6,6 +6,7 @@ import '../../features/agent/order_details/view/order_details_view.dart';
 import '../../features/agent/select_merchent/view/select_merchent_view.dart';
 import '../../features/auth/complete_data/view/complete_data.dart';
 import '../../features/auth/complete_data/view/success.dart';
+import '../../features/auth/complete_register_phone/view/complete_register_phone_view.dart';
 import '../../features/auth/forget_password/view/forget_password_view.dart';
 import '../../features/auth/login/view/login_view.dart';
 import '../../features/auth/register/view/register_view.dart';
@@ -64,6 +65,8 @@ class AppRoutes {
         phoneCode: c.arg['phone_code']),
     NamedRoutes.completeData: (c) =>
         CompleteDataView(phone: c.arg['phone'], phoneCode: c.arg['phone_code']),
+    NamedRoutes.completeRegisterPhone: (c) =>
+        CompleteRegisterPhoneView(phone: c.arg['phone'], phoneCode: c.arg['phone_code']),
     NamedRoutes.forgetPassword: (c) => ForgetPasswordView(),
     NamedRoutes.login: (c) => LoginView(),
     NamedRoutes.register: (c) => RegisterView(userType: c.arg['type']),

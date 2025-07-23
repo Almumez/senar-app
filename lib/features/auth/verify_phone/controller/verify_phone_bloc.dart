@@ -18,24 +18,51 @@ class VerifyPhoneCubit extends Cubit<VerifyPhoneState> {
   VerifyType? type;
   String? phone, phoneCode;
   final code = TextEditingController();
+  bool userExists = true;
 
-  String get url => type == VerifyType.register ? 'general/verify' : 'general/check-code';
-  Future<Map<String, dynamic>> get body async => {
+  String get url {
+    switch (type) {
+      case VerifyType.register:
+        return 'general/verify-otp';
+      case VerifyType.login:
+        return 'general/verify-otp';
+      default:
+        return 'general/check-code';
+    }
+  }
+  
+  Map<String, dynamic> get body => {
         "phone": phone,
         "phone_code": phoneCode,
         "otp": code.text,
-        if (type == VerifyType.register) "device_type": Platform.operatingSystem,
-        if (type == VerifyType.register) "device_token": kDebugMode && Platform.isIOS ? 'test device token' : await GlobalNotification.getFcmToken(),
       };
 
   Future<void> verify() async {
     emit(state.copyWith(verifyState: RequestState.loading));
-    final result = await ServerGate.i.sendToServer(url: url, body: await body);
+    final result = await ServerGate.i.sendToServer(url: url, body: body);
     if (result.success) {
-      if (type == VerifyType.register) {
-        UserModel.i.fromJson(result.data['data']);
-        if (UserModel.i.isAuth) UserModel.i.save();
+      // Verificar si el usuario existe o no basado en la respuesta de la API
+      if (result.data['data'] != null) {
+        // Comprobar si la API devolvió user_exists: false
+        if (result.data['data']['user_exists'] != null) {
+          userExists = result.data['data']['user_exists'];
+          debugPrint('API devolvió user_exists: $userExists');
+        } else {
+          // Si no hay campo user_exists, asumimos que el usuario existe y sus datos están en la respuesta
+          userExists = true;
+          
+          // Cargar los datos del usuario directamente desde la respuesta
+          UserModel.i.fromJson(result.data['data']);
+          
+          // Guardar los datos del usuario si está autenticado
+          if (UserModel.i.isAuth) {
+            UserModel.i.save();
+            debugPrint('Usuario autenticado y datos guardados: ${UserModel.i.fullname}');
+            debugPrint('Tipo de usuario: ${UserModel.i.userType}');
+          }
+        }
       }
+      
       emit(state.copyWith(verifyState: RequestState.done, msg: result.msg));
     } else {
       emit(state.copyWith(verifyState: RequestState.error, msg: result.msg, errorType: result.errType));
@@ -44,7 +71,8 @@ class VerifyPhoneCubit extends Cubit<VerifyPhoneState> {
 
   Future<void> resend() async {
     emit(state.copyWith(resendState: RequestState.loading));
-    final result = await ServerGate.i.sendToServer(url: 'general/forget-password', body: {
+    final url = type == VerifyType.login ? 'general/request-otp' : 'general/forget-password';
+    final result = await ServerGate.i.sendToServer(url: url, body: {
       "phone": phone,
       "phone_code": phoneCode,
     });

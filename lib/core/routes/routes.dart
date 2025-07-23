@@ -3,6 +3,7 @@ class NamedRoutes {
   static const login = "/login";
   static const verifyPhone = "/verifyPhone";
   static const completeData = "/completeData";
+  static const completeRegisterPhone = "/completeRegisterPhone";
   static const forgetPassword = "/forgetPassword";
   static const layout = "/layout";
   static const register = "/register";

@@ -48,7 +48,7 @@ enum UserType {
 
 enum StaticType { privacy, terms, about }
 
-enum VerifyType { resetPassword, register }
+enum VerifyType { resetPassword, register, login }
 
 enum CompanyServiceType { supply, maintenance }
 
