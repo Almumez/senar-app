@@ -7,7 +7,11 @@ import 'states.dart';
 class ProfitsCubit extends Cubit<ProfitsState> {
   ProfitsCubit() : super(ProfitsState());
 
-  String? profits;
+  String profits = "0";
+  int ordersCount = 0;
+  int servicesCount = 0;
+  int additionalCount = 0;
+  int clientsCount = 0;
 
   Future<void> getProfits(String date) async {
     emit(state.copyWith(requestState: RequestState.loading));
@@ -16,7 +20,13 @@ class ProfitsCubit extends Cubit<ProfitsState> {
       params: {'date': date},
     );
     if (result.success) {
-      profits = result.data['data'].toString();
+      // تحديث البيانات من الهيكل الجديد
+      profits = result.data['data']['total'].toString();
+      ordersCount = result.data['data']['orders_count'] ?? 0;
+      servicesCount = result.data['data']['services_count'] ?? 0;
+      additionalCount = result.data['data']['additional_count'] ?? 0;
+      clientsCount = result.data['data']['clients_count'] ?? 0;
+      
       emit(state.copyWith(requestState: RequestState.done));
     } else {
       emit(state.copyWith(requestState: RequestState.error, msg: result.msg, errorType: result.errType));
@@ -30,7 +40,12 @@ class ProfitsCubit extends Cubit<ProfitsState> {
       params: {'date': date},
     );
     if (result.success) {
-      profits = result.data['data'].toString();
+      // تحديث البيانات من الهيكل الجديد
+      profits = result.data['data']['total'].toString();
+      ordersCount = result.data['data']['orders_count'] ?? 0;
+      servicesCount = result.data['data']['services_count'] ?? 0;
+      additionalCount = result.data['data']['additional_count'] ?? 0;
+      clientsCount = result.data['data']['clients_count'] ?? 0;
 
       emit(state.copyWith(updateStatus: RequestState.done, type: ''));
     } else {

@@ -74,100 +74,225 @@ class _ProfitsViewState extends State<ProfitsView> {
             if (state.requestState.isError) {
               return Center(child: CustomErrorWidget(title: state.msg));
             } else if (state.requestState.isDone) {
-              return Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: (state.updateStatus == RequestState.loading && state.type == 'b') ? CustomProgress(size: 20) : Icon(Icons.arrow_back),
-                        onPressed: () {
-                          if (state.updateStatus != RequestState.loading) {
-                            getPreviousDay();
-                          }
-                        },
-                      ),
-                      Text(
-                        formattedDay,
-                        style: TextStyle(fontSize: 24),
-                      ),
-                      IconButton(
-                        icon: (state.updateStatus == RequestState.loading && state.type == 'f')
-                            ? CustomProgress(size: 20)
-                            : Icon(Icons.arrow_forward, color: isToday(selectedDay) ? Colors.grey : Colors.black),
-                        onPressed: () {
-                          if (state.updateStatus != RequestState.loading) {
-                            getNextDay();
-                          }
-                        },
-                      ),
-                    ],
-                  ).withPadding(bottom: 16.h),
-                  Container(
-                    decoration: BoxDecoration(color: context.canvasColor, borderRadius: BorderRadius.circular(8.r)),
-                    padding: EdgeInsets.all(24.h),
-                    child: Row(
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(LocaleKeys.profits_for_that_day.tr(), style: context.regularText.copyWith(fontSize: 16)),
-                        CustomImage(Assets.svg.dailyProfits),
-                        Text.rich(
-                          TextSpan(
+                        IconButton(
+                          icon: (state.updateStatus == RequestState.loading && state.type == 'b') ? CustomProgress(size: 20) : Icon(Icons.arrow_back),
+                          onPressed: () {
+                            if (state.updateStatus != RequestState.loading) {
+                              getPreviousDay();
+                            }
+                          },
+                        ),
+                        Text(
+                          formattedDay,
+                          style: TextStyle(fontSize: 24),
+                        ),
+                        IconButton(
+                          icon: (state.updateStatus == RequestState.loading && state.type == 'f')
+                              ? CustomProgress(size: 20)
+                              : Icon(Icons.arrow_forward, color: isToday(selectedDay) ? Colors.grey : Colors.black),
+                          onPressed: () {
+                            if (state.updateStatus != RequestState.loading) {
+                              getNextDay();
+                            }
+                          },
+                        ),
+                      ],
+                    ).withPadding(bottom: 16.h),
+                    
+                    // كارد المبلغ الإجمالي
+                    Container(
+                      decoration: BoxDecoration(color: context.canvasColor, borderRadius: BorderRadius.circular(8.r)),
+                      padding: EdgeInsets.all(24.h),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(LocaleKeys.profits_for_that_day.tr(), style: context.regularText.copyWith(fontSize: 16)),
+                          CustomImage(Assets.svg.dailyProfits),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: cubit.profits,
+                                  style: context.boldText.copyWith(fontSize: 24),
+                                ),
+                                const TextSpan(text: ' '),
+                                TextSpan(
+                                  text: LocaleKeys.currency.tr(),
+                                  style: context.regularText,
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ).withPadding(horizontal: 16.h),
+                    
+                    SizedBox(height: 20.h),
+                    
+                    // كاردات البيانات الإضافية
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.h),
+                      child: Column(
+                        children: [
+                          // صف أول من الكاردات
+                          Row(
                             children: [
-                              TextSpan(
-                                text: cubit.profits,
-                                style: context.boldText.copyWith(fontSize: 24),
+                              // كارد عدد الطلبات
+                              Expanded(
+                                child: _buildStatCard(
+                                  context,
+                                  title: "عدد الطلبات",
+                                  value: cubit.ordersCount.toString(),
+                                  icon: Assets.svg.ordersCountIcon,
+                                ),
                               ),
-                              const TextSpan(text: ' '),
-                              TextSpan(
-                                text: LocaleKeys.currency.tr(),
-                                style: context.regularText,
+                              SizedBox(width: 12.w),
+                              // كارد عدد الخدمات
+                              Expanded(
+                                child: _buildStatCard(
+                                  context,
+                                  title: "عدد الخدمات",
+                                  value: cubit.servicesCount.toString(),
+                                  icon: Assets.svg.star,
+                                ),
                               ),
                             ],
                           ),
-                        )
-                      ],
-                    ),
-                  ).withPadding(horizontal: 16.h),
-                  
-                  // زر المحفظة
-                  if (UserModel.i.isAuth && UserModel.i.accountType == UserType.freeAgent)
-                    InkWell(
-                      onTap: () => push(NamedRoutes.wallet),
-                      child: Container(
-                        margin: EdgeInsets.only(top: 24.h, left: 16.h, right: 16.h),
-                        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 24.h),
-                        decoration: BoxDecoration(
-                          color: context.canvasColor,
-                          borderRadius: BorderRadius.circular(8.r),
-                          border: Border.all(color: context.primaryColorLight.withOpacity(0.3), width: 1)
-                        ),
-                        child: Row(
-                          children: [
-                            CustomImage(
-                              Assets.svg.walletIcon,
-                              height: 24.h,
-                              width: 24.h,
-                              color: context.primaryColorDark,
-                            ).withPadding(end: 16.w),
-                            Expanded(
-                              child: Text(
-                                LocaleKeys.wallet.tr(),
-                                style: context.mediumText.copyWith(fontSize: 16),
+                          
+                          SizedBox(height: 12.h),
+                          
+                          // صف ثاني من الكاردات
+                          Row(
+                            children: [
+                              // كارد الخدمات الإضافية
+                              Expanded(
+                                child: _buildStatCard(
+                                  context,
+                                  title: "الخدمات الإضافية",
+                                  value: cubit.additionalCount.toString(),
+                                  icon: Assets.svg.bill,
+                                ),
                               ),
-                            ),
-                            Icon(Icons.arrow_forward_ios, size: 16.h, color: context.primaryColorDark)
-                          ],
-                        ),
+                              SizedBox(width: 12.w),
+                              // كارد عدد العملاء
+                              Expanded(
+                                child: _buildStatCard(
+                                  context,
+                                  title: "عدد العملاء",
+                                  value: cubit.clientsCount.toString(),
+                                  icon: Assets.svg.profileOut,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                ],
+                    
+                    SizedBox(height: 20.h),
+                    
+                    // زر المحفظة
+                    if (UserModel.i.isAuth && UserModel.i.accountType == UserType.freeAgent)
+                      InkWell(
+                        onTap: () => push(NamedRoutes.wallet),
+                        child: Container(
+                          margin: EdgeInsets.only(top: 4.h, left: 16.h, right: 16.h),
+                          padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 24.h),
+                          decoration: BoxDecoration(
+                            color: context.canvasColor,
+                            borderRadius: BorderRadius.circular(8.r),
+                            border: Border.all(color: context.primaryColorLight.withOpacity(0.3), width: 1)
+                          ),
+                          child: Row(
+                            children: [
+                              CustomImage(
+                                Assets.svg.walletIcon,
+                                height: 24.h,
+                                width: 24.h,
+                                color: context.primaryColorDark,
+                              ).withPadding(end: 16.w),
+                              Expanded(
+                                child: Text(
+                                  LocaleKeys.wallet.tr(),
+                                  style: context.mediumText.copyWith(fontSize: 16),
+                                ),
+                              ),
+                              Icon(Icons.arrow_forward_ios, size: 16.h, color: context.primaryColorDark)
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               );
             } else {
               return Center(child: CustomProgress(size: 30.h));
             }
           },
         ),
+      ),
+    );
+  }
+  
+  // دالة لإنشاء كارد إحصائي
+  Widget _buildStatCard(BuildContext context, {
+    required String title,
+    required String value,
+    required String icon,
+  }) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
+      decoration: BoxDecoration(
+        color: context.canvasColor,
+        borderRadius: BorderRadius.circular(8.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CustomImage(
+                icon,
+                height: 24.h,
+                width: 24.h,
+                color: context.primaryColor,
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: Text(
+                  title,
+                  style: context.regularText.copyWith(
+                    fontSize: 14.sp,
+
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12.h),
+          Text(
+            value,
+            style: context.boldText.copyWith(
+              fontSize: 20.sp,
+              color: context.primaryColor,
+            ),
+          ),
+        ],
       ),
     );
   }
