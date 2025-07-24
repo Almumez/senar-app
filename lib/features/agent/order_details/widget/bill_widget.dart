@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'send_bill_sheet.dart';
+import 'invoice_printer.dart';
 
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/custom_image.dart';
@@ -35,6 +36,8 @@ class AgentBillWidget extends StatelessWidget {
             if (!isMaintenanceOrSupply) _buildRow("توصيل", (item.deliveryFee - item.tax), context).withPadding(start: 43.w),
             _buildRow("ضريبة", item.tax, context).withPadding(start: 43.w),
             _buildRow("اجمالي", item.totalPrice, context, isBold: true).withPadding(start: 43.w),
+            // إضافة زر الطباعة
+            _buildPrintButton(context)
           ],
         ),
       );
@@ -72,6 +75,43 @@ class AgentBillWidget extends StatelessWidget {
       );
     }
     return SizedBox();
+  }
+
+  Widget _buildPrintButton(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: 16.h),
+      child: InkWell(
+        onTap: () async {
+          await InvoicePrinter.printInvoice(context, cubit.order!);
+        },
+        child: Container(
+          width: double.infinity,
+          height: 45.h,
+          decoration: BoxDecoration(
+            color: context.primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.print_outlined,
+                color: context.primaryColor,
+                size: 20.sp,
+              ),
+              SizedBox(width: 8.w),
+              Text(
+                "طباعة الفاتورة",
+                style: context.mediumText.copyWith(
+                  color: context.primaryColor,
+                  fontSize: 14.sp,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildServiceRow(BuildContext context, num value) {
