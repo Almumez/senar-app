@@ -58,6 +58,7 @@ dependencies:
   myfatoorah_flutter: ^3.2.3
   pdf: ^3.11.3
   printing: ^5.14.2
+  package_info_plus: ^8.3.0
 
 
 dev_dependencies:

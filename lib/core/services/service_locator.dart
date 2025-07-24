@@ -25,6 +25,7 @@ import '../../features/client/orders/controller/order_details/cubit.dart';
 import '../../features/client/orders/controller/orders/cubit.dart';
 import '../../features/client/product_details/controller/cubit.dart';
 import '../../features/client/refill/controller/cubit.dart';
+import '../../features/intro/controller/version_cubit.dart';
 import '../../features/product_agent/home/controller/home_cubit.dart';
 import '../../features/product_agent/order_details/cubit/order_details_cubit.dart';
 import '../../features/product_agent/orders/cubit/orders_cubit.dart';
@@ -72,6 +73,7 @@ class ServicesLocator {
     sl.registerFactory(() => ProfitsCubit());
     sl.registerFactory(() => OrderCountsCubit());
     sl.registerFactory(() => WalletCubit());
+    sl.registerFactory(() => VersionCubit());
     sl.registerLazySingleton(() => ClientHomeCubit());
     sl.registerLazySingleton(() => AddressesCubit());
     sl.registerLazySingleton(() => ClientDistributeGasCubit());

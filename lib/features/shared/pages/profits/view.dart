@@ -76,62 +76,62 @@ class _ProfitsViewState extends State<ProfitsView> {
             } else if (state.requestState.isDone) {
               return SingleChildScrollView(
                 child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          icon: (state.updateStatus == RequestState.loading && state.type == 'b') ? CustomProgress(size: 20) : Icon(Icons.arrow_back),
-                          onPressed: () {
-                            if (state.updateStatus != RequestState.loading) {
-                              getPreviousDay();
-                            }
-                          },
-                        ),
-                        Text(
-                          formattedDay,
-                          style: TextStyle(fontSize: 24),
-                        ),
-                        IconButton(
-                          icon: (state.updateStatus == RequestState.loading && state.type == 'f')
-                              ? CustomProgress(size: 20)
-                              : Icon(Icons.arrow_forward, color: isToday(selectedDay) ? Colors.grey : Colors.black),
-                          onPressed: () {
-                            if (state.updateStatus != RequestState.loading) {
-                              getNextDay();
-                            }
-                          },
-                        ),
-                      ],
-                    ).withPadding(bottom: 16.h),
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: (state.updateStatus == RequestState.loading && state.type == 'b') ? CustomProgress(size: 20) : Icon(Icons.arrow_back),
+                        onPressed: () {
+                          if (state.updateStatus != RequestState.loading) {
+                            getPreviousDay();
+                          }
+                        },
+                      ),
+                      Text(
+                        formattedDay,
+                        style: TextStyle(fontSize: 24),
+                      ),
+                      IconButton(
+                        icon: (state.updateStatus == RequestState.loading && state.type == 'f')
+                            ? CustomProgress(size: 20)
+                            : Icon(Icons.arrow_forward, color: isToday(selectedDay) ? Colors.grey : Colors.black),
+                        onPressed: () {
+                          if (state.updateStatus != RequestState.loading) {
+                            getNextDay();
+                          }
+                        },
+                      ),
+                    ],
+                  ).withPadding(bottom: 16.h),
                     
                     // كارد المبلغ الإجمالي
-                    Container(
-                      decoration: BoxDecoration(color: context.canvasColor, borderRadius: BorderRadius.circular(8.r)),
-                      padding: EdgeInsets.all(24.h),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(LocaleKeys.profits_for_that_day.tr(), style: context.regularText.copyWith(fontSize: 16)),
-                          CustomImage(Assets.svg.dailyProfits),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: cubit.profits,
-                                  style: context.boldText.copyWith(fontSize: 24),
-                                ),
-                                const TextSpan(text: ' '),
-                                TextSpan(
-                                  text: LocaleKeys.currency.tr(),
-                                  style: context.regularText,
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ).withPadding(horizontal: 16.h),
+                  Container(
+                    decoration: BoxDecoration(color: context.canvasColor, borderRadius: BorderRadius.circular(8.r)),
+                    padding: EdgeInsets.all(24.h),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(LocaleKeys.profits_for_that_day.tr(), style: context.regularText.copyWith(fontSize: 16)),
+                        CustomImage(Assets.svg.dailyProfits),
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: cubit.profits,
+                                style: context.boldText.copyWith(fontSize: 24),
+                              ),
+                              const TextSpan(text: ' '),
+                              TextSpan(
+                                text: LocaleKeys.currency.tr(),
+                                style: context.regularText,
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ).withPadding(horizontal: 16.h),
                     
                     SizedBox(height: 20.h),
                     
@@ -196,39 +196,39 @@ class _ProfitsViewState extends State<ProfitsView> {
                     ),
                     
                     SizedBox(height: 20.h),
-                    
-                    // زر المحفظة
-                    if (UserModel.i.isAuth && UserModel.i.accountType == UserType.freeAgent)
-                      InkWell(
-                        onTap: () => push(NamedRoutes.wallet),
-                        child: Container(
+                  
+                  // زر المحفظة
+                  if (UserModel.i.isAuth && UserModel.i.accountType == UserType.freeAgent)
+                    InkWell(
+                      onTap: () => push(NamedRoutes.wallet),
+                      child: Container(
                           margin: EdgeInsets.only(top: 4.h, left: 16.h, right: 16.h),
-                          padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 24.h),
-                          decoration: BoxDecoration(
-                            color: context.canvasColor,
-                            borderRadius: BorderRadius.circular(8.r),
-                            border: Border.all(color: context.primaryColorLight.withOpacity(0.3), width: 1)
-                          ),
-                          child: Row(
-                            children: [
-                              CustomImage(
-                                Assets.svg.walletIcon,
-                                height: 24.h,
-                                width: 24.h,
-                                color: context.primaryColorDark,
-                              ).withPadding(end: 16.w),
-                              Expanded(
-                                child: Text(
-                                  LocaleKeys.wallet.tr(),
-                                  style: context.mediumText.copyWith(fontSize: 16),
-                                ),
+                        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 24.h),
+                        decoration: BoxDecoration(
+                          color: context.canvasColor,
+                          borderRadius: BorderRadius.circular(8.r),
+                          border: Border.all(color: context.primaryColorLight.withOpacity(0.3), width: 1)
+                        ),
+                        child: Row(
+                          children: [
+                            CustomImage(
+                              Assets.svg.walletIcon,
+                              height: 24.h,
+                              width: 24.h,
+                              color: context.primaryColorDark,
+                            ).withPadding(end: 16.w),
+                            Expanded(
+                              child: Text(
+                                LocaleKeys.wallet.tr(),
+                                style: context.mediumText.copyWith(fontSize: 16),
                               ),
-                              Icon(Icons.arrow_forward_ios, size: 16.h, color: context.primaryColorDark)
-                            ],
-                          ),
+                            ),
+                            Icon(Icons.arrow_forward_ios, size: 16.h, color: context.primaryColorDark)
+                          ],
                         ),
                       ),
-                  ],
+                    ),
+                ],
                 ),
               );
             } else {
