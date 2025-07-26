@@ -2,11 +2,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import '../../../../core/utils/pull_to_refresh.dart';
 
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/utils/enums.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/utils/url_launcher_utils.dart';
 import '../../../../core/widgets/custom_image.dart';
 import '../../../../core/widgets/error_widget.dart';
 import '../../../../gen/locale_keys.g.dart';
@@ -22,10 +24,12 @@ class FreeAgentHomeView extends StatefulWidget {
   State<FreeAgentHomeView> createState() => _FreeAgentHomeViewState();
 }
 
-class _FreeAgentHomeViewState extends State<FreeAgentHomeView> {
+class _FreeAgentHomeViewState extends State<FreeAgentHomeView> with SingleTickerProviderStateMixin {
   final cubit = sl<AgentHomeCubit>();
   final ScrollController _scrollController = ScrollController();
   bool isAutomatic = false;
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
@@ -37,11 +41,25 @@ class _FreeAgentHomeViewState extends State<FreeAgentHomeView> {
         cubit.fetchOrders(isPagination: true);
       }
     });
+    
+    // تهيئة الأنيميشن
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+    
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.15).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -162,6 +180,52 @@ class _FreeAgentHomeViewState extends State<FreeAgentHomeView> {
           },
         ),
       ),
+      floatingActionButton: AnimatedBuilder(
+        animation: _animationController,
+        builder: (context, child) {
+          return Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: context.primaryColor.withOpacity(0.2),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Transform.scale(
+              scale: _scaleAnimation.value,
+              child: FloatingActionButton(
+                onPressed: () => UrlLauncherUtils.launchWhatsApp(),
+                backgroundColor: Colors.white,
+                elevation: 4,
+                mini: false,
+                shape: CircleBorder(
+                  side: BorderSide(
+                    color: context.primaryColorLight.withOpacity(0.1),
+                    width: 2,
+                  ),
+                ),
+                child: Container(
+                  padding: EdgeInsets.all(8.r),
+                  child: SvgPicture.asset(
+                    "assets/svg/ai-dialogue.svg",
+                    height: 30.h,
+                    width: 30.w,
+                    colorFilter: ColorFilter.mode(
+                      context.primaryColor,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 }

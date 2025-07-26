@@ -11,6 +11,7 @@ import '../../../../core/services/service_locator.dart';
 import '../../../../core/utils/enums.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/pull_to_refresh.dart';
+import '../../../../core/utils/url_launcher_utils.dart';
 import '../../../../core/widgets/custom_image.dart';
 import '../../../../gen/assets.gen.dart';
 import '../../../../gen/locale_keys.g.dart';
@@ -28,9 +29,11 @@ class HomeClientView extends StatefulWidget {
   State<HomeClientView> createState() => _HomeClientViewState();
 }
 
-class _HomeClientViewState extends State<HomeClientView> {
+class _HomeClientViewState extends State<HomeClientView> with SingleTickerProviderStateMixin {
   final cubit = sl<ClientHomeCubit>()..getHome();
   final addressesCubit = sl<AddressesCubit>();
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
@@ -39,7 +42,27 @@ class _HomeClientViewState extends State<HomeClientView> {
         addressesCubit.getAddresses();
       }
     }
+    
+    // تهيئة الأنيميشن
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+    
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.15).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+    
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   Future<void> _refresh() async {
@@ -221,6 +244,52 @@ class _HomeClientViewState extends State<HomeClientView> {
               ),
             ),
           ),
+          floatingActionButton: AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: context.primaryColor.withOpacity(0.2),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: FloatingActionButton(
+                    onPressed: () => UrlLauncherUtils.launchWhatsApp(),
+                    backgroundColor: Colors.white,
+                    elevation: 4,
+                    mini: false,
+                    shape: CircleBorder(
+                      side: BorderSide(
+                        color: context.primaryColorLight.withOpacity(0.1),
+                        width: 2,
+                      ),
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.all(8.r),
+                      child: SvgPicture.asset(
+                        "assets/svg/ai-dialogue.svg",
+                        height: 30.h,
+                        width: 30.w,
+                        colorFilter: ColorFilter.mode(
+                          context.primaryColor,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
         );
       },
     );
