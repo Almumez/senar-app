@@ -8,8 +8,10 @@ import '../../../shared/pages/navbar/cubit/navbar_cubit.dart';
 import '../../../../core/routes/app_routes_fun.dart';
 import '../../../../core/routes/routes.dart';
 import '../../../../core/services/service_locator.dart';
+import '../../../../core/services/settings_service.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_btn.dart';
+import '../../../../core/widgets/closing_time_warning_dialog.dart';
 import '../../../../core/widgets/custom_image.dart';
 import '../../../../gen/locale_keys.g.dart';
 import '../../../shared/components/appbar.dart';
@@ -28,6 +30,37 @@ class ClientCreateProductOrderView extends StatefulWidget {
 
 class _ClientCreateProductOrderViewState extends State<ClientCreateProductOrderView> {
   final cubit = sl<CartCubit>();
+  final settingsService = sl<SettingsService>();
+  
+  // دالة للتحقق من وقت الإغلاق قبل إنشاء الطلب
+  Future<void> _checkClosingTimeAndProceed() async {
+    // التحقق مما إذا كان الوقت قريبًا من وقت الإغلاق
+    if (settingsService.isNearClosingTime()) {
+      // عرض تحذير للمستخدم
+      final shouldContinue = await ClosingTimeWarningDialog.show(
+        context, 
+        settingsService.getCancellationTimeInMinutes()
+      );
+      
+      // إذا اختار المستخدم المتابعة
+      if (shouldContinue == true) {
+        _proceedToPayment();
+      }
+    } else {
+      // إذا كان الوقت ليس قريبًا من وقت الإغلاق، استمر في إنشاء الطلب
+      _proceedToPayment();
+    }
+  }
+  
+  // دالة للانتقال إلى صفحة الدفع
+  void _proceedToPayment() {
+    push(NamedRoutes.clientCreateOrderSelectPayment, arg: {"cubit": cubit}).then((value) {
+      if (cubit.paymentMethod != '') {
+        cubit.createOrder();
+      }
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,14 +90,7 @@ class _ClientCreateProductOrderViewState extends State<ClientCreateProductOrderV
           return AppBtn(
             loading: state.createOrderState.isLoading,
             title: LocaleKeys.complete_order.tr(),
-            onPressed: () {
-              // cubit.createOrder();
-              push(NamedRoutes.clientCreateOrderSelectPayment, arg: {"cubit": cubit}).then((value) {
-                if (cubit.paymentMethod != '') {
-                  cubit.createOrder();
-                }
-              });
-            },
+            onPressed: () => _checkClosingTimeAndProceed(),
           );
         },
       ).withPadding(horizontal: 16.w, bottom: 16.h),

@@ -5,8 +5,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'controller/states.dart';
 
 import '../../../core/services/service_locator.dart';
+import '../../../core/services/settings_service.dart';
 import '../../../core/utils/extensions.dart';
 import '../../../core/widgets/app_btn.dart';
+import '../../../core/widgets/closing_time_warning_dialog.dart';
 import '../../../core/widgets/custom_image.dart';
 import '../../../core/widgets/custom_radius_icon.dart';
 import '../../../gen/assets.gen.dart';
@@ -24,6 +26,28 @@ class ClientRefillView extends StatefulWidget {
 
 class _ClientRefillViewState extends State<ClientRefillView> {
   final cubit = sl<ClientRefillCubit>();
+  final settingsService = sl<SettingsService>();
+  
+  // دالة للتحقق من وقت الإغلاق قبل إنشاء الطلب
+  Future<void> _checkClosingTimeAndCreateOrder() async {
+    // التحقق مما إذا كان الوقت قريبًا من وقت الإغلاق
+    if (settingsService.isNearClosingTime()) {
+      // عرض تحذير للمستخدم
+      final shouldContinue = await ClosingTimeWarningDialog.show(
+        context, 
+        settingsService.getCancellationTimeInMinutes()
+      );
+      
+      // إذا اختار المستخدم المتابعة
+      if (shouldContinue == true) {
+        cubit.refill();
+      }
+    } else {
+      // إذا كان الوقت ليس قريبًا من وقت الإغلاق، استمر في إنشاء الطلب
+      cubit.refill();
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,7 +112,7 @@ class _ClientRefillViewState extends State<ClientRefillView> {
                           enable: cubit.count != 0,
                           title: LocaleKeys.order_now.tr(),
                           loading: state.requestState.isLoading,
-                          onPressed: () => cubit.refill(),
+                          onPressed: () => _checkClosingTimeAndCreateOrder(),
                         ).withPadding(bottom: 25.h);
                       },
                     )

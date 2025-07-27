@@ -7,8 +7,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/routes/app_routes_fun.dart';
 import '../../../../core/routes/routes.dart';
 import '../../../../core/services/service_locator.dart';
+import '../../../../core/services/settings_service.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_btn.dart';
+import '../../../../core/widgets/closing_time_warning_dialog.dart';
 import '../../../../core/widgets/flash_helper.dart';
 import '../../../../core/widgets/loading.dart';
 import '../../../../core/widgets/successfully_sheet.dart';
@@ -32,6 +34,46 @@ class ClientDistributingCreateOrderView extends StatefulWidget {
 
 class _ClientDistributingCreateOrderViewState extends State<ClientDistributingCreateOrderView> {
   final cubit = sl<ClientDistributeGasCubit>();
+  final settingsService = sl<SettingsService>();
+
+  // دالة للتحقق من وقت الإغلاق قبل إنشاء الطلب
+  Future<void> _checkClosingTimeAndCreateOrder() async {
+    // التحقق مما إذا كان الوقت قريبًا من وقت الإغلاق
+    if (settingsService.isNearClosingTime()) {
+      // عرض تحذير للمستخدم
+      final shouldContinue = await ClosingTimeWarningDialog.show(
+        context, 
+        settingsService.getCancellationTimeInMinutes()
+      );
+      
+      // إذا اختار المستخدم المتابعة
+      if (shouldContinue == true) {
+        _processOrder();
+      }
+    } else {
+      // إذا كان الوقت ليس قريبًا من وقت الإغلاق، استمر في إنشاء الطلب
+      _processOrder();
+    }
+  }
+  
+  // دالة لمعالجة الطلب بناءً على طريقة الدفع
+  void _processOrder() {
+    if (cubit.paymentMethod == 'visa') {
+      // استخدام bottom sheet للدفع الإلكتروني بدلاً من الانتقال إلى صفحة جديدة
+      showPaymentBottomSheet(
+        context: context,
+        amount: cubit.state.orderPrices?.total.toString() ?? "0",
+        onSuccess: (String paymentId) {
+          // تخزين معرف المعاملة وإكمال الطلب
+          cubit.paymentId = paymentId;
+          cubit.completeOrder();
+        },
+      );
+    } else {
+      // إذا كانت طريقة الدفع هي الكاش، قم بإكمال الطلب مباشرة
+      cubit.completeOrder();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,20 +112,9 @@ class _ClientDistributingCreateOrderViewState extends State<ClientDistributingCr
                   FlashHelper.showToast(LocaleKeys.choose_address_first.tr());
                 } else if (cubit.paymentMethod == '') {
                   FlashHelper.showToast(LocaleKeys.choose_payment_method_first.tr());
-                } else if (cubit.paymentMethod == 'visa') {
-                  // استخدام bottom sheet للدفع الإلكتروني بدلاً من الانتقال إلى صفحة جديدة
-                  showPaymentBottomSheet(
-                    context: context,
-                    amount: cubit.state.orderPrices?.total.toString() ?? "0",
-                    onSuccess: (String paymentId) {
-                      // تخزين معرف المعاملة وإكمال الطلب
-                      cubit.paymentId = paymentId;
-                      cubit.completeOrder();
-                    },
-                  );
                 } else {
-                  // إذا كانت طريقة الدفع هي الكاش، قم بإكمال الطلب مباشرة
-                  cubit.completeOrder();
+                  // التحقق من وقت الإغلاق قبل إنشاء الطلب
+                  _checkClosingTimeAndCreateOrder();
                 }
               },
             ).withPadding(horizontal: 16.w, bottom: 16.h),

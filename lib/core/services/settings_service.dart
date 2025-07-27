@@ -62,6 +62,27 @@ class SettingsService {
     // El servicio está abierto si la hora actual está entre la hora de apertura y cierre
     return nowMinutes >= openingMinutes && nowMinutes < closingMinutes;
   }
+  
+  // طريقة للتحقق مما إذا كان الوقت الحالي يساوي أو أكبر من وقت بدء الإشعار
+  bool isNearClosingTime() {
+    if (_settings == null) return false;
+    
+    final now = TimeOfDay.now();
+    final notificationStartTime = _parseTimeString(_settings!.closingService.notificationStartTime);
+    
+    // تحويل إلى دقائق للمقارنة بسهولة
+    final nowMinutes = now.hour * 60 + now.minute;
+    final notificationStartMinutes = notificationStartTime.hour * 60 + notificationStartTime.minute;
+    
+    // إذا كان الوقت الحالي يساوي أو أكبر من وقت بدء الإشعار، ولكن قبل وقت الإغلاق
+    return nowMinutes >= notificationStartMinutes && !isServiceClosed();
+  }
+  
+  // الحصول على وقت الإلغاء التلقائي بالدقائق
+  int getCancellationTimeInMinutes() {
+    if (_settings == null) return 15; // قيمة افتراضية
+    return _settings!.closingService.cancellationTime;
+  }
 
   // Método auxiliar para convertir una cadena de tiempo (HH:MM) a TimeOfDay
   TimeOfDay _parseTimeString(String timeString) {
