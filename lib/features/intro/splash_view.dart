@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io'; // Añadir importación para detectar la plataforma
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,6 +67,18 @@ class _SplashViewState extends State<SplashView> {
     
     // التحقق من الإصدار
     versionCubit.checkVersion().then((_) {
+      // التحقق مما إذا كان المستخدم يستخدم iOS وتوجيهه إلى App Store
+      if (Platform.isIOS) {
+        setState(() {
+          _showUpdateDialog = true;
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showUpdatePopup();
+        });
+        return;
+      }
+      
+      // للأنظمة الأخرى، تحقق من وجود تحديث من السيرفر
       if (versionCubit.state.updateAvailable) {
         setState(() {
           _showUpdateDialog = true;
@@ -84,8 +97,16 @@ class _SplashViewState extends State<SplashView> {
 
   // فتح متجر التطبيقات
   void _launchAppStore() async {
-    // رابط متجر جوجل بلاي
-    final Uri url = Uri.parse('https://play.google.com/store/apps/details?id=com.senar.gasapp');
+    // تحديد الرابط حسب نظام التشغيل
+    final Uri url;
+    
+    if (Platform.isIOS) {
+      // رابط متجر آبل
+      url = Uri.parse('https://apps.apple.com/sa/app/senar-%D8%B3%D9%8A%D9%86%D8%A7%D8%B1/id6741438069');
+    } else {
+      // رابط متجر جوجل بلاي
+      url = Uri.parse('https://play.google.com/store/apps/details?id=com.senar.gasapp');
+    }
     
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
@@ -99,7 +120,8 @@ class _SplashViewState extends State<SplashView> {
       body: BlocListener<VersionCubit, VersionState>(
         bloc: versionCubit,
         listener: (context, state) {
-          if (state.requestState.isDone && state.updateAvailable) {
+          // No mostrar el diálogo desde aquí para usuarios de iOS, ya que se muestra en initState
+          if (!Platform.isIOS && state.requestState.isDone && state.updateAvailable) {
             // عرض النافذة المنبثقة للتحديث
             WidgetsBinding.instance.addPostFrameCallback((_) {
               _showUpdatePopup();
@@ -121,6 +143,13 @@ class _SplashViewState extends State<SplashView> {
   
   // عرض النافذة المنبثقة للتحديث
   void _showUpdatePopup() {
+    final bool isIOS = Platform.isIOS;
+    final String title = isIOS ? "تطبيق سنار متاح الآن" : "تحديث جديد متاح";
+    final String message = isIOS 
+        ? "تطبيق سنار متاح الآن على متجر آبل. انتقل إلى App Store لتحميل التطبيق والاستمتاع بتجربة أفضل."
+        : "هناك إصدار جديد من التطبيق متاح الآن. يرجى تحديث التطبيق للاستمتاع بأحدث الميزات والتحسينات.";
+    final String buttonText = isIOS ? "الانتقال إلى App Store" : "تحديث الآن";
+    
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -144,7 +173,7 @@ class _SplashViewState extends State<SplashView> {
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    Icons.system_update,
+                    isIOS ? Icons.apple : Icons.system_update,
                     color: context.primaryColor,
                     size: 40.r,
                   ),
@@ -153,7 +182,7 @@ class _SplashViewState extends State<SplashView> {
                 
                 // عنوان التحديث
                 Text(
-                  "تحديث جديد متاح",
+                  title,
                   style: context.boldText.copyWith(
                     fontSize: 18.sp,
                   ),
@@ -163,7 +192,7 @@ class _SplashViewState extends State<SplashView> {
                 
                 // وصف التحديث
                 Text(
-                  "هناك إصدار جديد من التطبيق متاح الآن. يرجى تحديث التطبيق للاستمتاع بأحدث الميزات والتحسينات.",
+                  message,
                   style: context.regularText.copyWith(
                     fontSize: 14.sp,
                   ),
@@ -185,7 +214,7 @@ class _SplashViewState extends State<SplashView> {
                       ),
                     ),
                     child: Text(
-                      "تحديث الآن",
+                      buttonText,
                       style: context.boldText.copyWith(
                         fontSize: 16.sp,
                         color: Colors.white,
