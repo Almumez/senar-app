@@ -49,11 +49,15 @@ import '../../features/technician/order_details/cubit/order_details_cubit.dart';
 import '../../features/technician/orders/cubit/orders_cubit.dart';
 import '../utils/location_service.dart';
 import 'location_tracking_service.dart';
+import 'profile_service.dart';
 
 final sl = GetIt.instance;
 
 class ServicesLocator {
   void init() {
+    // Services
+    sl.registerLazySingleton(() => ProfileService());
+    
     sl.registerFactory(() => LoginCubit());
     sl.registerFactory(() => LogoutCubit());
     sl.registerFactory(() => RegisterCubit());

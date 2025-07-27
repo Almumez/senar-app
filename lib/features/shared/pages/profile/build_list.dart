@@ -6,8 +6,11 @@ import '../../../../models/user_model.dart';
 
 import '../../../../core/routes/app_routes_fun.dart';
 import '../../../../core/routes/routes.dart';
+import '../../../../core/services/profile_service.dart';
+import '../../../../core/services/service_locator.dart';
 import '../../../../core/utils/enums.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/utils/phoneix.dart';
 import '../../../../core/widgets/logout_sheet.dart';
 import '../../../../gen/assets.gen.dart';
 import '../../../../gen/locale_keys.g.dart';
@@ -101,23 +104,163 @@ void showComingSoonPopup(BuildContext context, String title) {
   );
 }
 
-// Function to switch between client and agent account types
-void switchAccountType() {
-  // This would be implemented with the proper API call to switch account types
-  // For now, just show a dialog or navigate to a screen to handle this
+// دالة لعرض رسالة خطأ عند محاولة تحويل الحساب
+void showErrorSwitchAccountPopup(BuildContext context) {
   showDialog(
-    context: navigator.currentContext!,
-    builder: (context) => AlertDialog(
-      title: Text(LocaleKeys.profile.tr()),
-      content: Text('Switch account type functionality will be implemented here.'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('OK'),
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(25.r),
         ),
-      ],
-    ),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: EdgeInsets.all(20.r),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(25.r),
+            boxShadow: [
+              BoxShadow(
+                color: "#BDBDD3".color.withOpacity(0.2),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 70.w,
+                height: 70.h,
+                decoration: BoxDecoration(
+                  color: Color(0xfff5f5f5),
+                  shape: BoxShape.circle,
+                ),
+                child: Container(
+                  margin: EdgeInsets.all(15.r),
+                  child: SvgPicture.asset(
+                    "assets/svg/notifications_in.svg",
+                    height: 20.h,
+                    width: 20.w,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              SizedBox(height: 20.h),
+              Text(
+                "لا يمكنك استخدام تحويل",
+                style: context.boldText.copyWith(
+                  fontSize: 20.sp,
+                  color: "#090909".color,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 15.h),
+              Text(
+                "عذراً، لا يمكنك تحويل الحساب من نوع العميل إلى مندوب حر.",
+                style: context.mediumText.copyWith(
+                  fontSize: 16.sp,
+                  color: "#9E968F".color,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 25.h),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                style: TextButton.styleFrom(
+                  backgroundColor: "#090909".color,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14.r),
+                  ),
+                  minimumSize: Size(double.infinity, 50.h),
+                ),
+                child: Text(
+                  LocaleKeys.ok.tr(),
+                  style: context.mediumText.copyWith(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
   );
+}
+
+// Function to switch between client and agent account types
+void switchAccountType() async {
+  final profileService = sl<ProfileService>();
+  
+  try {
+    // الحصول على بيانات الملف الشخصي
+    final profileData = await profileService.getProfile();
+    
+    if (profileData['status'] != 'success' && profileData['message'] != 'success') {
+      showErrorSwitchAccountPopup(navigator.currentContext!);
+      return;
+    }
+    
+    final userData = profileData['data'];
+    final userType = userData['user_type'];
+    final isApproved = userData['admin_approved'] ?? false;
+    
+    print('نوع المستخدم: $userType');
+    print('معتمد من الإدارة: $isApproved');
+    
+    // التحقق مما إذا كان المستخدم عميل
+    if (userType == 'client') {
+      showErrorSwitchAccountPopup(navigator.currentContext!);
+      return;
+    }
+    
+    // التحقق مما إذا كان المستخدم مندوب حر ومعتمد من الإدارة
+    if (userType == 'free_agent' && isApproved) {
+      // تحويل نوع المستخدم من مندوب حر إلى عميل
+      if (UserModel.i.userType == 'free_agent') {
+        UserModel.i.userType = 'client';
+        UserModel.i.save();
+        
+        // إظهار رسالة نجاح
+        ScaffoldMessenger.of(navigator.currentContext!).showSnackBar(
+          SnackBar(
+            content: Text('تم تحويل الحساب إلى عميل بنجاح'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        
+        // إعادة تشغيل التطبيق
+        Future.delayed(Duration(seconds: 2), () {
+          Phoenix.rebirth(navigator.currentContext!);
+        });
+      } else {
+        UserModel.i.userType = 'free_agent';
+        UserModel.i.save();
+        
+        // إظهار رسالة نجاح
+        ScaffoldMessenger.of(navigator.currentContext!).showSnackBar(
+          SnackBar(
+            content: Text('تم تحويل الحساب إلى مندوب حر بنجاح'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        
+        // إعادة تشغيل التطبيق
+        Future.delayed(Duration(seconds: 2), () {
+          Phoenix.rebirth(navigator.currentContext!);
+        });
+      }
+    } else {
+      showErrorSwitchAccountPopup(navigator.currentContext!);
+    }
+  } catch (e) {
+    print('خطأ أثناء تبديل نوع المستخدم: $e');
+    showErrorSwitchAccountPopup(navigator.currentContext!);
+  }
 }
 
 // Function to handle join button click
@@ -169,7 +312,7 @@ class BuildProfileList {
       ProfileItemModel(
         image: 'assets/svg/profile-2user.svg', 
         title: LocaleKeys.switch_account, 
-        onTap: () => showComingSoonPopup(navigator.currentContext!, LocaleKeys.switch_account.tr()),
+        onTap: () => switchAccountType(),
       ),
     
     ProfileItemModel(
@@ -205,7 +348,7 @@ class BuildProfileList {
     ProfileItemModel(
       image: 'assets/svg/profile-2user.svg', 
       title: LocaleKeys.switch_account, 
-      onTap: () => showComingSoonPopup(navigator.currentContext!, LocaleKeys.switch_account.tr()),
+      onTap: () => switchAccountType(),
     ),
     ProfileItemModel(image: Assets.svg.logout, title: UserModel.i.isAuth ? LocaleKeys.logout : LocaleKeys.login, onTap: () => logout(),),
   ];
