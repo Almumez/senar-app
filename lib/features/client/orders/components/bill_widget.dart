@@ -6,6 +6,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../gen/locale_keys.g.dart';
 import '../../../../models/client_order.dart';
+// إضافة استيراد لطابع الفاتورة
+import 'client_invoice_printer.dart';
 
 class ClientBillWidget extends StatelessWidget {
   final ClientOrderModel data;
@@ -35,7 +37,48 @@ class ClientBillWidget extends StatelessWidget {
           if (isMaintenanceOrSupply) _buildRow("ضريبة", data.tax, context).withPadding(start: 43.w),
         
           _buildRow("اجمالي", data.totalPrice, context).withPadding(start: 43.w),
+          
+          // إضافة زر الطباعة
+          _buildPrintButton(context),
         ],
+      ),
+    );
+  }
+
+  // إضافة دالة لبناء زر الطباعة
+  Widget _buildPrintButton(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: 16.h),
+      child: InkWell(
+        onTap: () async {
+          await ClientInvoicePrinter.printInvoice(context, data);
+        },
+        child: Container(
+          width: double.infinity,
+          height: 45.h,
+          decoration: BoxDecoration(
+            color: context.primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.print_outlined,
+                color: context.primaryColor,
+                size: 20.sp,
+              ),
+              SizedBox(width: 8.w),
+              Text(
+                "طباعة الفاتورة",
+                style: context.mediumText.copyWith(
+                  color: context.primaryColor,
+                  fontSize: 14.sp,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
