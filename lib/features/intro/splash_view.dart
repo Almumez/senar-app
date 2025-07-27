@@ -11,10 +11,12 @@ import '../../models/user_model.dart';
 import '../../core/routes/app_routes_fun.dart';
 import '../../core/routes/routes.dart';
 import '../../core/services/service_locator.dart';
+import '../../core/services/settings_service.dart';
 import '../../core/utils/enums.dart';
 import '../../core/utils/extensions.dart';
 import '../../core/widgets/custom_image.dart';
 import '../../core/widgets/loading.dart';
+import '../../core/widgets/service_closed_dialog.dart';
 import '../../gen/assets.gen.dart';
 import '../../gen/locale_keys.g.dart';
 import 'controller/version_cubit.dart';
@@ -29,10 +31,12 @@ class SplashView extends StatefulWidget {
 
 class _SplashViewState extends State<SplashView> {
   final versionCubit = sl<VersionCubit>();
+  final settingsService = sl<SettingsService>();
   bool _showUpdateDialog = false;
+  bool _showServiceClosedDialog = false;
 
   void navigateUser() {
-    if (_showUpdateDialog) return; // لا تنتقل إذا كان هناك تحديث مطلوب
+    if (_showUpdateDialog || _showServiceClosedDialog) return; // لا تنتقل إذا كان هناك تحديث مطلوب أو الخدمة مغلقة
 
     if (!UserModel.i.isAuth) {
       replacement(NamedRoutes.onboarding);
@@ -65,8 +69,34 @@ class _SplashViewState extends State<SplashView> {
   void initState() {
     log(UserModel.i.token);
     
-    // التحقق من الإصدار
-    versionCubit.checkVersion().then((_) {
+    // جلب إعدادات النظام والتحقق من الإصدار
+    _loadSettingsAndCheckVersion();
+    
+    super.initState();
+  }
+
+  // دالة لجلب الإعدادات والتحقق من الإصدار
+  Future<void> _loadSettingsAndCheckVersion() async {
+    try {
+      // جلب إعدادات النظام
+      await settingsService.getSettings();
+      
+      // التحقق مما إذا كانت الخدمة مغلقة
+      if (settingsService.isServiceClosed()) {
+        setState(() {
+          _showServiceClosedDialog = true;
+        });
+        
+        // عرض رسالة الخدمة المغلقة بعد تحميل الشاشة
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showServiceClosedPopup();
+        });
+        return;
+      }
+      
+      // التحقق من الإصدار
+      await versionCubit.checkVersion();
+      
       // التحقق مما إذا كان المستخدم يستخدم iOS وتوجيهه إلى App Store
       if (Platform.isIOS) {
         setState(() {
@@ -83,16 +113,18 @@ class _SplashViewState extends State<SplashView> {
         setState(() {
           _showUpdateDialog = true;
         });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showUpdatePopup();
+        });
       } else {
         // الانتقال بعد 3 ثواني إذا لم يكن هناك تحديث مطلوب
         Timer(3.seconds, () => navigateUser());
       }
-    }).catchError((error) {
+    } catch (error) {
+      debugPrint('Error during initialization: $error');
       // في حالة حدوث خطأ، انتقل بعد 3 ثواني
       Timer(3.seconds, () => navigateUser());
-    });
-    
-    super.initState();
+    }
   }
 
   // فتح متجر التطبيقات
@@ -138,6 +170,16 @@ class _SplashViewState extends State<SplashView> {
           ),
         ),
       ),
+    );
+  }
+  
+  // عرض النافذة المنبثقة للخدمة المغلقة
+  void _showServiceClosedPopup() {
+    if (settingsService.settings == null) return;
+    
+    ServiceClosedDialog.show(
+      context, 
+      settingsService.settings!.closingService.openingTime
     );
   }
   
