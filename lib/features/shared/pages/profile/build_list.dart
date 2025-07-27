@@ -11,7 +11,9 @@ import '../../../../core/services/service_locator.dart';
 import '../../../../core/utils/enums.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/phoneix.dart';
+import '../../../../core/widgets/loading.dart';
 import '../../../../core/widgets/logout_sheet.dart';
+import '../navbar/cubit/navbar_cubit.dart';
 import '../../../../gen/assets.gen.dart';
 import '../../../../gen/locale_keys.g.dart';
 import '../../../../models/profile_item.dart';
@@ -220,45 +222,61 @@ void switchAccountType() async {
     
     // التحقق مما إذا كان المستخدم مندوب حر ومعتمد من الإدارة
     if (userType == 'free_agent' && isApproved) {
+      // إظهار شاشة التحميل
+      LoadingDialog.show();
+      
       // تحويل نوع المستخدم من مندوب حر إلى عميل
       if (UserModel.i.userType == 'free_agent') {
         UserModel.i.userType = 'client';
         UserModel.i.save();
+        
+        // إخفاء شاشة التحميل بعد فترة قصيرة
+        await Future.delayed(Duration(milliseconds: 50));
+        LoadingDialog.hide();
         
         // إظهار رسالة نجاح
         ScaffoldMessenger.of(navigator.currentContext!).showSnackBar(
           SnackBar(
             content: Text('تم تحويل الحساب إلى عميل بنجاح'),
             backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
           ),
         );
         
-        // إعادة تشغيل التطبيق
-        Future.delayed(Duration(seconds: 2), () {
-          Phoenix.rebirth(navigator.currentContext!);
-        });
+        // الانتقال إلى شاشة البداية بعد إظهار الرسالة
+        await Future.delayed(Duration(seconds: 2));
+        sl<NavbarCubit>().changeTap(0);
+        pushAndRemoveUntil(NamedRoutes.navbar);
+        
       } else {
         UserModel.i.userType = 'free_agent';
         UserModel.i.save();
+        
+        // إخفاء شاشة التحميل بعد فترة قصيرة
+        await Future.delayed(Duration(milliseconds: 50));
+        LoadingDialog.hide();
         
         // إظهار رسالة نجاح
         ScaffoldMessenger.of(navigator.currentContext!).showSnackBar(
           SnackBar(
             content: Text('تم تحويل الحساب إلى مندوب حر بنجاح'),
             backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
           ),
         );
         
-        // إعادة تشغيل التطبيق
-        Future.delayed(Duration(seconds: 2), () {
-          Phoenix.rebirth(navigator.currentContext!);
-        });
+        // الانتقال إلى شاشة البداية بعد إظهار الرسالة
+        await Future.delayed(Duration(seconds: 2));
+        sl<NavbarCubit>().changeTap(0);
+        pushAndRemoveUntil(NamedRoutes.navbar);
       }
     } else {
       showErrorSwitchAccountPopup(navigator.currentContext!);
     }
   } catch (e) {
     print('خطأ أثناء تبديل نوع المستخدم: $e');
+    // إخفاء شاشة التحميل في حالة الخطأ
+    LoadingDialog.hide();
     showErrorSwitchAccountPopup(navigator.currentContext!);
   }
 }
