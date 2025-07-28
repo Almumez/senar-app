@@ -80,7 +80,7 @@ class _LoginViewState extends State<LoginView> {
                     textAlign: TextAlign.center,
                     style:  context.mediumText.copyWith(fontSize: 20),
                   ),
-                  SizedBox(height: 45.h),
+                  SizedBox(height: 70.h),
                   AppField(
                     controller: cubit.phone,
                     margin: EdgeInsets.symmetric(vertical: 8.h),
@@ -108,7 +108,7 @@ class _LoginViewState extends State<LoginView> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 50.h),
                   BlocConsumer<LoginCubit, LoginState>(
                     bloc: cubit,
                     listener: (context, state) {
@@ -141,33 +141,33 @@ class _LoginViewState extends State<LoginView> {
                       );
                     },
                   ),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "تسجيل",
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              showModalBottomSheet<UserTypeModel?>(
-                                context: context,
-                                builder: (context) => SelectItemSheet(
-                                  title: "اختر",
-                                  items: userTypes,
-                                ),
-                              ).then((value) {
-                                if (value != null) {
-                                  push(NamedRoutes.register,
-                                      arg: {"type": value.userType});
-                                }
-                              });
-                            },
-                          style: context.mediumText
-                              .copyWith(fontSize: 14, color: Color(0xff000000)),
-                        ),
-                      ],
-                    ),
-                    textAlign: TextAlign.center,
-                  ).withPadding(vertical: 12.h),
+                  // Text.rich(
+                  //   TextSpan(
+                  //     children: [
+                  //       TextSpan(
+                  //         text: "تسجيل",
+                  //         recognizer: TapGestureRecognizer()
+                  //           ..onTap = () {
+                  //             showModalBottomSheet<UserTypeModel?>(
+                  //               context: context,
+                  //               builder: (context) => SelectItemSheet(
+                  //                 title: "اختر",
+                  //                 items: userTypes,
+                  //               ),
+                  //             ).then((value) {
+                  //               if (value != null) {
+                  //                 push(NamedRoutes.register,
+                  //                     arg: {"type": value.userType});
+                  //               }
+                  //             });
+                  //           },
+                  //         style: context.mediumText
+                  //             .copyWith(fontSize: 14, color: Color(0xff000000)),
+                  //       ),
+                  //     ],
+                  //   ),
+                  //   textAlign: TextAlign.center,
+                  // ).withPadding(vertical: 12.h),
                 ],
               ),
             ),
