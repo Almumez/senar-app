@@ -38,8 +38,12 @@ class _ClientDistributingCreateOrderViewState extends State<ClientDistributingCr
 
   // دالة للتحقق من وقت الإغلاق قبل إنشاء الطلب
   Future<void> _checkClosingTimeAndCreateOrder() async {
+    debugPrint('Checking closing time before creating gas distribution order...');
+    debugPrint('Is near closing time: ${settingsService.isNearClosingTime()}');
+    
     // التحقق مما إذا كان الوقت قريبًا من وقت الإغلاق
     if (settingsService.isNearClosingTime()) {
+      debugPrint('Showing closing time warning dialog');
       // عرض تحذير للمستخدم
       final shouldContinue = await ClosingTimeWarningDialog.show(
         context, 
@@ -48,9 +52,13 @@ class _ClientDistributingCreateOrderViewState extends State<ClientDistributingCr
       
       // إذا اختار المستخدم المتابعة
       if (shouldContinue == true) {
+        debugPrint('User chose to continue, processing order');
         _processOrder();
+      } else {
+        debugPrint('User chose to cancel');
       }
     } else {
+      debugPrint('Not near closing time, processing order directly');
       // إذا كان الوقت ليس قريبًا من وقت الإغلاق، استمر في إنشاء الطلب
       _processOrder();
     }

@@ -34,8 +34,12 @@ class _ClientCreateProductOrderViewState extends State<ClientCreateProductOrderV
   
   // دالة للتحقق من وقت الإغلاق قبل إنشاء الطلب
   Future<void> _checkClosingTimeAndProceed() async {
+    debugPrint('Checking closing time before creating order...');
+    debugPrint('Is near closing time: ${settingsService.isNearClosingTime()}');
+    
     // التحقق مما إذا كان الوقت قريبًا من وقت الإغلاق
     if (settingsService.isNearClosingTime()) {
+      debugPrint('Showing closing time warning dialog');
       // عرض تحذير للمستخدم
       final shouldContinue = await ClosingTimeWarningDialog.show(
         context, 
@@ -44,9 +48,13 @@ class _ClientCreateProductOrderViewState extends State<ClientCreateProductOrderV
       
       // إذا اختار المستخدم المتابعة
       if (shouldContinue == true) {
+        debugPrint('User chose to continue, proceeding to payment');
         _proceedToPayment();
+      } else {
+        debugPrint('User chose to cancel');
       }
     } else {
+      debugPrint('Not near closing time, proceeding directly to payment');
       // إذا كان الوقت ليس قريبًا من وقت الإغلاق، استمر في إنشاء الطلب
       _proceedToPayment();
     }

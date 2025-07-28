@@ -79,10 +79,18 @@ class _SplashViewState extends State<SplashView> {
   Future<void> _loadSettingsAndCheckVersion() async {
     try {
       // جلب إعدادات النظام
+      debugPrint('Loading settings...');
       await settingsService.getSettings();
+      debugPrint('Settings loaded successfully');
+      
+      // التحقق من إشعارات وقت الإغلاق
+      debugPrint('Checking closing time notifications...');
+      debugPrint('Is near closing time: ${settingsService.isNearClosingTime()}');
+      debugPrint('Is service closed: ${settingsService.isServiceClosed()}');
       
       // التحقق مما إذا كانت الخدمة مغلقة
       if (settingsService.isServiceClosed()) {
+        debugPrint('Service is closed, showing closed dialog');
         setState(() {
           _showServiceClosedDialog = true;
         });

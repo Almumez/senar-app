@@ -16,10 +16,16 @@ class SettingsService {
   // Método para obtener los ajustes desde la API
   Future<SettingsModel?> getSettings() async {
     try {
+      debugPrint('Fetching settings from API...');
       final response = await _serverGate.getFromServer(url: 'general/settings');
       
       if (response.success) {
         _settings = SettingsModel.fromJson(response.data['data']);
+        debugPrint('Settings loaded successfully:');
+        debugPrint('Opening time: ${_settings!.closingService.openingTime}');
+        debugPrint('Closing time: ${_settings!.closingService.closingTime}');
+        debugPrint('Notification start time: ${_settings!.closingService.notificationStartTime}');
+        debugPrint('Cancellation time: ${_settings!.closingService.cancellationTime} minutes');
         return _settings;
       } else {
         debugPrint('Error al obtener los ajustes: ${response.msg}');
@@ -65,7 +71,10 @@ class SettingsService {
   
   // طريقة للتحقق مما إذا كان الوقت الحالي يساوي أو أكبر من وقت بدء الإشعار
   bool isNearClosingTime() {
-    if (_settings == null) return false;
+    if (_settings == null) {
+      debugPrint('Settings is null');
+      return false;
+    }
     
     final now = TimeOfDay.now();
     final notificationStartTime = _parseTimeString(_settings!.closingService.notificationStartTime);
@@ -74,8 +83,12 @@ class SettingsService {
     final nowMinutes = now.hour * 60 + now.minute;
     final notificationStartMinutes = notificationStartTime.hour * 60 + notificationStartTime.minute;
     
-    // إذا كان الوقت الحالي يساوي أو أكبر من وقت بدء الإشعار، ولكن قبل وقت الإغلاق
-    return nowMinutes >= notificationStartMinutes && !isServiceClosed();
+    debugPrint('Current time: ${now.hour}:${now.minute} (${nowMinutes} minutes)');
+    debugPrint('Notification start time: ${notificationStartTime.hour}:${notificationStartTime.minute} (${notificationStartMinutes} minutes)');
+    debugPrint('Should show notification: ${nowMinutes >= notificationStartMinutes}');
+    
+    // إذا كان الوقت الحالي يساوي أو أكبر من وقت بدء الإشعار
+    return nowMinutes >= notificationStartMinutes;
   }
   
   // الحصول على وقت الإلغاء التلقائي بالدقائق
