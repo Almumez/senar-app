@@ -34,94 +34,20 @@ class _FreeAgentCarInfoViewState extends State<FreeAgentCarInfoView> {
   @override
   void initState() {
     super.initState();
-    if (UserModel.i.accountType == UserType.freeAgent) {
-      cubit.getCarInfo();
-    }
+    // إزالة استدعاء API - تظهر الواجهة مباشرة
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isClient) {
-      // إذا كان المستخدم عميل عادي، اعرض الفورم مباشرة
-      return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: CustomAppbar(
-          title: LocaleKeys.agent_documents.tr(),
-        ),
-        body: _buildFormContent(context),
-        bottomNavigationBar: SafeArea(
-          child: _buildSaveButton(context),
-        ),
-      );
-    }
-    // المنطق الحالي للمندوب الحر
+    // عرض الفورم مباشرة للجميع بدون استدعاء API
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppbar(
         title: LocaleKeys.agent_documents.tr(),
       ),
+      body: _buildFormContent(context),
       bottomNavigationBar: SafeArea(
-        child: BlocConsumer<FreeAgentCarInfoCubit, FreeAgentCarInfoState>(
-          bloc: cubit,
-          listener: (context, state) {
-            if (state.editState.isDone) {
-              showModalBottomSheet(
-                elevation: 0,
-                context: context,
-                isScrollControlled: true,
-                isDismissible: true,
-                builder: (context) => SuccessfullySheet(
-                  title: LocaleKeys.documents_updated_successfully.tr(),
-                  subTitle: LocaleKeys.lang.tr() == 'en' 
-                    ? "Your documents have been successfully uploaded and are being reviewed by our team."
-                    : "تم رفع وثائقك بنجاح وجاري مراجعتها من قبل فريقنا.",
-                  onLottieFinish: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              );
-            } else if (state.editState.isError) {
-              FlashHelper.showToast(state.msg);
-            }
-          },
-          builder: (context, state) {
-            if (state.getState.isDone) {
-              return Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                child: AppBtn(
-                  loading: state.editState.isLoading,
-                  title: LocaleKeys.save_changes.tr(),
-                  backgroundColor: context.primaryColor,
-                  textColor: Colors.white,
-                  radius: 12.r,
-                  onPressed: () {
-                    if (cubit.validateSave) {
-                      cubit.editCarInfo();
-                    }
-                  },
-                ),
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          },
-        ),
-      ),
-      body: BlocBuilder<FreeAgentCarInfoCubit, FreeAgentCarInfoState>(
-        buildWhen: (previous, current) => previous.getState != current.getState,
-        bloc: cubit,
-        builder: (context, state) {
-          if (state.getState.isDone) {
-            return _buildFormContent(context);
-          } else {
-            return Center(
-              child: CustomProgress(
-                size: 30.h,
-                color: context.primaryColor,
-              ),
-            );
-          }
-        },
+        child: _buildSaveButton(context),
       ),
     );
   }
@@ -217,17 +143,20 @@ class _FreeAgentCarInfoViewState extends State<FreeAgentCarInfoView> {
         }
       },
       builder: (context, state) {
-        return AppBtn(
-          loading: state.editState.isLoading,
-          title: LocaleKeys.save_changes.tr(),
-          backgroundColor: context.primaryColor,
-          textColor: Colors.white,
-          radius: 12.r,
-          onPressed: () {
-            if (cubit.validateSave) {
-              cubit.editCarInfo();
-            }
-          },
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+          child: AppBtn(
+            loading: state.editState.isLoading,
+            title: LocaleKeys.save_changes.tr(),
+            backgroundColor: context.primaryColor,
+            textColor: Colors.white,
+            radius: 12.r,
+            onPressed: () {
+              if (cubit.validateSave) {
+                cubit.editCarInfo();
+              }
+            },
+          ),
         );
       },
     );
