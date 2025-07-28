@@ -20,6 +20,9 @@ class UploadImage extends StatefulWidget {
   final String title, model;
   final AttachmentModel data;
   final TextStyle? titleStyle;
+  final bool showTitle; // إضافة خيار لإظهار العنوان
+  final double borderRadius; // إضافة خيار لتعديل نصف قطر الحدود
+  final double borderRadiusBottom; // إضافة خيار لتعديل نصف قطر الحدود السفلية
 
   // final Function(String) callback;
   const UploadImage({
@@ -29,6 +32,9 @@ class UploadImage extends StatefulWidget {
     required this.model,
     required this.data,
     this.titleStyle,
+    this.showTitle = true, // القيمة الافتراضية هي إظهار العنوان
+    this.borderRadius = 14, // القيمة الافتراضية لنصف قطر الحدود
+    this.borderRadiusBottom = 14, // القيمة الافتراضية لنصف قطر الحدود السفلية
   });
 
   @override
@@ -82,7 +88,15 @@ class _UploadImageState extends State<UploadImage> {
             children: [
               Container(
                 constraints: BoxConstraints(minHeight: 109.h),
-                decoration: BoxDecoration(color: context.borderColor.withValues(alpha: .5), borderRadius: BorderRadius.circular(14.r)),
+                decoration: BoxDecoration(
+                  color: context.borderColor.withValues(alpha: .5), 
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(widget.borderRadius.r),
+                    topRight: Radius.circular(widget.borderRadius.r),
+                    bottomLeft: Radius.circular(widget.borderRadiusBottom.r),
+                    bottomRight: Radius.circular(widget.borderRadiusBottom.r),
+                  ),
+                ),
                 // height: widget.data.url == null ? 109.h : 205.h,
                 width: context.w,
                 child: widget.data.url == null ? selectImage(state, context) : selectedImage(state, context),
@@ -102,11 +116,13 @@ class _UploadImageState extends State<UploadImage> {
         state.requestState.isLoading
             ? CustomProgress(size: 20, color: context.secondaryHeaderColor).center
             : Icon(Icons.image_outlined, color: context.secondaryHeaderColor).center,
-        SizedBox(height: 16.h),
-        Text(
-          "${LocaleKeys.upload.tr()} ${widget.title}",
-          style: widget.titleStyle ?? context.mediumText.copyWith(color: context.secondaryHeaderColor),
-        )
+        if (widget.showTitle) ...[
+          SizedBox(height: 16.h),
+          Text(
+            "${LocaleKeys.upload.tr()} ${widget.title}",
+            style: widget.titleStyle ?? context.mediumText.copyWith(color: context.secondaryHeaderColor),
+          ),
+        ],
       ],
     );
   }
@@ -132,7 +148,7 @@ class _UploadImageState extends State<UploadImage> {
                 loading: state.requestState.isLoading,
                 icon: Icon(Icons.image_outlined, color: context.primaryColorDark, size: 16.h),
                 height: 32.h,
-                title: LocaleKeys.change_image.tr(args: [widget.title]),
+                title: widget.showTitle ? LocaleKeys.change_image.tr() : LocaleKeys.change_image.tr(),
                 backgroundColor: Colors.transparent,
                 textColor: context.primaryColorDark,
                 onPressed: () {
@@ -146,7 +162,7 @@ class _UploadImageState extends State<UploadImage> {
                 saveArea: false,
                 icon: Icon(CupertinoIcons.delete, color: context.errorColor, size: 16.h),
                 height: 32.h,
-                title: LocaleKeys.delete_image.tr(args: [widget.title]),
+                title: widget.showTitle ? LocaleKeys.delete_image.tr() : LocaleKeys.delete_image.tr(),
                 backgroundColor: Colors.transparent,
                 textColor: context.errorColor,
                 onPressed: () {

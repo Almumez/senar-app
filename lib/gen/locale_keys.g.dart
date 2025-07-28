@@ -70,6 +70,7 @@ abstract class  LocaleKeys {
   static const driving_license = 'driving_license';
   static const vehicle_registration_form = 'vehicle_registration_form';
   static const health_certificate = 'health_certificate';
+  static const identity = 'identity';
   static const civil_status_number = 'civil_status_number';
   static const accept_terms = 'accept_terms';
   static const upload = 'upload';
@@ -109,6 +110,12 @@ abstract class  LocaleKeys {
   static const please_enter_your_message = 'please_enter_your_message';
   static const no_faq = 'no_faq';
   static const edit_car_info = 'edit_car_info';
+  static const agent_documents = 'agent_documents';
+  static const documents_updated_successfully = 'documents_updated_successfully';
+  static const agent_documents_info = 'agent_documents_info';
+  static const driving_license_desc = 'driving_license_desc';
+  static const vehicle_registration_form_desc = 'vehicle_registration_form_desc';
+  static const identity_desc = 'identity_desc';
   static const save_changes = 'save_changes';
   static const car_info_updated_successfully = 'car_info_updated_successfully';
   static const profits_for_that_day = 'profits_for_that_day';

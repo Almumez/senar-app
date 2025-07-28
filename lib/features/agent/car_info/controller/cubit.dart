@@ -13,19 +13,21 @@ class FreeAgentCarInfoCubit extends Cubit<FreeAgentCarInfoState> {
 
   AttachmentModel license = AttachmentModel();
   AttachmentModel vehicleForm = AttachmentModel();
-  AttachmentModel healthCertificate = AttachmentModel();
+  AttachmentModel identity = AttachmentModel(); // إضافة حقل الهوية
 
   Map<String, dynamic> get body => {
         'license': license.key,
         'vehicle_form': vehicleForm.key,
-        'health_certificate': healthCertificate.key,
+        'identity': identity.key,
+        '_method': 'PUT', // إضافة طريقة الطلب PUT
       };
 
   //https://gas.azmy.aait-d.com/storage/
 
   Future<void> editCarInfo() async {
     emit(state.copyWith(editState: RequestState.loading));
-    final result = await ServerGate.i.sendToServer(url: 'general/profile/car-info', body: body);
+    // تغيير المسار إلى المسار الجديد
+    final result = await ServerGate.i.sendToServer(url: 'general/profile/free-agent', body: body);
     if (result.success) {
       emit(state.copyWith(editState: RequestState.done, msg: result.msg));
     } else {
@@ -35,12 +37,13 @@ class FreeAgentCarInfoCubit extends Cubit<FreeAgentCarInfoState> {
 
   Future<void> getCarInfo() async {
     emit(state.copyWith(getState: RequestState.loading));
-    final result = await ServerGate.i.getFromServer(url: 'general/profile/car-info');
+    // تغيير المسار إلى المسار الجديد
+    final result = await ServerGate.i.getFromServer(url: 'general/profile/free-agent');
     if (result.success) {
       license = AttachmentModel.fromUrl(result.data?['data']?['license']);
       vehicleForm = AttachmentModel.fromUrl(result.data?['data']?['vehicle_form']);
-      healthCertificate = AttachmentModel.fromUrl(result.data?['data']?['health_certificate']);
-
+      identity = AttachmentModel.fromUrl(result.data?['data']?['identity']); // إضافة حقل الهوية
+      
       emit(state.copyWith(getState: RequestState.done));
     } else {
       emit(state.copyWith(getState: RequestState.error, msg: result.msg, errorType: result.errType));
@@ -48,13 +51,13 @@ class FreeAgentCarInfoCubit extends Cubit<FreeAgentCarInfoState> {
   }
 
   bool get validateSave {
-    if ([license.url, vehicleForm.url, healthCertificate.url].contains(null)) {
+    if ([license.url, vehicleForm.url, identity.url].contains(null)) {
       FlashHelper.showToast(LocaleKeys.please_upload_all_images.tr());
       return false;
-    } else if ([license.loading, vehicleForm.loading, healthCertificate.loading].contains(true)) {
+    } else if ([license.loading, vehicleForm.loading, identity.loading].contains(true)) {
       FlashHelper.showToast(LocaleKeys.uploading_images.tr());
       return false;
-    } else if ([license.key, vehicleForm.key, healthCertificate.key].contains(null)) {
+    } else if ([license.key, vehicleForm.key, identity.key].contains(null)) {
       FlashHelper.showToast(LocaleKeys.there_are_images_not_uploaded.tr());
       return false;
     } else {
