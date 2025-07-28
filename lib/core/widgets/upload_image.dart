@@ -69,7 +69,8 @@ class _UploadImageState extends State<UploadImage> {
       listener: (context, state) {
         widget.data.loading = state.requestState.isLoading;
         if (state.requestState.isDone) {
-          // widget.callback(state.key);
+          // حفظ الملف والمسار
+          widget.data.file = state.file;
           widget.data.url = state.file!.path;
           widget.data.key = state.key;
           setState(() {});

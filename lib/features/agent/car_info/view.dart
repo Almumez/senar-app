@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/services/service_locator.dart';
 import '../../../core/utils/extensions.dart';
 import '../../../core/widgets/app_btn.dart';
+import '../../../core/widgets/flash_helper.dart';
 import '../../../core/widgets/loading.dart';
 import '../../../core/widgets/successfully_sheet.dart';
 import '../../../core/widgets/upload_image.dart';
@@ -15,6 +16,9 @@ import '../../../gen/locale_keys.g.dart';
 import '../../shared/components/appbar.dart';
 import 'controller/cubit.dart';
 import 'controller/state.dart';
+import '../../../models/user_model.dart';
+import '../../../core/utils/enums.dart';
+
 
 class FreeAgentCarInfoView extends StatefulWidget {
   const FreeAgentCarInfoView({super.key});
@@ -25,14 +29,32 @@ class FreeAgentCarInfoView extends StatefulWidget {
 
 class _FreeAgentCarInfoViewState extends State<FreeAgentCarInfoView> {
   final cubit = sl<FreeAgentCarInfoCubit>();
+  bool get isClient => UserModel.i.accountType == UserType.client;
+
   @override
   void initState() {
     super.initState();
-    cubit.getCarInfo();
+    if (UserModel.i.accountType == UserType.freeAgent) {
+      cubit.getCarInfo();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isClient) {
+      // إذا كان المستخدم عميل عادي، اعرض الفورم مباشرة
+      return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: CustomAppbar(
+          title: LocaleKeys.agent_documents.tr(),
+        ),
+        body: _buildFormContent(context),
+        bottomNavigationBar: SafeArea(
+          child: _buildSaveButton(context),
+        ),
+      );
+    }
+    // المنطق الحالي للمندوب الحر
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppbar(
@@ -50,8 +72,16 @@ class _FreeAgentCarInfoViewState extends State<FreeAgentCarInfoView> {
                 isDismissible: true,
                 builder: (context) => SuccessfullySheet(
                   title: LocaleKeys.documents_updated_successfully.tr(),
+                  subTitle: LocaleKeys.lang.tr() == 'en' 
+                    ? "Your documents have been successfully uploaded and are being reviewed by our team."
+                    : "تم رفع وثائقك بنجاح وجاري مراجعتها من قبل فريقنا.",
+                  onLottieFinish: () {
+                    Navigator.pop(context);
+                  },
                 ),
               );
+            } else if (state.editState.isError) {
+              FlashHelper.showToast(state.msg);
             }
           },
           builder: (context, state) {
@@ -82,72 +112,7 @@ class _FreeAgentCarInfoViewState extends State<FreeAgentCarInfoView> {
         bloc: cubit,
         builder: (context, state) {
           if (state.getState.isDone) {
-            return SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.all(16.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // نص توضيحي
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(16.w),
-                      decoration: BoxDecoration(
-                        color: context.primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            color: context.primaryColor,
-                            size: 24.w,
-                          ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: Text(
-                              LocaleKeys.agent_documents_info.tr(),
-                              style: context.regularText.copyWith(
-                                fontSize: 14.sp,
-                                color: context.primaryColor,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 24.h),
-                    
-                    // رخصة القيادة
-                    _buildDocumentSection(
-                      title: LocaleKeys.driving_license.tr(),
-                      subtitle: LocaleKeys.driving_license_desc.tr(),
-                      icon: "assets/svg/license.svg",
-                      data: cubit.license,
-                      context: context,
-                    ),
-                    
-                    // استمارة المركبة
-                    _buildDocumentSection(
-                      title: LocaleKeys.vehicle_registration_form.tr(),
-                      subtitle: LocaleKeys.vehicle_registration_form.tr(),
-                      icon: "assets/svg/car.svg",
-                      data: cubit.vehicleForm,
-                      context: context,
-                    ),
-                    
-                    // الهوية
-                    _buildDocumentSection(
-                      title: LocaleKeys.identity.tr(),
-                      subtitle: LocaleKeys.identity_desc.tr(),
-                      icon: "assets/svg/id_card.svg",
-                      data: cubit.identity,
-                      context: context,
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return _buildFormContent(context);
           } else {
             return Center(
               child: CustomProgress(
@@ -158,6 +123,113 @@ class _FreeAgentCarInfoViewState extends State<FreeAgentCarInfoView> {
           }
         },
       ),
+    );
+  }
+
+  Widget _buildFormContent(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // نص توضيحي
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(16.w),
+              decoration: BoxDecoration(
+                color: context.primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: context.primaryColor,
+                    size: 24.w,
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: Text(
+                      LocaleKeys.agent_documents_info.tr(),
+                      style: context.regularText.copyWith(
+                        fontSize: 14.sp,
+                        color: context.primaryColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 24.h),
+            // رخصة القيادة
+            _buildDocumentSection(
+              title: LocaleKeys.driving_license.tr(),
+              subtitle: LocaleKeys.driving_license_desc.tr(),
+              icon: "assets/svg/license.svg",
+              data: cubit.license,
+              context: context,
+            ),
+            // استمارة المركبة
+            _buildDocumentSection(
+              title: LocaleKeys.vehicle_registration_form.tr(),
+              subtitle: LocaleKeys.vehicle_registration_form.tr(),
+              icon: "assets/svg/car.svg",
+              data: cubit.vehicleForm,
+              context: context,
+            ),
+            // الهوية
+            _buildDocumentSection(
+              title: LocaleKeys.identity.tr(),
+              subtitle: LocaleKeys.identity_desc.tr(),
+              icon: "assets/svg/id_card.svg",
+              data: cubit.identity,
+              context: context,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSaveButton(BuildContext context) {
+    return BlocConsumer<FreeAgentCarInfoCubit, FreeAgentCarInfoState>(
+      bloc: cubit,
+      listener: (context, state) {
+        if (state.editState.isDone) {
+          showModalBottomSheet(
+            elevation: 0,
+            context: context,
+            isScrollControlled: true,
+            isDismissible: true,
+            builder: (context) => SuccessfullySheet(
+              title: LocaleKeys.documents_updated_successfully.tr(),
+              subTitle: LocaleKeys.lang.tr() == 'en' 
+                ? "Your documents have been successfully uploaded and are being reviewed by our team."
+                : "تم رفع وثائقك بنجاح وجاري مراجعتها من قبل فريقنا.",
+              onLottieFinish: () {
+                Navigator.pop(context);
+              },
+            ),
+          );
+        } else if (state.editState.isError) {
+          FlashHelper.showToast(state.msg);
+        }
+      },
+      builder: (context, state) {
+        return AppBtn(
+          loading: state.editState.isLoading,
+          title: LocaleKeys.save_changes.tr(),
+          backgroundColor: context.primaryColor,
+          textColor: Colors.white,
+          radius: 12.r,
+          onPressed: () {
+            if (cubit.validateSave) {
+              cubit.editCarInfo();
+            }
+          },
+        );
+      },
     );
   }
   
