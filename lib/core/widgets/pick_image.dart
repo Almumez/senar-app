@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -42,7 +43,7 @@ class _PickImageState extends State<PickImage> {
                     ),
                     child: Icon(
                       CupertinoIcons.camera,
-                      color: context.hintColor,
+                      color: Colors.black,
                       size: 32.h,
                     ),
                   ),
@@ -50,7 +51,7 @@ class _PickImageState extends State<PickImage> {
                 SizedBox(height: 6.h),
                 Text(
                   LocaleKeys.camera.tr(),
-                  style: context.regularText.copyWith(fontSize: 14, color: context.hintColor),
+                  style: context.regularText.copyWith(fontSize: 14, color: Colors.black),
                   textAlign: TextAlign.center,
                 )
               ],
@@ -73,7 +74,7 @@ class _PickImageState extends State<PickImage> {
                     ),
                     child: Icon(
                       CupertinoIcons.photo,
-                      color: context.hintColor,
+                      color: Colors.black,
                       size: 32.h,
                     ),
                   ),
@@ -81,7 +82,7 @@ class _PickImageState extends State<PickImage> {
                 SizedBox(height: 6.h),
                 Text(
                   LocaleKeys.gallery.tr(),
-                  style: context.regularText.copyWith(fontSize: 14, color: context.hintColor),
+                  style: context.regularText.copyWith(fontSize: 14, color: Colors.black),
                   textAlign: TextAlign.center,
                 )
               ],
