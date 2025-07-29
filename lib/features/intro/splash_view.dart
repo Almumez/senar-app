@@ -79,18 +79,18 @@ class _SplashViewState extends State<SplashView> {
   Future<void> _loadSettingsAndCheckVersion() async {
     try {
       // جلب إعدادات النظام
-      debugPrint('Loading settings...');
+      print('Loading settings...');
       await settingsService.getSettings();
-      debugPrint('Settings loaded successfully');
+      print('Settings loaded successfully');
       
       // التحقق من إشعارات وقت الإغلاق
-      debugPrint('Checking closing time notifications...');
-      debugPrint('Is near closing time: ${settingsService.isNearClosingTime()}');
-      debugPrint('Is service closed: ${settingsService.isServiceClosed()}');
+      print('Checking closing time notifications...');
+      print('Is near closing time: ${settingsService.isNearClosingTime()}');
+      print('Is service closed: ${settingsService.isServiceClosed()}');
       
       // التحقق مما إذا كانت الخدمة مغلقة
       if (settingsService.isServiceClosed()) {
-        debugPrint('Service is closed, showing closed dialog');
+        print('Service is closed, showing closed dialog');
         setState(() {
           _showServiceClosedDialog = true;
         });
@@ -129,7 +129,7 @@ class _SplashViewState extends State<SplashView> {
         Timer(3.seconds, () => navigateUser());
       }
     } catch (error) {
-      debugPrint('Error during initialization: $error');
+      print('Error during initialization: $error');
       // في حالة حدوث خطأ، انتقل بعد 3 ثواني
       Timer(3.seconds, () => navigateUser());
     }
