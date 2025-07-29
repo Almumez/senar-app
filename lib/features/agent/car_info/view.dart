@@ -48,74 +48,74 @@ class _FreeAgentCarInfoViewState extends State<FreeAgentCarInfoView> {
       body: _buildFormContent(context),
       bottomNavigationBar: SafeArea(
         child: _buildSaveButton(context),
-      ),
-    );
-  }
+                ),
+              );
+            }
 
   Widget _buildFormContent(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // نص توضيحي
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: context.primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: context.primaryColor,
-                    size: 24.w,
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: Text(
-                      LocaleKeys.agent_documents_info.tr(),
-                      style: context.regularText.copyWith(
-                        fontSize: 14.sp,
-                        color: context.primaryColor,
+            return SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.all(16.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // نص توضيحي
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(16.w),
+                      decoration: BoxDecoration(
+                        color: context.primaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: context.primaryColor,
+                            size: 24.w,
+                          ),
+                          SizedBox(width: 12.w),
+                          Expanded(
+                            child: Text(
+                              LocaleKeys.agent_documents_info.tr(),
+                              style: context.regularText.copyWith(
+                                fontSize: 14.sp,
+                                color: context.primaryColor,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 24.h),
+                    // رخصة القيادة
+                    _buildDocumentSection(
+                      title: LocaleKeys.driving_license.tr(),
+                      subtitle: LocaleKeys.driving_license_desc.tr(),
+                      icon: "assets/svg/license.svg",
+                      data: cubit.license,
+                      context: context,
+                    ),
+                    // استمارة المركبة
+                    _buildDocumentSection(
+                      title: LocaleKeys.vehicle_registration_form.tr(),
+                      subtitle: LocaleKeys.vehicle_registration_form.tr(),
+                      icon: "assets/svg/car.svg",
+                      data: cubit.vehicleForm,
+                      context: context,
+                    ),
+                    // الهوية
+                    _buildDocumentSection(
+                      title: LocaleKeys.identity.tr(),
+                      subtitle: LocaleKeys.identity_desc.tr(),
+                      icon: "assets/svg/id_card.svg",
+                      data: cubit.identity,
+                      context: context,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 24.h),
-            // رخصة القيادة
-            _buildDocumentSection(
-              title: LocaleKeys.driving_license.tr(),
-              subtitle: LocaleKeys.driving_license_desc.tr(),
-              icon: "assets/svg/license.svg",
-              data: cubit.license,
-              context: context,
-            ),
-            // استمارة المركبة
-            _buildDocumentSection(
-              title: LocaleKeys.vehicle_registration_form.tr(),
-              subtitle: LocaleKeys.vehicle_registration_form.tr(),
-              icon: "assets/svg/car.svg",
-              data: cubit.vehicleForm,
-              context: context,
-            ),
-            // الهوية
-            _buildDocumentSection(
-              title: LocaleKeys.identity.tr(),
-              subtitle: LocaleKeys.identity_desc.tr(),
-              icon: "assets/svg/id_card.svg",
-              data: cubit.identity,
-              context: context,
-            ),
-          ],
-        ),
-      ),
-    );
+            );
   }
 
   Widget _buildSaveButton(BuildContext context) {
@@ -154,9 +154,9 @@ class _FreeAgentCarInfoViewState extends State<FreeAgentCarInfoView> {
             onPressed: () {
               if (cubit.validateSave) {
                 cubit.editCarInfo();
-              }
-            },
-          ),
+          }
+        },
+      ),
         );
       },
     );

@@ -17,17 +17,17 @@ class VersionCubit extends Cubit<VersionState> {
     
     // جلب معلومات الإصدار الحالي للتطبيق
     packageInfo = await PackageInfo.fromPlatform();
-    debugPrint('Current app version: ${packageInfo!.version}');
+    print('Current app version: ${packageInfo!.version}');
     
     // جلب معلومات الإصدار من السيرفر
-    debugPrint('Fetching version from server...');
+    print('Fetching version from server...');
     final result = await ServerGate.i.getFromServer(
       url: 'general/version',
     );
     
     if (result.success) {
       versionModel = VersionModel.fromJson(result.data['data']);
-      debugPrint('Server version: ${versionModel!.mobileVersion}');
+      print('Server version: ${versionModel!.mobileVersion}');
       
       // التحقق مما إذا كان هناك تحديث متاح
       bool updateAvailable = _isUpdateAvailable(
@@ -35,14 +35,14 @@ class VersionCubit extends Cubit<VersionState> {
         serverVersion: versionModel!.mobileVersion
       );
       
-      debugPrint('Update available: $updateAvailable');
+      print('Update available: $updateAvailable');
       
       emit(state.copyWith(
         requestState: RequestState.done,
         updateAvailable: updateAvailable
       ));
     } else {
-      debugPrint('Error fetching version: ${result.msg}');
+      print('Error fetching version: ${result.msg}');
       emit(state.copyWith(
         requestState: RequestState.error,
         msg: result.msg,
@@ -53,15 +53,15 @@ class VersionCubit extends Cubit<VersionState> {
   
   // دالة للتحقق مما إذا كان هناك تحديث متاح
   bool _isUpdateAvailable({required String currentVersion, required String serverVersion}) {
-    debugPrint('Comparing versions:');
-    debugPrint('Current: $currentVersion');
-    debugPrint('Server: $serverVersion');
+    print('Comparing versions:');
+    print('Current: $currentVersion');
+    print('Server: $serverVersion');
     
     List<int> currentParts = currentVersion.split('.').map((e) => int.parse(e)).toList();
     List<int> serverParts = serverVersion.split('.').map((e) => int.parse(e)).toList();
     
-    debugPrint('Current parts: $currentParts');
-    debugPrint('Server parts: $serverParts');
+    print('Current parts: $currentParts');
+    print('Server parts: $serverParts');
     
     // التأكد من أن كلا الإصدارين لهما نفس عدد الأجزاء
     while (currentParts.length < serverParts.length) {
@@ -71,22 +71,22 @@ class VersionCubit extends Cubit<VersionState> {
       serverParts.add(0);
     }
     
-    debugPrint('Normalized current parts: $currentParts');
-    debugPrint('Normalized server parts: $serverParts');
+    print('Normalized current parts: $currentParts');
+    print('Normalized server parts: $serverParts');
     
     // المقارنة جزء بجزء
     for (int i = 0; i < currentParts.length; i++) {
-      debugPrint('Comparing part $i: ${currentParts[i]} vs ${serverParts[i]}');
+      print('Comparing part $i: ${currentParts[i]} vs ${serverParts[i]}');
       if (serverParts[i] > currentParts[i]) {
-        debugPrint('Server version is newer at part $i');
+        print('Server version is newer at part $i');
         return true; // هناك تحديث متاح
       } else if (serverParts[i] < currentParts[i]) {
-        debugPrint('Current version is newer at part $i');
+        print('Current version is newer at part $i');
         return false; // الإصدار الحالي أحدث
       }
     }
     
-    debugPrint('Versions are identical');
+    print('Versions are identical');
     return false; // الإصداران متطابقان
   }
 } 
