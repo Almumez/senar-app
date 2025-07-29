@@ -12,8 +12,8 @@ import '../utils/enums.dart';
 import '../utils/logger.dart';
 
 class ServerGate {
-//  final String _baseUrl = 'https://backend.senar.me/api';
-final String _baseUrl = 'https://stage.senar.me/api';
+ final String _baseUrl = 'https://backend.senar.me/api';
+//final String _baseUrl = 'https://stage.senar.me/api';
   //final String _baseUrl = 'https://gas.azmy.aait-d.com/api';
  //final String _baseUrl = 'http://192.168.100.250:8000/api';
  //final String _baseUrl = 'http://192.168.0.116:8000/api';
