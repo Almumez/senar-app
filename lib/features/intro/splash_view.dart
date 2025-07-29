@@ -79,18 +79,18 @@ class _SplashViewState extends State<SplashView> {
   Future<void> _loadSettingsAndCheckVersion() async {
     try {
       // جلب إعدادات النظام
-      print('Loading settings...');
+      debugPrint('Loading settings...');
       await settingsService.getSettings();
-      print('Settings loaded successfully');
+      debugPrint('Settings loaded successfully');
       
       // التحقق من إشعارات وقت الإغلاق
-      print('Checking closing time notifications...');
-      print('Is near closing time: ${settingsService.isNearClosingTime()}');
-      print('Is service closed: ${settingsService.isServiceClosed()}');
+      debugPrint('Checking closing time notifications...');
+      debugPrint('Is near closing time: ${settingsService.isNearClosingTime()}');
+      debugPrint('Is service closed: ${settingsService.isServiceClosed()}');
       
       // التحقق مما إذا كانت الخدمة مغلقة
       if (settingsService.isServiceClosed()) {
-        print('Service is closed, showing closed dialog');
+        debugPrint('Service is closed, showing closed dialog');
         setState(() {
           _showServiceClosedDialog = true;
         });
@@ -102,22 +102,13 @@ class _SplashViewState extends State<SplashView> {
         return;
       }
       
-      // التحقق من الإصدار
+      // التحقق من الإصدار لجميع الأنظمة
+      debugPrint('Checking app version...');
       await versionCubit.checkVersion();
       
-      // التحقق مما إذا كان المستخدم يستخدم iOS وتوجيهه إلى App Store
-      if (Platform.isIOS) {
-        setState(() {
-          _showUpdateDialog = true;
-        });
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _showUpdatePopup();
-        });
-        return;
-      }
-      
-      // للأنظمة الأخرى، تحقق من وجود تحديث من السيرفر
+      // التحقق من وجود تحديث متاح لجميع الأنظمة
       if (versionCubit.state.updateAvailable) {
+        debugPrint('Update available, showing update dialog');
         setState(() {
           _showUpdateDialog = true;
         });
@@ -125,11 +116,12 @@ class _SplashViewState extends State<SplashView> {
           _showUpdatePopup();
         });
       } else {
+        debugPrint('No update available, proceeding to navigation');
         // الانتقال بعد 3 ثواني إذا لم يكن هناك تحديث مطلوب
         Timer(3.seconds, () => navigateUser());
       }
     } catch (error) {
-      print('Error during initialization: $error');
+      debugPrint('Error during initialization: $error');
       // في حالة حدوث خطأ، انتقل بعد 3 ثواني
       Timer(3.seconds, () => navigateUser());
     }
@@ -160,8 +152,9 @@ class _SplashViewState extends State<SplashView> {
       body: BlocListener<VersionCubit, VersionState>(
         bloc: versionCubit,
         listener: (context, state) {
-          // No mostrar el diálogo desde aquí para usuarios de iOS, ya que se muestra en initState
-          if (!Platform.isIOS && state.requestState.isDone && state.updateAvailable) {
+          // التحقق من وجود تحديث متاح لجميع الأنظمة
+          if (state.requestState.isDone && state.updateAvailable) {
+            debugPrint('Update available in BlocListener, showing update dialog');
             // عرض النافذة المنبثقة للتحديث
             WidgetsBinding.instance.addPostFrameCallback((_) {
               _showUpdatePopup();
