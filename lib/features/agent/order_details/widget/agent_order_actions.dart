@@ -95,12 +95,27 @@ class _AgentOrderActionsState extends State<AgentOrderActions> {
           } else if (cubit.order?.status == "on_way") {
             return BlocBuilder<AgentOrderDetailsCubit, AgentOrderDetailsState>(
               bloc: cubit,
-              buildWhen: (previous, current) => previous.changeStatus != current.changeStatus,
+              buildWhen: (previous, current) => previous.changeStatus != current.changeStatus || previous.rejectOrder != current.rejectOrder,
               builder: (context, state) {
-                return AppBtn(
-                  loading: state.changeStatus.isLoading,
-                  title: "btn_status_trans.${cubit.order?.status}".tr(),
-                  onPressed: () => cubit.changeStatus(),
+                return Row(
+                  children: [
+                    Expanded(
+                      child: AppBtn(
+                        loading: state.changeStatus.isLoading,
+                        title: "btn_status_trans.${cubit.order?.status}".tr(),
+                        onPressed: () => cubit.changeStatus(),
+                      ),
+                    ),
+                    SizedBox(width: 10.w),
+                    Expanded(
+                      child: AppBtn(
+                        onPressed: _showRejectReasonSheet,
+                        textColor: context.errorColor,
+                        backgroundColor: Colors.transparent,
+                        title: LocaleKeys.reject.tr(),
+                      ),
+                    ),
+                  ],
                 ).withPadding(horizontal: 16.w, vertical: 12.h);
               },
             );
