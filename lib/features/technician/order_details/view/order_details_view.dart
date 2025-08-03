@@ -100,7 +100,10 @@ class _TechnicianOrderDetailsViewState extends State<TechnicianOrderDetailsView>
                         ],
                       ),
                     ),
-                    AgentOrderClientItem(data: item.client).withPadding(top: 8.h),
+                    AgentOrderClientItem(
+                      data: item.client,
+                      orderStatus: item.status,
+                    ).withPadding(top: 8.h),
                     SizedBox(height: 5.h),
                     Text(
                       "• ${LocaleKeys.client_address.tr()}",

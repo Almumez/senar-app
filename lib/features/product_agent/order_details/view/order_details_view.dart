@@ -71,7 +71,10 @@ class _ProductAgentOrderDetailsViewState extends State<ProductAgentOrderDetailsV
                         ),
                         SizedBox(height: 16.h),
                         ProductAgentServiceType(data: item),
-                        AgentOrderClientItem(data: item.client).withPadding(top: 8.h),
+                        AgentOrderClientItem(
+                          data: item.client,
+                          orderStatus: item.status,
+                        ).withPadding(top: 8.h),
                         SizedBox(height: 5.h),
                         Text(
                           "• ${LocaleKeys.addresses.tr()}",

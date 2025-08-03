@@ -96,7 +96,10 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
                       Container(
                         width: double.infinity,
                         padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        child: AgentOrderClientItem(data: item.client),
+                        child: AgentOrderClientItem(
+                          data: item.client,
+                          orderStatus: item.status,
+                        ),
                       ),
                       
                       // Services list

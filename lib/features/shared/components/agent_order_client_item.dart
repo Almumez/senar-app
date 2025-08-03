@@ -24,15 +24,21 @@ class AgentOrderClientItem extends StatelessWidget {
   const AgentOrderClientItem({
     super.key,
     required this.data,
+    this.orderStatus,
   });
 
   final ClientModel data;
+  final String? orderStatus;
 
   @override
   Widget build(BuildContext context) {
     if (data.id == '') {
       return const SizedBox.shrink();
     }
+    
+    // Verificar si el estado del pedido es "pending"
+    final bool isPending = orderStatus == 'pending';
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -59,49 +65,52 @@ class AgentOrderClientItem extends StatelessWidget {
                   style: context.mediumText.copyWith(fontSize: 14.sp),
                 ),
               ),
-              // Call icon
-              InkWell(
-                onTap: () => _callClient(data.phoneCode, data.phone),
-                child: Container(
-                  padding: EdgeInsets.all(8.h),
-                  decoration: BoxDecoration(
-                    color: Color(0xfff5f5f5),
-                    shape: BoxShape.circle,
-                  ),
-                  child: SvgPicture.asset(
-                    'assets/svg/call.svg',
-                    height: 20.h,
-                    width: 20.w,
-                    colorFilter: ColorFilter.mode(
-                      Colors.black,
-                      BlendMode.srcIn,
+              // Solo mostrar los botones de llamada y chat si el estado NO es "pending"
+              if (!isPending) ...[
+                // Call icon
+                InkWell(
+                  onTap: () => _callClient(data.phoneCode, data.phone),
+                  child: Container(
+                    padding: EdgeInsets.all(8.h),
+                    decoration: BoxDecoration(
+                      color: Color(0xfff5f5f5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: SvgPicture.asset(
+                      'assets/svg/call.svg',
+                      height: 20.h,
+                      width: 20.w,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(width: 8.w),
-              // Chat icon
-              InkWell(
-                onTap: () {
-                  // Add chat functionality here
-                },
-                child: Container(
-                  padding: EdgeInsets.all(8.h),
-                  decoration: BoxDecoration(
-                    color: Color(0xfff5f5f5),
-                    shape: BoxShape.circle,
-                  ),
-                  child: SvgPicture.asset(
-                    'assets/svg/chatbox.svg',
-                    height: 20.h,
-                    width: 20.w,
-                    colorFilter: ColorFilter.mode(
-                      Colors.black,
-                      BlendMode.srcIn,
+                SizedBox(width: 8.w),
+                // Chat icon
+                InkWell(
+                  onTap: () {
+                    // Add chat functionality here
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8.h),
+                    decoration: BoxDecoration(
+                      color: Color(0xfff5f5f5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: SvgPicture.asset(
+                      'assets/svg/chatbox.svg',
+                      height: 20.h,
+                      width: 20.w,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ],
           ),
         ).withPadding(bottom: 16.h),
