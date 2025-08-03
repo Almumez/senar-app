@@ -137,7 +137,7 @@ class _SplashViewState extends State<SplashView> {
       url = Uri.parse('https://apps.apple.com/sa/app/senar-%D8%B3%D9%8A%D9%86%D8%A7%D8%B1/id6741438069');
     } else {
       // رابط متجر جوجل بلاي
-      url = Uri.parse('https://play.google.com/store/apps/details?id=com.senar.gasapp');
+      url = Uri.parse('https://play.google.com/store/apps/details?id=com.vcorp.senar');
     }
     
     if (await canLaunchUrl(url)) {
