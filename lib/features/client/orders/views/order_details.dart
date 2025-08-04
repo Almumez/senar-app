@@ -31,6 +31,7 @@ import '../../../../core/widgets/flash_helper.dart';
 
 // إضافة استيراد مكون bottom sheet الدفع
 import '../../../shared/components/payment_bottom_sheet.dart';
+import '../components/cancel_order_sheet.dart';
 
 class ClientOrderDetailsView extends StatefulWidget {
   final String id, type;
@@ -337,35 +338,29 @@ class _ClientOrderDetailsActionsState extends State<ClientOrderDetailsActions> {
     final data = widget.cubit.data;
     final isDistribution = data?.type == 'distribution' || data?.type == 'accessory' || data?.type == 'factory';
     if (data?.status == 'pending') {
-      return BlocConsumer<CancelReasonsCubit, CancelReasonsState>(
-        bloc: cancelCubit,
-        listener: (context, state) {
-          if (state.reasonsState.isDone) {
-            showModalBottomSheet<CancelReasonsModel?>(
-              context: context,
-              builder: (context) => SelectItemSheet(
-                title: "اختر",
-                items: cancelCubit.reasons,
-                initItem: widget.cubit.cancelReason,
-              ),
-            ).then((value) {
-              if (value != null) {
-                widget.cubit.cancelReason = value;
-                setState(() {});
-                widget.cubit.cancel();
-                FlashHelper.showToast("تم الغاء الطلب");
-              }
-            });
-          }
-        },
+      return BlocBuilder<ClientOrderDetailsCubit, ClientOrderDetailsState>(
+        bloc: widget.cubit,
         builder: (context, state) {
           return SafeArea(
               child: AppBtn(
-            loading: state.reasonsState.isLoading || widget.cubit.state.cancelState.isLoading,
+            loading: state.cancelState.isLoading,
             title: "الغاء",
             textColor: context.errorColor,
             backgroundColor: context.scaffoldBackgroundColor,
-            onPressed: () => cancelCubit.getReasons(),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (context) => CancelOrderSheet(
+                  reasonController: widget.cubit.cancelReasonController,
+                ),
+              ).then((confirmed) {
+                if (confirmed == true) {
+                  widget.cubit.cancel();
+                  FlashHelper.showToast("تم الغاء الطلب");
+                }
+              });
+            },
           ).withPadding(horizontal: 16.w, bottom: 16.h));
         },
       );

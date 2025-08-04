@@ -83,8 +83,7 @@ class ClientOrderDetailsCubit extends Cubit<ClientOrderDetailsState> {
     final result = await ServerGate.i.sendToServer(
       url: 'client/order/cancel/${data?.id}',
       body: {
-        "other_reason": cancelReasonController.text,
-        "cancel_reason_id": cancelReason!.id,
+        "cancel_reason": cancelReasonController.text,
       },
     );
     if (result.success) {
