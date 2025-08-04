@@ -31,14 +31,8 @@ class CompleteRegisterPhoneCubit extends Cubit<CompleteRegisterPhoneState> {
   Future<void> completeRegister() async {
     emit(state.copyWith(requestState: RequestState.loading));
     final result = await ServerGate.i.sendToServer(
-      url: 'general/register',
-      body: {
-        "phone": phone,
-        "phone_code": phoneCode,
-        "fullname": nameController.text,
-        "gender": gender,
-        "user_type": userType.name,
-      },
+      url: 'general/complete-register-phone',
+      body: body,
     );
 
     if (result.success) {
