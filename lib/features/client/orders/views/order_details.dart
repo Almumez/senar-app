@@ -83,39 +83,7 @@ class _ClientOrderDetailsViewState extends State<ClientOrderDetailsView> {
       return SizedBox.shrink();
     }
     
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
-      margin: EdgeInsets.only(bottom: 16.h),
-      decoration: BoxDecoration(
-        color: statusColors[data.status]?.withOpacity(0.1) ?? Colors.grey.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: statusColors[data.status] ?? Colors.grey, width: 1),
-      ),
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            statusIcons[data.status] ?? 'assets/svg/time.svg',
-            height: 24.h,
-            width: 24.w,
-            colorFilter: ColorFilter.mode(
-              statusColors[data.status] ?? Colors.grey,
-              BlendMode.srcIn,
-            ),
-          ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Text(
-              statusMessages[data.status] ?? '',
-              style: context.mediumText.copyWith(
-                fontSize: 14.sp,
-                color: statusColors[data.status] ?? Colors.grey,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    return Container();
   }
   
   // Construir la sección de instrucciones similar a create_order.dart
