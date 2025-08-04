@@ -1,6 +1,9 @@
 import 'dart:async';
 // import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -166,27 +169,82 @@ class GlobalNotification {
 
   Future<void> showNotification(RemoteMessage data) async {
     if (data.notification != null) {
+      String? imageUrl = data.notification!.android?.imageUrl ?? data.notification!.apple?.imageUrl;
+      
+      AndroidNotificationDetails androidDetails;
+      
+      if (imageUrl != null && imageUrl.isNotEmpty) {
+        try {
+          final ByteArrayAndroidBitmap largeIcon = await _getByteArrayFromUrl(imageUrl);
+          final ByteArrayAndroidBitmap bigPicture = await _getByteArrayFromUrl(imageUrl);
+          
+          final BigPictureStyleInformation bigPictureStyleInformation = BigPictureStyleInformation(
+            bigPicture,
+            largeIcon: largeIcon,
+            contentTitle: data.notification!.title,
+            summaryText: data.notification!.body,
+          );
+          
+          androidDetails = AndroidNotificationDetails(
+            channel.id,
+            channel.name,
+            channelDescription: channel.description,
+            importance: Importance.high,
+            priority: Priority.high,
+            colorized: true,
+            color: '#70C656'.color,
+            styleInformation: bigPictureStyleInformation,
+            sound: const RawResourceAndroidNotificationSound('notification'),
+            playSound: true,
+            enableVibration: true,
+            enableLights: true,
+          );
+        } catch (e) {
+          print("Error loading notification image: $e");
+          androidDetails = _getDefaultAndroidDetails();
+        }
+      } else {
+        androidDetails = _getDefaultAndroidDetails();
+      }
+      
       var iOSPlatformSpecifics = const DarwinNotificationDetails(
         presentSound: true,
         sound: 'notification.wav',
       );
-
-      var androidChannelSpecifics = AndroidNotificationDetails(
-        channel.id,
-        channel.name,
-        channelDescription: channel.description,
-        importance: Importance.high,
-        colorized: true,
-        color: '#70C656'.color,
-        priority: Priority.high,
-        sound: const RawResourceAndroidNotificationSound('notification'),
-        playSound: true,
-        enableVibration: true,
-        enableLights: true,
-      );
-      var notificationDetails = NotificationDetails(android: androidChannelSpecifics, iOS: iOSPlatformSpecifics);
+      
+      var notificationDetails = NotificationDetails(android: androidDetails, iOS: iOSPlatformSpecifics);
       await _notificationsPlugin.show(0, data.notification!.title, data.notification!.body, notificationDetails);
     }
+  }
+  
+  AndroidNotificationDetails _getDefaultAndroidDetails() {
+    return AndroidNotificationDetails(
+      channel.id,
+      channel.name,
+      channelDescription: channel.description,
+      importance: Importance.high,
+      colorized: true,
+      color: '#70C656'.color,
+      priority: Priority.high,
+      sound: const RawResourceAndroidNotificationSound('notification'),
+      playSound: true,
+      enableVibration: true,
+      enableLights: true,
+    );
+  }
+  
+  Future<ByteArrayAndroidBitmap> _getByteArrayFromUrl(String url) async {
+    final http.Response response = await http.get(Uri.parse(url));
+    return ByteArrayAndroidBitmap(response.bodyBytes);
+  }
+
+  Future<String> _downloadAndSaveFile(String url, String fileName) async {
+    final Directory directory = await getApplicationDocumentsDirectory();
+    final String filePath = '${directory.path}/$fileName';
+    final http.Response response = await http.get(Uri.parse(url));
+    final File file = File(filePath);
+    await file.writeAsBytes(response.bodyBytes);
+    return filePath;
   }
 
   // _downloadAndSaveFile(String url, String fileName) async {
@@ -244,18 +302,62 @@ Future<void> showBackgroundNotification(RemoteMessage message) async {
     // Inicializar el plugin de notificaciones locales
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     
-    // Configuración específica para Android
-    AndroidNotificationDetails androidPlatformChannelSpecifics = const AndroidNotificationDetails(
-      'high_importance_channel',
-      'High Importance Notifications',
-      channelDescription: 'This channel is used for important notifications.',
-      importance: Importance.high,
-      priority: Priority.high,
-      sound: RawResourceAndroidNotificationSound('notification'),
-      playSound: true,
-      enableVibration: true,
-      enableLights: true,
-    );
+    String? imageUrl = message.notification!.android?.imageUrl ?? message.notification!.apple?.imageUrl;
+    
+    AndroidNotificationDetails androidDetails;
+    
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      try {
+        final http.Response response = await http.get(Uri.parse(imageUrl));
+        final ByteArrayAndroidBitmap largeIcon = ByteArrayAndroidBitmap(response.bodyBytes);
+        final ByteArrayAndroidBitmap bigPicture = ByteArrayAndroidBitmap(response.bodyBytes);
+        
+        final BigPictureStyleInformation bigPictureStyleInformation = BigPictureStyleInformation(
+          bigPicture,
+          largeIcon: largeIcon,
+          contentTitle: message.notification!.title,
+          summaryText: message.notification!.body,
+        );
+        
+        androidDetails = AndroidNotificationDetails(
+          'high_importance_channel',
+          'High Importance Notifications',
+          channelDescription: 'This channel is used for important notifications.',
+          importance: Importance.high,
+          priority: Priority.high,
+          styleInformation: bigPictureStyleInformation,
+          sound: const RawResourceAndroidNotificationSound('notification'),
+          playSound: true,
+          enableVibration: true,
+          enableLights: true,
+        );
+      } catch (e) {
+        print("Error loading notification image in background: $e");
+        androidDetails = const AndroidNotificationDetails(
+          'high_importance_channel',
+          'High Importance Notifications',
+          channelDescription: 'This channel is used for important notifications.',
+          importance: Importance.high,
+          priority: Priority.high,
+          sound: RawResourceAndroidNotificationSound('notification'),
+          playSound: true,
+          enableVibration: true,
+          enableLights: true,
+        );
+      }
+    } else {
+      androidDetails = const AndroidNotificationDetails(
+        'high_importance_channel',
+        'High Importance Notifications',
+        channelDescription: 'This channel is used for important notifications.',
+        importance: Importance.high,
+        priority: Priority.high,
+        sound: RawResourceAndroidNotificationSound('notification'),
+        playSound: true,
+        enableVibration: true,
+        enableLights: true,
+      );
+    }
     
     // Configuración específica para iOS
     const DarwinNotificationDetails iOSPlatformChannelSpecifics = DarwinNotificationDetails(
@@ -265,7 +367,7 @@ Future<void> showBackgroundNotification(RemoteMessage message) async {
     
     // Combinamos configuraciones
     NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
+      android: androidDetails,
       iOS: iOSPlatformChannelSpecifics,
     );
     
