@@ -57,6 +57,35 @@ class GlobalNotification {
       }
     });
   }
+  
+  // دالة جديدة لإرسال توكن الجهاز إلى API الجديدة
+  static Future<bool> sendTokenToServer() async {
+    try {
+      // الحصول على التوكن إذا لم يكن موجوداً بالفعل
+      String token = await getFcmToken();
+      
+      // إرسال التوكن إلى الخادم
+      CustomResponse response = await ServerGate.i.sendToServer(
+        url: "general/device/register",
+        body: {
+          "device_token": token,
+          "device_type": Platform.isAndroid ? "android" : "ios"
+        },
+      );
+      
+      // التحقق من نجاح العملية
+      if (response.success) {
+        print('<--------- Token sent to server successfully --------> \x1B[32m $token\x1B[0m');
+        return true;
+      } else {
+        print('<--------- Failed to send token to server --------> \x1B[31m ${response.msg}\x1B[0m');
+        return false;
+      }
+    } catch (e) {
+      print('<--------- Error sending token to server --------> \x1B[31m $e\x1B[0m');
+      return false;
+    }
+  }
 
   StreamController<Map<String, dynamic>> get notificationSubject {
     return _onMessageStreamController;

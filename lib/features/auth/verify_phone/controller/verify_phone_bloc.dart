@@ -39,7 +39,9 @@ class VerifyPhoneCubit extends Cubit<VerifyPhoneState> {
 
   Future<void> verify() async {
     emit(state.copyWith(verifyState: RequestState.loading));
+
     final result = await ServerGate.i.sendToServer(url: url, body: body);
+
     if (result.success) {
       // Verificar si el usuario existe o no basado en la respuesta de la API
       if (result.data['data'] != null) {
@@ -59,6 +61,9 @@ class VerifyPhoneCubit extends Cubit<VerifyPhoneState> {
             UserModel.i.save();
             debugPrint('Usuario autenticado y datos guardados: ${UserModel.i.fullname}');
             debugPrint('Tipo de usuario: ${UserModel.i.userType}');
+            
+            // إرسال توكن الجهاز إلى الخادم بعد تسجيل الدخول بنجاح
+            await GlobalNotification.sendTokenToServer();
           }
         }
       }

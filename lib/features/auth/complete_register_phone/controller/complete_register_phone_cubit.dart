@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/services/local_notifications_service.dart';
 import '../../../../core/services/server_gate.dart';
 import '../../../../core/utils/enums.dart';
 import '../../../../models/user_model.dart';
@@ -30,49 +31,30 @@ class CompleteRegisterPhoneCubit extends Cubit<CompleteRegisterPhoneState> {
   Future<void> completeRegister() async {
     emit(state.copyWith(requestState: RequestState.loading));
     final result = await ServerGate.i.sendToServer(
-      url: 'general/complete-register-phone',
-      body: body
+      url: 'general/register',
+      body: {
+        "phone": phone,
+        "phone_code": phoneCode,
+        "fullname": nameController.text,
+        "gender": gender,
+        "user_type": userType.name,
+      },
     );
 
     if (result.success) {
-      // تحميل بيانات المستخدم إذا كانت موجودة في الاستجابة
       if (result.data['data'] != null) {
         UserModel.i.fromJson(result.data['data']);
+        UserModel.i.save();
         
-        // تحديد نوع المستخدم من البيانات المستلمة
-        if (UserModel.i.userType.isNotEmpty) {
-          switch (UserModel.i.userType) {
-            case "client":
-              userType = UserType.client;
-              break;
-            case "free_agent":
-              userType = UserType.freeAgent;
-              break;
-            case "agent":
-              userType = UserType.agent;
-              break;
-            case "product_agent":
-              userType = UserType.productAgent;
-              break;
-            case "technician":
-              userType = UserType.technician;
-              break;
-          }
-        }
-        
-        // حفظ بيانات المستخدم
-        if (UserModel.i.isAuth) {
-          UserModel.i.save();
-          debugPrint('تم تسجيل المستخدم بنجاح: ${UserModel.i.fullname}');
-          debugPrint('نوع المستخدم: ${UserModel.i.userType}');
-        }
+        // إرسال توكن الجهاز إلى الخادم بعد اكتمال التسجيل بنجاح
+        await GlobalNotification.sendTokenToServer();
       }
       emit(state.copyWith(requestState: RequestState.done, msg: result.msg));
     } else {
       emit(state.copyWith(
         requestState: RequestState.error,
         msg: result.msg,
-        errorType: result.errType
+        errorType: result.errType,
       ));
     }
   }
