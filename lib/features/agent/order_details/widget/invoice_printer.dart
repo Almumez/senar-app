@@ -281,7 +281,7 @@ class InvoicePrinter {
                   textDirection: pw.TextDirection.rtl,
                 ),
                 pw.Text(
-                  '${(order.deliveryFee - order.tax)} ${LocaleKeys.sar.tr()}',
+                  '${(order.deliveryFee)} ${LocaleKeys.sar.tr()}',
                   style: pw.TextStyle(font: ttf, fontSize: 12),
                   textDirection: pw.TextDirection.rtl,
                 ),

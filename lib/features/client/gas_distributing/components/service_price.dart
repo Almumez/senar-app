@@ -64,7 +64,7 @@ class _ServicePriceWidgetState extends State<ServicePriceWidget> {
               ),
               ServiceItem(
                 title: LocaleKeys.delivery.tr(), 
-                price: (cubit.state.orderPrices!.deliveryPrice - cubit.state.orderPrices!.tax).toStringAsFixed(2)
+                price: (cubit.state.orderPrices!.deliveryPrice).toStringAsFixed(2)
               ),
               ServiceItem(
                 title: LocaleKeys.tax.tr(), 
