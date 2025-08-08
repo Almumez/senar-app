@@ -16,7 +16,6 @@ import '../../core/utils/enums.dart';
 import '../../core/utils/extensions.dart';
 import '../../core/widgets/custom_image.dart';
 import '../../core/widgets/loading.dart';
-import '../../core/widgets/service_closed_dialog.dart';
 import '../../gen/assets.gen.dart';
 import '../../gen/locale_keys.g.dart';
 import 'controller/version_cubit.dart';
@@ -33,10 +32,10 @@ class _SplashViewState extends State<SplashView> {
   final versionCubit = sl<VersionCubit>();
   final settingsService = sl<SettingsService>();
   bool _showUpdateDialog = false;
-  bool _showServiceClosedDialog = false;
+  // تم إزالة المتغير _showServiceClosedDialog
 
   void navigateUser() {
-    if (_showUpdateDialog || _showServiceClosedDialog) return; // لا تنتقل إذا كان هناك تحديث مطلوب أو الخدمة مغلقة
+    if (_showUpdateDialog) return; // لا تنتقل إذا كان هناك تحديث مطلوب
 
     if (!UserModel.i.isAuth) {
       replacement(NamedRoutes.onboarding);
@@ -83,24 +82,7 @@ class _SplashViewState extends State<SplashView> {
       await settingsService.getSettings();
       debugPrint('Settings loaded successfully');
       
-      // التحقق من إشعارات وقت الإغلاق
-      debugPrint('Checking closing time notifications...');
-      debugPrint('Is near closing time: ${settingsService.isNearClosingTime()}');
-      debugPrint('Is service closed: ${settingsService.isServiceClosed()}');
-      
-      // التحقق مما إذا كانت الخدمة مغلقة
-      if (settingsService.isServiceClosed()) {
-        debugPrint('Service is closed, showing closed dialog');
-        setState(() {
-          _showServiceClosedDialog = true;
-        });
-        
-        // عرض رسالة الخدمة المغلقة بعد تحميل الشاشة
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _showServiceClosedPopup();
-        });
-        return;
-      }
+      // تم إزالة التحقق من إشعارات وقت الإغلاق
       
       // التحقق من الإصدار لجميع الأنظمة
       debugPrint('Checking app version...');
@@ -174,15 +156,7 @@ class _SplashViewState extends State<SplashView> {
     );
   }
   
-  // عرض النافذة المنبثقة للخدمة المغلقة
-  void _showServiceClosedPopup() {
-    if (settingsService.settings == null) return;
-    
-    ServiceClosedDialog.show(
-      context, 
-      settingsService.settings!.closingService.openingTime
-    );
-  }
+  // تم إزالة دالة _showServiceClosedPopup()
   
   // عرض النافذة المنبثقة للتحديث
   void _showUpdatePopup() {
