@@ -24,6 +24,7 @@ import '../../../shared/components/payment_methods.dart';
 import '../components/service_price.dart';
 import '../controller/cubit.dart';
 import '../controller/states.dart';
+import '../../../../core/widgets/service_closed_dialog.dart';
 
 class ClientDistributingCreateOrderView extends StatefulWidget {
   const ClientDistributingCreateOrderView({super.key});
@@ -107,7 +108,19 @@ class _ClientDistributingCreateOrderViewState extends State<ClientDistributingCr
               ),
             );
           } else if (state.createOrderState.isError) {
-            FlashHelper.showToast(state.msg);
+            // تحقق مما إذا كان نوع الخطأ هو "الخدمة غير متاحة"
+            if (state.errorType.isServiceUnavailable) {
+              // استدعاء نافذة الخدمة المغلقة
+              if (settingsService.settings != null) {
+                ServiceClosedDialog.show(
+                  context,
+                  settingsService.settings!.closingService.openingTime
+                );
+              }
+            } else {
+              // عرض رسالة الخطأ العادية
+              FlashHelper.showToast(state.msg);
+            }
           }
         },
         builder: (context, state) {

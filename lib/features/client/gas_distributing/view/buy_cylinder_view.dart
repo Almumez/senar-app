@@ -20,6 +20,8 @@ import '../../../shared/components/increment_widget.dart';
 import '../../addresses/controller/cubit.dart';
 import '../controller/cubit.dart';
 import '../controller/states.dart';
+import '../../../../core/services/settings_service.dart';
+import '../../../../core/widgets/service_closed_dialog.dart';
 
 class BuyCylinderView extends StatefulWidget {
   const BuyCylinderView({super.key});
@@ -108,7 +110,20 @@ class _BuyCylinderViewState extends State<BuyCylinderView> {
               // Restablecer la bandera después de navegar
               cubit.setRequestingOrder(false);
             } else if (state.calculationsState.isError) {
-              FlashHelper.showToast(state.msg);
+              // تحقق مما إذا كان نوع الخطأ هو "الخدمة غير متاحة"
+              if (state.errorType.isServiceUnavailable) {
+                // استدعاء نافذة الخدمة المغلقة
+                final settingsService = sl<SettingsService>();
+                if (settingsService.settings != null) {
+                  ServiceClosedDialog.show(
+                    context,
+                    settingsService.settings!.closingService.openingTime
+                  );
+                }
+              } else {
+                // عرض رسالة الخطأ العادية
+                FlashHelper.showToast(state.msg);
+              }
             }
           },
           builder: (context, state) {

@@ -19,13 +19,15 @@ enum ErrorType {
   none,
   unAuth,
   canceled,
-  empty;
+  empty,
+  serviceUnavailable;
 
   bool get isNetwork => this == ErrorType.network;
   bool get isServer => this == ErrorType.server;
   bool get isBackEndValidation => this == ErrorType.backEndValidation;
   bool get isUnknown => this == ErrorType.unknown;
   bool get isCanceled => this == ErrorType.canceled;
+  bool get isServiceUnavailable => this == ErrorType.serviceUnavailable;
 
   bool get isEmpty => this == ErrorType.empty;
   bool get isUnAuth => this == ErrorType.unAuth;

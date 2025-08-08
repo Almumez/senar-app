@@ -130,7 +130,17 @@ class ClientDistributeGasCubit extends Cubit<ClientDistributeGasState> {
       final orderPrices = OrderPricesModel.fromJson(response.data['data']);
       emit(state.copyWith(calculationsState: RequestState.done, orderPrices: orderPrices));
     } else {
-      emit(state.copyWith(calculationsState: RequestState.error, msg: response.msg, errorType: response.errType));
+      // تحقق مما إذا كان الخطأ هو 403 (الخدمة مغلقة)
+      if (response.statusCode == 403) {
+        // إضافة علامة خاصة لإظهار رسالة إغلاق الخدمة
+        emit(state.copyWith(
+          calculationsState: RequestState.error, 
+          msg: response.msg, 
+          errorType: ErrorType.serviceUnavailable, // استخدام نوع خطأ خاص للخدمة المغلقة
+        ));
+      } else {
+        emit(state.copyWith(calculationsState: RequestState.error, msg: response.msg, errorType: response.errType));
+      }
     }
   }
 
@@ -193,7 +203,17 @@ class ClientDistributeGasCubit extends Cubit<ClientDistributeGasState> {
     if (response.success) {
       emit(state.copyWith(createOrderState: RequestState.done));
     } else {
-      emit(state.copyWith(createOrderState: RequestState.error, msg: response.msg, errorType: response.errType));
+      // تحقق مما إذا كان الخطأ هو 403 (الخدمة مغلقة)
+      if (response.statusCode == 403) {
+        // إضافة علامة خاصة لإظهار رسالة إغلاق الخدمة
+        emit(state.copyWith(
+          createOrderState: RequestState.error, 
+          msg: response.msg, 
+          errorType: ErrorType.serviceUnavailable, // استخدام نوع خطأ خاص للخدمة المغلقة
+        ));
+      } else {
+        emit(state.copyWith(createOrderState: RequestState.error, msg: response.msg, errorType: response.errType));
+      }
     }
   }
 
