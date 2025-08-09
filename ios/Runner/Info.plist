@@ -24,6 +24,11 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>ar</string>
+		<string>en</string>
+	</array>
 	<key>GMSApiKey</key>
 	<string>AIzaSyCvLDETWANAijGWUxdHaV7F_ph3PyQsHho</string>
 	<key>LSRequiresIPhoneOS</key>
