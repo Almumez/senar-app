@@ -210,6 +210,7 @@ class GlobalNotification {
       var iOSPlatformSpecifics = const DarwinNotificationDetails(
         presentSound: true,
         sound: 'notification.wav',
+        interruptionLevel: InterruptionLevel.active,  // إضافة مستوى المقاطعة للصوت
       );
       
       var notificationDetails = NotificationDetails(android: androidDetails, iOS: iOSPlatformSpecifics);
@@ -363,6 +364,7 @@ Future<void> showBackgroundNotification(RemoteMessage message) async {
     const DarwinNotificationDetails iOSPlatformChannelSpecifics = DarwinNotificationDetails(
       presentSound: true,
       sound: 'notification.wav',
+      interruptionLevel: InterruptionLevel.active,  // إضافة مستوى المقاطعة للصوت
     );
     
     // Combinamos configuraciones
