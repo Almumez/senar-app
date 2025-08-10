@@ -64,7 +64,7 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F090AABD2A0C0E9600D5A7D7 /* notification.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Resources/notification.wav; sourceTree = "<group>"; };
+		F090AABD2A0C0E9600D5A7D7 /* notification.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = notification.wav; path = ../Resources/notification.wav; sourceTree = "<group>"; };
 		C2E4E5D8A373CAD392527A97 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		E07A93F22E1042AB00B7E90D /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		F925E1F0174E96ABF02F0815 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
@@ -155,6 +155,7 @@
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
+				F090AABD2A0C0E9600D5A7D7 /* notification.wav */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -308,7 +309,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Asegurar que el archivo de sonido esté en el bundle principal\nSOURCE_FILE=\"${SRCROOT}/Runner/Resources/notification.wav\"\nDEST_DIR=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\"\n\nif [ ! -f \"$SOURCE_FILE\" ]; then\n  echo \"ERROR: El archivo de sonido no existe en $SOURCE_FILE\"\n  exit 1\nfi\n\nmkdir -p \"$DEST_DIR\"\ncp \"$SOURCE_FILE\" \"$DEST_DIR/\"\necho \"Archivo de sonido copiado con éxito a $DEST_DIR/notification.wav\"\n";
+			shellScript = "# Asegurar que el archivo de sonido esté en el bundle principal\nSOURCE_FILE=\"${SRCROOT}/Resources/notification.wav\"\nDEST_DIR=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\"\n\nif [ ! -f \"$SOURCE_FILE\" ]; then\n  echo \"ERROR: El archivo de sonido no existe en $SOURCE_FILE\"\n  exit 1\nfi\n\nmkdir -p \"$DEST_DIR\"\ncp \"$SOURCE_FILE\" \"$DEST_DIR/\"\necho \"Archivo de sonido copiado con éxito a $DEST_DIR/notification.wav\"\n";
 		};
 		6E42A13803A6584B80EFE065 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
