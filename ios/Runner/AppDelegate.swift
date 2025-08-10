@@ -28,9 +28,8 @@ import AVFoundation
         }
       )
       
-      // تكوين فئة الإشعارات مع الصوت
-      let soundName = UNNotificationSoundName("notification.wav")
-      let sound = UNNotificationSound(named: soundName)
+      // تكوين فئة الإشعارات مع الصوت الافتراضي
+      let sound = UNNotificationSound.default
       
       let category = UNNotificationCategory(
         identifier: "high_importance_category",
@@ -105,29 +104,9 @@ import AVFoundation
     super.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
   }
   
-  // تشغيل صوت الإشعار يدويًا
+  // تشغيل صوت الإشعار الافتراضي
   private func playNotificationSound() {
-    guard let soundURL = Bundle.main.url(forResource: "notification", withExtension: "wav") else {
-      print("Sound file not found")
-      
-      // Intentar buscar el archivo en otros lugares
-      if let resourcePath = Bundle.main.resourcePath {
-        print("Resource path: \(resourcePath)")
-        let fileManager = FileManager.default
-        do {
-          let files = try fileManager.contentsOfDirectory(atPath: resourcePath)
-          print("Files in bundle: \(files)")
-        } catch {
-          print("Error listing files: \(error)")
-        }
-      }
-      
-      return
-    }
-    
-    print("Sound file found at: \(soundURL)")
-    var soundID: SystemSoundID = 0
-    AudioServicesCreateSystemSoundID(soundURL as CFURL, &soundID)
-    AudioServicesPlaySystemSound(soundID)
+    // استخدام صوت الإشعار الافتراضي للنظام
+    AudioServicesPlaySystemSound(1007) // رمز الصوت الافتراضي للإشعارات في iOS
   }
 }

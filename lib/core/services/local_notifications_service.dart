@@ -209,7 +209,7 @@ class GlobalNotification {
       
       var iOSPlatformSpecifics = const DarwinNotificationDetails(
         presentSound: true,
-        sound: 'notification.wav',
+        // No custom sound specified - will use iOS default sound
         interruptionLevel: InterruptionLevel.active,
         categoryIdentifier: 'high_importance_category',
         presentAlert: true,
@@ -366,7 +366,7 @@ Future<void> showBackgroundNotification(RemoteMessage message) async {
     // Configuración específica para iOS
     const DarwinNotificationDetails iOSPlatformChannelSpecifics = DarwinNotificationDetails(
       presentSound: true,
-      sound: 'notification.wav',
+      // Using default iOS notification sound
       interruptionLevel: InterruptionLevel.active,
       categoryIdentifier: 'high_importance_category',
       presentAlert: true,
