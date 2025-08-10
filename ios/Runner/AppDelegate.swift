@@ -109,9 +109,23 @@ import AVFoundation
   private func playNotificationSound() {
     guard let soundURL = Bundle.main.url(forResource: "notification", withExtension: "wav") else {
       print("Sound file not found")
+      
+      // Intentar buscar el archivo en otros lugares
+      if let resourcePath = Bundle.main.resourcePath {
+        print("Resource path: \(resourcePath)")
+        let fileManager = FileManager.default
+        do {
+          let files = try fileManager.contentsOfDirectory(atPath: resourcePath)
+          print("Files in bundle: \(files)")
+        } catch {
+          print("Error listing files: \(error)")
+        }
+      }
+      
       return
     }
     
+    print("Sound file found at: \(soundURL)")
     var soundID: SystemSoundID = 0
     AudioServicesCreateSystemSoundID(soundURL as CFURL, &soundID)
     AudioServicesPlaySystemSound(soundID)
