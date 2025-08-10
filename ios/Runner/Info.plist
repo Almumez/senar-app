@@ -83,5 +83,7 @@
 	<true/>
 	<key>UNNotificationSoundName</key>
 	<string>notification.wav</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 </dict>
 </plist>

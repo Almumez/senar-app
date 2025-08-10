@@ -1,6 +1,7 @@
 import Flutter
 import UIKit
 import GoogleMaps
+import UserNotifications
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -13,10 +14,25 @@ import GoogleMaps
     
     // تفعيل الإشعارات
     if #available(iOS 10.0, *) {
-      // استخدام الطريقة المباشرة بدون UserNotifications
+      UNUserNotificationCenter.current().delegate = self
+      
+      let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+      UNUserNotificationCenter.current().requestAuthorization(
+        options: authOptions,
+        completionHandler: { _, _ in }
+      )
+      
+      // تسجيل للإشعارات البعيدة
       application.registerForRemoteNotifications()
     }
     
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+  
+  // التعامل مع استلام الإشعارات في المقدمة
+  override func userNotificationCenter(_ center: UNUserNotificationCenter, 
+                                      willPresent notification: UNNotification, 
+                                      withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    completionHandler([.alert, .badge, .sound])
   }
 }
