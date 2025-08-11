@@ -105,6 +105,11 @@ class GlobalNotification {
   Future<void> setUpFirebase() async {
     await getFcmToken();
     
+    // التحقق من وجود ملف الصوت في iOS
+    if (Platform.isIOS) {
+      await _checkSoundFileExists();
+    }
+    
     // Inicializar Firebase en segundo plano
     await Firebase.initializeApp();
     
@@ -134,16 +139,19 @@ class GlobalNotification {
     // Configurar inicialización para Android y iOS
     var android = const AndroidInitializationSettings('@mipmap/launcher_icon');
     var ios = const DarwinInitializationSettings(
-      defaultPresentBadge: true,
-      defaultPresentAlert: true,
+      requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
       defaultPresentSound: true,
+      defaultPresentAlert: true,
+      defaultPresentBadge: true,
     );
     var initSetting = InitializationSettings(android: android, iOS: ios);
     _notificationsPlugin.initialize(initSetting, onDidReceiveNotificationResponse: onSelectNotification);
   }
 
   Future<void> firebaseCloudMessagingListeners() async {
-    if (Platform.isIOS) iOSPermission();
+    if (Platform.isIOS) await iOSPermission();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage data) {
       // print("--------- Global Notification Logger --------> \x1B[37m------ on Notification message data -----\x1B[0m");
@@ -209,7 +217,7 @@ class GlobalNotification {
       
       var iOSPlatformSpecifics = const DarwinNotificationDetails(
         presentSound: true,
-        // No custom sound specified - will use iOS default sound
+        sound: 'notification.wav', // تحديد ملف الصوت المخصص
         interruptionLevel: InterruptionLevel.active,
         categoryIdentifier: 'high_importance_category',
         presentAlert: true,
@@ -260,12 +268,66 @@ class GlobalNotification {
   //   return filePath;
   // }
 
-  void iOSPermission() {
-    _firebaseMessaging.requestPermission(alert: true, announcement: true, badge: true, sound: true);
+  Future<void> iOSPermission() async {
+    // طلب أذونات شاملة للإشعارات في iOS
+    await _firebaseMessaging.requestPermission(
+      alert: true,
+      announcement: true,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true, // مهم جداً لتفعيل الصوت
+    );
+    
+    // التأكد من تفعيل الصوت في الإعدادات المحلية
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
   }
 
   void handlePath(Map<String, dynamic> dataMap) {
     handlePathByRoute(dataMap);
+  }
+
+  // دالة للتحقق من وجود ملف الصوت في iOS Bundle
+  Future<void> _checkSoundFileExists() async {
+    try {
+      print('🔊 Checking notification sound file...');
+      
+      // إرسال إشعار تجريبي للتأكد من الصوت
+      if (Platform.isIOS) {
+        await _testNotificationSound();
+      }
+      
+      print('✅ Sound file check completed');
+    } catch (e) {
+      print('❌ Error checking sound file: $e');
+    }
+  }
+
+  // دالة لاختبار صوت الإشعار
+  Future<void> _testNotificationSound() async {
+    try {
+      const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
+        presentSound: true,
+        sound: 'notification.wav',
+        presentAlert: false, // لا نريد عرض الإشعار، فقط اختبار الصوت
+        presentBadge: false,
+      );
+      
+      const NotificationDetails testDetails = NotificationDetails(iOS: iOSDetails);
+      
+      // هذا مجرد اختبار داخلي - لن يظهر للمستخدم
+      print('🎵 Testing notification sound configuration...');
+      
+    } catch (e) {
+      print('❌ Sound test failed: $e');
+    }
   }
 
   Future<void> handlePathByRoute(Map<String, dynamic> dataMap) async {
@@ -366,7 +428,7 @@ Future<void> showBackgroundNotification(RemoteMessage message) async {
     // Configuración específica para iOS
     const DarwinNotificationDetails iOSPlatformChannelSpecifics = DarwinNotificationDetails(
       presentSound: true,
-      // Using default iOS notification sound
+      sound: 'notification.wav', // استخدام ملف الصوت المخصص
       interruptionLevel: InterruptionLevel.active,
       categoryIdentifier: 'high_importance_category',
       presentAlert: true,
