@@ -121,10 +121,11 @@ class GlobalNotification {
     }
     
     // Configurar opciones de notificación en primer plano
+    // إيقاف عرض Firebase للإشعارات مباشرة لنتحكم نحن فيها
     await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
+      alert: false, // إيقاف عرض Firebase للإشعار
+      badge: false, // سنديره نحن محلياً
+      sound: false, // سنديره نحن محلياً بالصوت المخصص
     );
     
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
@@ -154,13 +155,15 @@ class GlobalNotification {
     if (Platform.isIOS) await iOSPermission();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage data) {
-      // print("--------- Global Notification Logger --------> \x1B[37m------ on Notification message data -----\x1B[0m");
-      // print('<--------- Global Notification Logger --------> \x1B[32m ${data.data}\x1B[0m');
-      // print('<--------- Global Notification Logger --------> \x1B[32m ${data.notification?.android?.channelId}\x1B[0m');
-      // print('<--------- Global Notification Logger --------> \x1B[32m ${data.notification?.android?.sound}\x1B[0m');
+      print("🔔 Firebase notification received in foreground");
+      print("📱 Notification title: ${data.notification?.title}");
+      print("📱 Notification body: ${data.notification?.body}");
+      print("🔊 Original sound: iOS=${data.notification?.apple?.sound}, Android=${data.notification?.android?.sound}");
+      
       _onMessageStreamController.add(data.data);
-
       _not = data.data;
+      
+      // عرض الإشعار محلياً بالصوت المخصص
       showNotification(data);
     });
 
@@ -177,6 +180,10 @@ class GlobalNotification {
 
   Future<void> showNotification(RemoteMessage data) async {
     if (data.notification != null) {
+      print('🔔 Received notification from: ${data.from}');
+      print('📱 iOS sound info: ${data.notification?.apple?.sound}');
+      print('🤖 Android sound info: ${data.notification?.android?.sound}');
+      
       String? imageUrl = data.notification!.android?.imageUrl ?? data.notification!.apple?.imageUrl;
       
       AndroidNotificationDetails androidDetails;
@@ -215,14 +222,17 @@ class GlobalNotification {
         androidDetails = _getDefaultAndroidDetails();
       }
       
+      // استخدام الصوت المخصص دائماً، حتى لو لم يأت في payload
       var iOSPlatformSpecifics = const DarwinNotificationDetails(
         presentSound: true,
-        sound: 'notification.wav', // تحديد ملف الصوت المخصص
+        sound: 'notification.wav', // إجباري: ملف الصوت المخصص
         interruptionLevel: InterruptionLevel.active,
         categoryIdentifier: 'high_importance_category',
         presentAlert: true,
         presentBadge: true,
       );
+      
+      print('🔊 Using custom sound: notification.wav for iOS');
       
       var notificationDetails = NotificationDetails(android: androidDetails, iOS: iOSPlatformSpecifics);
       await _notificationsPlugin.show(0, data.notification!.title, data.notification!.body, notificationDetails);
@@ -425,15 +435,17 @@ Future<void> showBackgroundNotification(RemoteMessage message) async {
       );
     }
     
-    // Configuración específica para iOS
+    // Configuración específica para iOS - إجباري للصوت المخصص
     const DarwinNotificationDetails iOSPlatformChannelSpecifics = DarwinNotificationDetails(
       presentSound: true,
-      sound: 'notification.wav', // استخدام ملف الصوت المخصص
+      sound: 'notification.wav', // إجباري: ملف الصوت المخصص
       interruptionLevel: InterruptionLevel.active,
       categoryIdentifier: 'high_importance_category',
       presentAlert: true,
       presentBadge: true,
     );
+    
+    print('🔊 Background: Using custom sound for iOS notification');
     
     // Combinamos configuraciones
     NotificationDetails platformChannelSpecifics = NotificationDetails(
