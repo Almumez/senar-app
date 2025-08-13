@@ -11,8 +11,8 @@ class NotificationService: UNNotificationServiceExtension {
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
         if let bestAttemptContent = bestAttemptContent {
-            // Configurar el sonido personalizado para la notificación
-            bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "notification.wav"))
+            // استخدام الصوت الافتراضي للنظام
+            bestAttemptContent.sound = UNNotificationSound.default
             
             // Asegurarse de que se muestre la notificación con el sonido
             contentHandler(bestAttemptContent)

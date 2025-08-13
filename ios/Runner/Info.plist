@@ -83,8 +83,7 @@
 	</array>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
-	<key>UNNotificationSoundName</key>
-	<string>notification.wav</string>
+
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 </dict>

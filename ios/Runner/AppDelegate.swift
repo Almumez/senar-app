@@ -28,7 +28,7 @@ import AVFoundation
         }
       )
       
-      // تكوين فئة الإشعارات مع الصوت الافتراضي
+      // تكوين فئة الإشعارات مع الصوت الافتراضي للنظام
       let sound = UNNotificationSound.default
       
       let category = UNNotificationCategory(
@@ -104,9 +104,9 @@ import AVFoundation
     super.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
   }
   
-  // تشغيل صوت الإشعار الافتراضي
+  // تشغيل صوت الإشعار الافتراضي للنظام
   private func playNotificationSound() {
-    // استخدام صوت الإشعار الافتراضي للنظام
+    // استخدام صوت الإشعار الافتراضي للنظام (Tri-tone)
     AudioServicesPlaySystemSound(1007) // رمز الصوت الافتراضي للإشعارات في iOS
   }
 }

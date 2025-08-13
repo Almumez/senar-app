@@ -222,17 +222,17 @@ class GlobalNotification {
         androidDetails = _getDefaultAndroidDetails();
       }
       
-      // استخدام الصوت المخصص دائماً، حتى لو لم يأت في payload
+      // استخدام الصوت الافتراضي للنظام في iOS
       var iOSPlatformSpecifics = const DarwinNotificationDetails(
         presentSound: true,
-        sound: 'notification.wav', // إجباري: ملف الصوت المخصص
+        sound: null, // استخدام الصوت الافتراضي للنظام
         interruptionLevel: InterruptionLevel.active,
         categoryIdentifier: 'high_importance_category',
         presentAlert: true,
         presentBadge: true,
       );
       
-      print('🔊 Using custom sound: notification.wav for iOS');
+      print('🔊 Using default system sound for iOS');
       
       var notificationDetails = NotificationDetails(android: androidDetails, iOS: iOSPlatformSpecifics);
       await _notificationsPlugin.show(0, data.notification!.title, data.notification!.body, notificationDetails);
@@ -435,17 +435,17 @@ Future<void> showBackgroundNotification(RemoteMessage message) async {
       );
     }
     
-    // Configuración específica para iOS - إجباري للصوت المخصص
+    // Configuración específica para iOS - استخدام الصوت الافتراضي
     const DarwinNotificationDetails iOSPlatformChannelSpecifics = DarwinNotificationDetails(
       presentSound: true,
-      sound: 'notification', // إجباري: ملف الصوت المخصص
+      sound: null, // استخدام الصوت الافتراضي للنظام
       interruptionLevel: InterruptionLevel.active,
       categoryIdentifier: 'high_importance_category',
       presentAlert: true,
       presentBadge: true,
     );
     
-    print('🔊 Background: Using custom sound for iOS notification');
+    print('🔊 Background: Using default system sound for iOS notification');
     
     // Combinamos configuraciones
     NotificationDetails platformChannelSpecifics = NotificationDetails(
