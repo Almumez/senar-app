@@ -438,7 +438,7 @@ Future<void> showBackgroundNotification(RemoteMessage message) async {
     // Configuración específica para iOS - إجباري للصوت المخصص
     const DarwinNotificationDetails iOSPlatformChannelSpecifics = DarwinNotificationDetails(
       presentSound: true,
-      sound: 'notification.wav', // إجباري: ملف الصوت المخصص
+      sound: 'notification', // إجباري: ملف الصوت المخصص
       interruptionLevel: InterruptionLevel.active,
       categoryIdentifier: 'high_importance_category',
       presentAlert: true,
