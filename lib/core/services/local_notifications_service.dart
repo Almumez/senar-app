@@ -240,20 +240,38 @@ class GlobalNotification {
         androidDetails = _getDefaultAndroidDetails();
       }
       
-      // استخدام الصوت الافتراضي للنظام في iOS
-      var iOSPlatformSpecifics = const DarwinNotificationDetails(
+      // استخدام نفس إعدادات iOS التي تعمل في الإشعار التجريبي
+      const DarwinNotificationDetails iOSPlatformSpecifics = DarwinNotificationDetails(
         presentSound: true,
-        sound: 'notification.wav', // تحديد اسم ملف الصوت بدلاً من null
-        interruptionLevel: InterruptionLevel.active,
-        categoryIdentifier: 'high_importance_category',
+        sound: 'notification.wav',
         presentAlert: true,
         presentBadge: true,
+        interruptionLevel: InterruptionLevel.active,
       );
       
       print('🔊 Using custom notification sound for iOS: notification.wav');
       
-      var notificationDetails = NotificationDetails(android: androidDetails, iOS: iOSPlatformSpecifics);
-      await _notificationsPlugin.show(0, data.notification!.title, data.notification!.body, notificationDetails);
+      const NotificationDetails notificationDetails = NotificationDetails(
+        android: AndroidNotificationDetails(
+          'high_importance_channel',
+          'High Importance Notifications',
+          channelDescription: 'This channel is used for important notifications.',
+          importance: Importance.high,
+          priority: Priority.high,
+          sound: RawResourceAndroidNotificationSound('notification'),
+          playSound: true,
+          enableVibration: true,
+          enableLights: true,
+        ),
+        iOS: iOSPlatformSpecifics,
+      );
+      
+      await _notificationsPlugin.show(
+        0, 
+        data.notification!.title, 
+        data.notification!.body, 
+        notificationDetails
+      );
     }
   }
   
@@ -522,25 +540,34 @@ Future<void> showBackgroundNotification(RemoteMessage message) async {
       );
     }
     
-    // Configuración específica para iOS - استخدام الصوت المخصص
-    const DarwinNotificationDetails iOSPlatformChannelSpecifics = DarwinNotificationDetails(
+    // استخدام نفس إعدادات iOS التي تعمل في الإشعار التجريبي
+    const DarwinNotificationDetails iOSPlatformSpecifics = DarwinNotificationDetails(
       presentSound: true,
-      sound: 'notification.wav', // تحديد اسم ملف الصوت بدلاً من null
-      interruptionLevel: InterruptionLevel.active,
-      categoryIdentifier: 'high_importance_category',
+      sound: 'notification.wav',
       presentAlert: true,
       presentBadge: true,
+      interruptionLevel: InterruptionLevel.active,
     );
     
     print('🔊 Background: Using custom notification sound for iOS: notification.wav');
     
-    // Combinamos configuraciones
-    NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidDetails,
-      iOS: iOSPlatformChannelSpecifics,
+    // إعدادات الإشعار النهائية
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'high_importance_channel',
+        'High Importance Notifications',
+        channelDescription: 'This channel is used for important notifications.',
+        importance: Importance.high,
+        priority: Priority.high,
+        sound: RawResourceAndroidNotificationSound('notification'),
+        playSound: true,
+        enableVibration: true,
+        enableLights: true,
+      ),
+      iOS: iOSPlatformSpecifics,
     );
     
-    // Mostrar la notificación
+    // عرض الإشعار
     await flutterLocalNotificationsPlugin.show(
       message.hashCode,
       message.notification!.title,
