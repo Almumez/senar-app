@@ -108,6 +108,13 @@ class GlobalNotification {
     // التحقق من وجود ملف الصوت في iOS
     if (Platform.isIOS) {
       await _checkSoundFileExists();
+      
+      // طباعة مسار ملفات التطبيق للمساعدة في تحديد مكان وضع ملف الصوت
+      final appDir = await getApplicationDocumentsDirectory();
+      print('📁 iOS App Documents Directory: ${appDir.path}');
+      
+      // التحقق من أذونات الإشعارات في iOS
+      await _requestIOSPermissions();
     }
     
     // Inicializar Firebase en segundo plano
@@ -180,37 +187,23 @@ class GlobalNotification {
 
   Future<void> showNotification(RemoteMessage data) async {
     if (data.notification != null) {
-      // إضافة طباعة تفصيلية لبيانات الإشعار
-      print('\n🔔 ====== تفاصيل الإشعار ======');
-      print('📱 عنوان الإشعار: ${data.notification!.title}');
-      print('📝 محتوى الإشعار: ${data.notification!.body}');
-      print('🆔 معرف الإشعار: ${data.messageId}');
-      print('📊 البيانات الإضافية: ${data.data}');
-      
-      // طباعة معلومات خاصة بنظام Android
-      if (data.notification!.android != null) {
-        print('\n🤖 معلومات Android:');
-        print('- رابط الصورة: ${data.notification!.android?.imageUrl}');
-        print('- القناة: ${data.notification!.android?.channelId}');
-        print('- الأولوية: ${data.notification!.android?.priority}');
-        print('- الصوت: ${data.notification!.android?.sound}');
-      }
-      
-      // طباعة معلومات خاصة بنظام iOS
-      if (data.notification!.apple != null) {
-        print('\n🍎 معلومات iOS:');
-        print('- رابط الصورة: ${data.notification!.apple?.imageUrl}');
-        print('- الصوت: ${data.notification!.apple?.sound}');
-        print('- البادج: ${data.notification!.apple?.badge}');
-      }
-      print('==============================\n');
-      
-      print('🔔 Received notification from: ${data.from}');
-      print('📱 iOS sound info: ${data.notification?.apple?.sound}');
-      print('🤖 Android sound info: ${data.notification?.android?.sound}');
-      
+      print('------------------------------------------------------');
+      print('RemoteMessage details:');
+      print('Notification Title: ${data.notification?.title}');
+      print('Notification Body: ${data.notification?.body}');
+      print('Data: ${data.data}');
+      print('From: ${data.from}');
+      print('Message ID: ${data.messageId}');
+      print('Sent Time: ${data.sentTime}');
+      print('TTL: ${data.ttl}');
+      print('Category: ${data.category}');
+      print('Content Available: ${data.contentAvailable}');
+      print('Android: ${data.notification?.android?.toString()}');
+      print('Apple: ${data.notification?.apple?.toString()}');
+      print('apns: ${data..toString()}');
+      print("------------------------------------------------------");
+
       String? imageUrl = data.notification!.android?.imageUrl ?? data.notification!.apple?.imageUrl;
-      
       AndroidNotificationDetails androidDetails;
       
       if (imageUrl != null && imageUrl.isNotEmpty) {
@@ -250,14 +243,14 @@ class GlobalNotification {
       // استخدام الصوت الافتراضي للنظام في iOS
       var iOSPlatformSpecifics = const DarwinNotificationDetails(
         presentSound: true,
-        sound: null, // استخدام الصوت الافتراضي للنظام
+        sound: 'notification.wav', // تحديد اسم ملف الصوت بدلاً من null
         interruptionLevel: InterruptionLevel.active,
         categoryIdentifier: 'high_importance_category',
         presentAlert: true,
         presentBadge: true,
       );
       
-      print('🔊 Using default system sound for iOS');
+      print('🔊 Using custom notification sound for iOS: notification.wav');
       
       var notificationDetails = NotificationDetails(android: androidDetails, iOS: iOSPlatformSpecifics);
       await _notificationsPlugin.show(0, data.notification!.title, data.notification!.body, notificationDetails);
@@ -334,6 +327,21 @@ class GlobalNotification {
     try {
       print('🔊 Checking notification sound file...');
       
+      // تعليمات حول كيفية إضافة ملف الصوت في iOS
+      print('''
+🔊 ====== تعليمات إضافة ملف الصوت في iOS ======
+1. تأكد من وجود ملف الصوت 'notification.wav' في مجلد التطبيق iOS
+2. أضف الملف في Xcode: Runner -> Build Phases -> Copy Bundle Resources
+3. تأكد من إضافة الملف في info.plist:
+   <key>UIBackgroundModes</key>
+   <array>
+      <string>remote-notification</string>
+   </array>
+4. تأكد من تفعيل Background Modes في Xcode: Signing & Capabilities -> + Capability -> Background Modes -> Remote notifications
+5. تأكد من أن امتداد الملف هو .wav أو .aiff أو .caf
+==============================
+''');
+      
       // إرسال إشعار تجريبي للتأكد من الصوت
       if (Platform.isIOS) {
         await _testNotificationSound();
@@ -350,18 +358,72 @@ class GlobalNotification {
     try {
       const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
         presentSound: true,
-        sound: 'notification.wav',
-        presentAlert: false, // لا نريد عرض الإشعار، فقط اختبار الصوت
-        presentBadge: false,
+        sound: 'notification.wav', // تأكيد استخدام نفس اسم الملف
+        presentAlert: true, // تغيير إلى true لعرض الإشعار التجريبي
+        presentBadge: true,
+        interruptionLevel: InterruptionLevel.active, // مستوى عالي للمقاطعة
       );
       
-      const NotificationDetails testDetails = NotificationDetails(iOS: iOSDetails);
+      const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+        'test_sound_channel',
+        'Test Sound Channel',
+        channelDescription: 'Channel for testing notification sounds',
+        importance: Importance.high,
+        priority: Priority.high,
+        sound: RawResourceAndroidNotificationSound('notification'),
+        playSound: true,
+      );
       
-      // هذا مجرد اختبار داخلي - لن يظهر للمستخدم
-      print('🎵 Testing notification sound configuration...');
+      const NotificationDetails testDetails = NotificationDetails(
+        iOS: iOSDetails,
+        android: androidDetails,
+      );
+      
+      // إرسال إشعار تجريبي لاختبار الصوت
+      print('🎵 Sending test notification to verify sound...');
+      
+      await flutterLocalNotificationsPlugin.show(
+        999, // معرف فريد للإشعار التجريبي
+        'اختبار الصوت',
+        'هذا إشعار تجريبي للتحقق من عمل الصوت',
+        testDetails,
+      );
+      
+      print('✅ Test notification sent successfully');
       
     } catch (e) {
       print('❌ Sound test failed: $e');
+    }
+  }
+
+  // دالة جديدة للتحقق من أذونات الإشعارات في iOS وتفعيل الصوت
+  Future<void> _requestIOSPermissions() async {
+    if (Platform.isIOS) {
+      print('🔔 Requesting iOS notification permissions with sound...');
+
+      // طلب أذونات شاملة للإشعارات في iOS مع التركيز على الصوت
+      final settings = await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        announcement: true,
+        badge: true,
+        carPlay: false,
+        criticalAlert: true, // طلب إذن للتنبيهات الحرجة
+        provisional: false,
+        sound: true, // مهم جداً لتفعيل الصوت
+      );
+
+      print('🔔 iOS Authorization status: ${settings.authorizationStatus}');
+
+      // التأكد من تفعيل الصوت في الإعدادات المحلية
+      final granted = await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+
+      print('🔊 iOS Local notifications permission: ${granted == true ? "Granted" : "Denied"}');
     }
   }
 
@@ -460,17 +522,17 @@ Future<void> showBackgroundNotification(RemoteMessage message) async {
       );
     }
     
-    // Configuración específica para iOS - استخدام الصوت الافتراضي
+    // Configuración específica para iOS - استخدام الصوت المخصص
     const DarwinNotificationDetails iOSPlatformChannelSpecifics = DarwinNotificationDetails(
       presentSound: true,
-      sound: null, // استخدام الصوت الافتراضي للنظام
+      sound: 'notification.wav', // تحديد اسم ملف الصوت بدلاً من null
       interruptionLevel: InterruptionLevel.active,
       categoryIdentifier: 'high_importance_category',
       presentAlert: true,
       presentBadge: true,
     );
     
-    print('🔊 Background: Using default system sound for iOS notification');
+    print('🔊 Background: Using custom notification sound for iOS: notification.wav');
     
     // Combinamos configuraciones
     NotificationDetails platformChannelSpecifics = NotificationDetails(
