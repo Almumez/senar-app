@@ -400,12 +400,12 @@ class GlobalNotification {
       // إرسال إشعار تجريبي لاختبار الصوت
       print('🎵 Sending test notification to verify sound...');
       
-      await flutterLocalNotificationsPlugin.show(
-        999, // معرف فريد للإشعار التجريبي
-        'اختبار الصوت',
-        'هذا إشعار تجريبي للتحقق من عمل الصوت',
-        testDetails,
-      );
+      // await flutterLocalNotificationsPlugin.show(
+      //   999, // معرف فريد للإشعار التجريبي
+      //   'اختبار الصوت',
+      //   'هذا إشعار تجريبي للتحقق من عمل الصوت',
+      //   testDetails,
+      // );
       
       print('✅ Test notification sent successfully');
       
