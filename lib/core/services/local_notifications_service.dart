@@ -180,6 +180,31 @@ class GlobalNotification {
 
   Future<void> showNotification(RemoteMessage data) async {
     if (data.notification != null) {
+      // إضافة طباعة تفصيلية لبيانات الإشعار
+      print('\n🔔 ====== تفاصيل الإشعار ======');
+      print('📱 عنوان الإشعار: ${data.notification!.title}');
+      print('📝 محتوى الإشعار: ${data.notification!.body}');
+      print('🆔 معرف الإشعار: ${data.messageId}');
+      print('📊 البيانات الإضافية: ${data.data}');
+      
+      // طباعة معلومات خاصة بنظام Android
+      if (data.notification!.android != null) {
+        print('\n🤖 معلومات Android:');
+        print('- رابط الصورة: ${data.notification!.android?.imageUrl}');
+        print('- القناة: ${data.notification!.android?.channelId}');
+        print('- الأولوية: ${data.notification!.android?.priority}');
+        print('- الصوت: ${data.notification!.android?.sound}');
+      }
+      
+      // طباعة معلومات خاصة بنظام iOS
+      if (data.notification!.apple != null) {
+        print('\n🍎 معلومات iOS:');
+        print('- رابط الصورة: ${data.notification!.apple?.imageUrl}');
+        print('- الصوت: ${data.notification!.apple?.sound}');
+        print('- البادج: ${data.notification!.apple?.badge}');
+      }
+      print('==============================\n');
+      
       print('🔔 Received notification from: ${data.from}');
       print('📱 iOS sound info: ${data.notification?.apple?.sound}');
       print('🤖 Android sound info: ${data.notification?.android?.sound}');
