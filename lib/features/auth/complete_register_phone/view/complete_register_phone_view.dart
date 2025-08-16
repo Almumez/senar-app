@@ -68,6 +68,24 @@ class _CompleteRegisterPhoneViewState extends State<CompleteRegisterPhoneView> {
                     },
                   ),
                   SizedBox(height: 16.h),
+                  // إضافة حقل العمر
+                  AppField(
+                    controller: cubit.ageController,
+                    margin: EdgeInsets.symmetric(vertical: 8.h),
+                    keyboardType: TextInputType.number,
+                    labelText: "العمر",
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "الرجاء إدخال العمر";
+                      }
+                      final age = int.tryParse(value);
+                      if (age == null || age <= 0) {
+                        return "الرجاء إدخال عمر صحيح";
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 16.h),
                   Text(
                     "الجنس",
                     style: context.mediumText.copyWith(fontSize: 16, color: Colors.black),

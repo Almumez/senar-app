@@ -11,6 +11,7 @@ class CompleteRegisterPhoneCubit extends Cubit<CompleteRegisterPhoneState> {
   CompleteRegisterPhoneCubit() : super(CompleteRegisterPhoneState());
 
   final nameController = TextEditingController();
+  final ageController = TextEditingController(); // إضافة حقل العمر
   String? phone, phoneCode;
   String gender = 'male'; // القيمة الافتراضية للجنس
   UserType userType = UserType.client; // القيمة الافتراضية لنوع المستخدم
@@ -26,6 +27,7 @@ class CompleteRegisterPhoneCubit extends Cubit<CompleteRegisterPhoneState> {
     "phone": phone,
     "phone_code": phoneCode,
     "gender": gender,
+    "age": int.tryParse(ageController.text) ?? 0, // إضافة العمر إلى الطلب
   };
 
   Future<void> completeRegister() async {

@@ -12,6 +12,7 @@ class UserModel extends Model {
 
   late String token, fullname, image, phoneCode, phone, email, userType, locale, license, vehicleForm, healthCertificate, civilStatusNumber, address, wallet, gender;
   late bool isActive, adminApproved, isAvailable, isNotified, completeRegistration;
+  late int age; // إضافة حقل العمر
   late CountryModel country;
 
   bool get isAuth => token.isNotEmpty;
@@ -55,6 +56,7 @@ class UserModel extends Model {
     completeRegistration = boolFromJson(json, "complete_registeratin_form");
     wallet = stringFromJson(json, "wallet");
     gender = stringFromJson(json, "gender", defaultValue: "male");
+    age = intFromJson(json, "age", defaultValue: 0); // استخراج قيمة العمر من البيانات
     country = CountryModel.fromJson(json?["country"] ?? {});
   }
 
@@ -95,6 +97,7 @@ class UserModel extends Model {
         "complete_registeratin_form": completeRegistration,
         "wallet": wallet,
         "gender": gender,
+        "age": age, // إضافة العمر إلى البيانات المرسلة
         "country": country.toJson(),
       };
 }
