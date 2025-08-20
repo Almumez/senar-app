@@ -20,7 +20,7 @@ class _PaymentMethodsViewState extends State<PaymentMethodsView> {
   String paymentMethod = '';
 
   List<PaymentMethods> methods = [
-     PaymentMethods(image: "assets/svg/card.svg", title: "الكتروني", key: "visa"),
+    // PaymentMethods(image: "assets/svg/card.svg", title: "الكتروني", key: "visa"),
     PaymentMethods(image: "assets/svg/cash.svg", title: LocaleKeys.cash.tr(), key: "cash"),
   ];
 
