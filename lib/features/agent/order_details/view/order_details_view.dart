@@ -102,15 +102,32 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
                         ),
                       ),
                       
-                      // Services list
-                      ...List.generate(
-                        item.details.length,
-                        (index) {
-                          final service = item.details[index];
-                          if (!service.isService) return SizedBox();
-                          return _buildServiceCard(context, service, isFirst: index == 0);
-                        },
-                      ),
+                      // Services list - عرض الخدمات الجديدة من API
+                      if (item.items.isNotEmpty) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: Text(
+                            LocaleKeys.services.tr(),
+                            style: context.semiboldText.copyWith(fontSize: 16.sp),
+                          ),
+                        ),
+                        SizedBox(height: 8.h),
+                        ...List.generate(
+                          item.items.length,
+                          (index) => _buildNewServiceCard(context, item.items[index], isFirst: index == 0),
+                        ),
+                      ] else ...[
+                        // عرض الخدمات القديمة إذا لم تكن هناك خدمات جديدة
+                        ...List.generate(
+                          item.details.length,
+                          (index) {
+                            final service = item.details[index];
+                            if (!service.isService) return SizedBox();
+                            return _buildServiceCard(context, service, isFirst: index == 0);
+                          },
+                        ),
+                      ],
                       
                       // Additional options section
                       if (item.details.any((e) => !e.isService)) ...[
@@ -218,6 +235,49 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
     );
   }
   
+  Widget _buildNewServiceCard(BuildContext context, dynamic item, {bool isFirst = false}) {
+    return Container(
+      width: context.w,
+      margin: EdgeInsets.symmetric(vertical: 4.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+      ),
+      child: Row(
+        children: [
+          if (isFirst)
+            SvgPicture.asset(
+              'assets/svg/orders_out.svg',
+              height: 24.h,
+              width: 24.w,
+              colorFilter: ColorFilter.mode(
+                context.primaryColor,
+                BlendMode.srcIn,
+              ),
+            ).withPadding(end: 8.w),
+          Expanded(
+            child: Row(
+              children: [
+                Text(
+                  item.subServiceName,
+                  style: context.mediumText.copyWith(fontSize: 14.sp),
+                ),
+                SizedBox(width: 4.w),
+                Text(
+                  "(${item.quantity}x)",
+                  style: context.mediumText.copyWith(
+                    fontSize: 14.sp,
+                    color: context.primaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ).withPadding(start: isFirst ? 15.w : 45.w),
+    );
+  }
+
   Widget _buildServiceCard(BuildContext context, dynamic service, {bool isFirst = false}) {
     return Container(
       width: context.w,

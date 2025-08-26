@@ -6,6 +6,7 @@ import '../gen/assets.gen.dart';
 import 'address.dart';
 import 'base.dart';
 import 'client.dart';
+import 'order_item.dart';
 import 'order_product.dart';
 import 'order_service.dart';
 import 'user_model.dart';
@@ -24,6 +25,8 @@ class AgentOrderModel extends Model {
   late final List<AgentOrderService> details;
   late List<OrderProductModel> orderProducts;
   late List<OrderServiceModel> orderServices;
+  late List<OrderItemModel> items; // البيانات الجديدة من API
+  late OrderSummaryModel summary; // ملخص الطلب
   late bool isPaid;
   late ClientModel client;
 
@@ -103,6 +106,12 @@ class AgentOrderModel extends Model {
         (json["details"] ?? []).map((x) => OrderProductModel.fromJson(x)));
     orderServices = List<OrderServiceModel>.from(
         (json["details"] ?? []).map((x) => OrderServiceModel.fromJson(x)));
+    
+    // تحليل البيانات الجديدة من API
+    items = List<OrderItemModel>.from(
+        (json["items"] ?? []).map((x) => OrderItemModel.fromJson(x)));
+    summary = OrderSummaryModel.fromJson(json["summary"] ?? {});
+    
     isPaid = boolFromJson(json, "is_paid");
     paymentMethod = stringFromJson(json, "payment_method");
     client = ClientModel.fromJson(json["client"]);
