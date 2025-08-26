@@ -166,31 +166,37 @@ class _HomeClientViewState extends State<HomeClientView> with SingleTickerProvid
       title: LocaleKeys.factory.tr(),
       image: Assets.images.homeFactory.path,
       onTap: () => push(NamedRoutes.clientFactoryAccessory, arg: {"type": FactoryServiceType.factory}),
+      isEnabled: false, // غير متاح
     ),
     HomeItemModel(
       title: LocaleKeys.suppliers.tr(),
       image: Assets.images.homeProvide.path,
       onTap: () => push(NamedRoutes.clientMaintenanceCompanies, arg: {"type": CompanyServiceType.supply}),
+      isEnabled: false, // غير متاح
     ),
     HomeItemModel(
       title: LocaleKeys.maintenance.tr(),
       image: Assets.images.homeMaintenance.path,
       onTap: () => push(NamedRoutes.clientMaintenanceCompanies, arg: {"type": CompanyServiceType.maintenance}),
+      isEnabled: false, // غير متاح
     ),
     HomeItemModel(
       title: LocaleKeys.accessories.tr(),
       image: Assets.images.homeAccessories.path,
       onTap: () => push(NamedRoutes.clientFactoryAccessory, arg: {"type": FactoryServiceType.accessory}),
+      isEnabled: false, // غير متاح
     ),
     HomeItemModel(
       title: LocaleKeys.fill.tr(),
       image: Assets.images.homeFill.path,
       onTap: () => push(NamedRoutes.centralGasFilling),
+      isEnabled: false, // غير متاح
     ),
     HomeItemModel(
       title: LocaleKeys.reset.tr(),
       image: Assets.images.homeRecycle.path,
       onTap: () => push(NamedRoutes.clientRefill),
+      isEnabled: false, // غير متاح
     ),
   ];
   @override
@@ -215,27 +221,37 @@ class _HomeClientViewState extends State<HomeClientView> with SingleTickerProvid
                       items.length,
                       (index) => InkWell(
                         onTap: () => _showComingSoonPopup(context, items[index].title),
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 115.h,
-                              width: 112.w,
-                              padding:  EdgeInsets.all(15.r),
-                              decoration: BoxDecoration(
-                                color: Color(0xfff5f5f5),
-                                borderRadius: BorderRadius.circular(25),
-                                border: Border.all(width: 0, color: Colors.transparent),
-                              ),
-                              child: CircleAvatar(
-                                backgroundColor: Colors.white,
-                                backgroundImage: AssetImage(
-                                  items[index].image,
-
+                        child: Opacity(
+                          opacity: items[index].isEnabled ? 1.0 : 0.3, // opacity خفيف للكاردات غير المتاحة
+                          child: Column(
+                            children: [
+                              Container(
+                                height: 115.h,
+                                width: 112.w,
+                                padding:  EdgeInsets.all(15.r),
+                                decoration: BoxDecoration(
+                                  color: Color(0xfff5f5f5),
+                                  borderRadius: BorderRadius.circular(25),
+                                  border: Border.all(width: 0, color: Colors.transparent),
                                 ),
-                              )
-                            ),
-                            Text(items[index].title, style: context.mediumText.copyWith(fontSize: 20)),
-                          ],
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  backgroundImage: AssetImage(
+                                    items[index].image,
+                                  ),
+                                )
+                              ),
+                              Text(
+                                items[index].title, 
+                                style: context.mediumText.copyWith(
+                                  fontSize: 20,
+                                  color: items[index].isEnabled 
+                                    ? null 
+                                    : Colors.grey[600], // لون رمادي للنصوص غير المتاحة
+                                ),
+                              ),
+                            ],
+                          ),
                         ).withPadding(bottom: 16.h, horizontal: 4.w),
                       ),
                     ),
@@ -299,6 +315,12 @@ class _HomeClientViewState extends State<HomeClientView> with SingleTickerProvid
 class HomeItemModel {
   final String title, image;
   final Function()? onTap;
+  final bool isEnabled;
 
-  HomeItemModel({required this.title, required this.image, required this.onTap});
+  HomeItemModel({
+    required this.title, 
+    required this.image, 
+    required this.onTap,
+    this.isEnabled = true, // افتراضياً متاح
+  });
 }
