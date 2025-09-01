@@ -51,7 +51,11 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
       bottomNavigationBar: AgentOrderActions(cubit: cubit),
       body: BlocBuilder<AgentOrderDetailsCubit, AgentOrderDetailsState>(
         bloc: cubit,
-        buildWhen: (previous, current) => previous.getOrderState != current.getOrderState,
+        buildWhen: (previous, current) => 
+          previous.getOrderState != current.getOrderState ||
+          previous.rejectOrder != current.rejectOrder ||
+          previous.acceptState != current.acceptState ||
+          previous.changeStatus != current.changeStatus,
         builder: (context, state) {
           if (cubit.order != null) {
             var item = cubit.order!;

@@ -95,7 +95,10 @@ class _AgentOrderActionsState extends State<AgentOrderActions> {
           } else if (cubit.order?.status == "on_way") {
             return BlocBuilder<AgentOrderDetailsCubit, AgentOrderDetailsState>(
               bloc: cubit,
-              buildWhen: (previous, current) => previous.changeStatus != current.changeStatus || previous.rejectOrder != current.rejectOrder,
+              buildWhen: (previous, current) => 
+                previous.changeStatus != current.changeStatus || 
+                previous.rejectOrder != current.rejectOrder ||
+                previous.acceptState != current.acceptState,
               builder: (context, state) {
                 return Row(
                   children: [
@@ -109,9 +112,10 @@ class _AgentOrderActionsState extends State<AgentOrderActions> {
                     SizedBox(width: 10.w),
                     Expanded(
                       child: AppBtn(
-                        onPressed: _showRejectReasonSheet,
+                        onPressed: state.rejectOrder.isLoading ? null : _showRejectReasonSheet,
                         textColor: context.errorColor,
                         backgroundColor: Colors.transparent,
+                        loading: state.rejectOrder.isLoading,
                         title: LocaleKeys.reject.tr(),
                       ),
                     ),
@@ -123,7 +127,11 @@ class _AgentOrderActionsState extends State<AgentOrderActions> {
             print("DEBUG: Order status is ACCEPTED - Status: ${cubit.order?.status}");
             return BlocBuilder<AgentOrderDetailsCubit, AgentOrderDetailsState>(
               bloc: cubit,
-              buildWhen: (previous, current) => previous.changeStatus != current.changeStatus || previous.acceptState != current.acceptState || previous.getOrderState != current.getOrderState,
+              buildWhen: (previous, current) => 
+                previous.changeStatus != current.changeStatus || 
+                previous.acceptState != current.acceptState || 
+                previous.rejectOrder != current.rejectOrder ||
+                previous.getOrderState != current.getOrderState,
               builder: (context, state) {
                 return Row(
                   children: [
@@ -137,9 +145,10 @@ class _AgentOrderActionsState extends State<AgentOrderActions> {
                     SizedBox(width: 10.w),
                     Expanded(
                       child: AppBtn(
-                        onPressed: _showRejectReasonSheet,
+                        onPressed: state.rejectOrder.isLoading ? null : _showRejectReasonSheet,
                         textColor: context.errorColor,
                         backgroundColor: Colors.transparent,
+                        loading: state.rejectOrder.isLoading,
                         title: LocaleKeys.reject.tr(),
                       ),
                     ),

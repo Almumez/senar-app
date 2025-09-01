@@ -1,11 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_btn.dart';
 import '../../../../gen/locale_keys.g.dart';
 import '../cubit/order_details_cubit.dart';
+import '../cubit/order_details_state.dart';
 
 class RejectReasonSheet extends StatefulWidget {
   final AgentOrderDetailsCubit cubit;
@@ -17,7 +19,6 @@ class RejectReasonSheet extends StatefulWidget {
 
 class _RejectReasonSheetState extends State<RejectReasonSheet> {
   final TextEditingController _reasonController = TextEditingController();
-  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -74,38 +75,41 @@ class _RejectReasonSheetState extends State<RejectReasonSheet> {
             ),
           ),
           SizedBox(height: 24.h),
-          AbsorbPointer(
-            absorbing: _isSubmitting,
-            child: Opacity(
-              opacity: _isSubmitting ? 0.7 : 1.0,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: AppBtn(
-                      onPressed: () => Navigator.pop(context),
-                      textColor: context.primaryColor,
-                      backgroundColor: Colors.transparent,
-                      title: LocaleKeys.cancel.tr(),
-                    ),
+          BlocBuilder<AgentOrderDetailsCubit, AgentOrderDetailsState>(
+            bloc: widget.cubit,
+            buildWhen: (previous, current) => previous.rejectOrder != current.rejectOrder,
+            builder: (context, state) {
+              return AbsorbPointer(
+                absorbing: state.rejectOrder.isLoading,
+                child: Opacity(
+                  opacity: state.rejectOrder.isLoading ? 0.7 : 1.0,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: AppBtn(
+                          onPressed: state.rejectOrder.isLoading ? null : () => Navigator.pop(context),
+                          textColor: context.primaryColor,
+                          backgroundColor: Colors.transparent,
+                          title: LocaleKeys.cancel.tr(),
+                        ),
+                      ),
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        child: AppBtn(
+                          onPressed: state.rejectOrder.isLoading ? null : () {
+                            widget.cubit.rejectOrder(_reasonController.text);
+                          },
+                          textColor: Colors.white,
+                          backgroundColor: Colors.black,
+                          loading: state.rejectOrder.isLoading,
+                          title: LocaleKeys.reject.tr(),
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 16.w),
-                  Expanded(
-                    child: AppBtn(
-                      onPressed: () {
-                        setState(() => _isSubmitting = true);
-                        widget.cubit.rejectOrder(_reasonController.text).then((_) {
-                          setState(() => _isSubmitting = false);
-                        });
-                      },
-                      textColor: Colors.white,
-                      backgroundColor: Colors.black,
-                      loading: _isSubmitting,
-                      title: LocaleKeys.reject.tr(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
           SizedBox(height: 16.h),
         ],

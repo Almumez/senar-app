@@ -51,18 +51,28 @@ class AgentOrderDetailsCubit extends Cubit<AgentOrderDetailsState> {
   }
 
   rejectOrder([String? reason]) async {
-    emit(state.copyWith(acceptState: RequestState.loading));
+    emit(state.copyWith(rejectOrder: RequestState.loading));
     final result = await ServerGate.i.sendToServer(
       url: '${UserModel.i.accountType.isFreeAgent ? "free-" : ""}agent/order/reject/${order?.id}',
       body: {'reason': reason ?? ''},
     );
     if (result.success) {
       FlashHelper.showToast(result.msg, type: MessageType.success);
+      
+      // تحديث بيانات الطلب بعد الرفض
+      if (result.data != null && result.data['data'] != null) {
+        order = AgentOrderModel.fromJson(result.data['data']);
+        print("DEBUG: Order rejected - new status: ${order?.status}");
+      } else {
+        // إعادة تحميل بيانات الطلب إذا لم تكن متوفرة في الاستجابة
+        await getOrderDetails(order!.id, order!.type);
+      }
+      
       Navigator.pop(navigator.currentContext!);
-      emit(state.copyWith(acceptState: RequestState.done));
+      emit(state.copyWith(rejectOrder: RequestState.done));
     } else {
       FlashHelper.showToast(result.msg);
-      emit(state.copyWith(acceptState: RequestState.error));
+      emit(state.copyWith(rejectOrder: RequestState.error));
     }
   }
 
