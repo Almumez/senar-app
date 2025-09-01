@@ -84,13 +84,7 @@ class _ContactUsViewState extends State<ContactUsView> {
                   keyboardType: TextInputType.name,
                   labelText: LocaleKeys.name.tr(),
                 ),
-                AppField(
-                  controller: cubit.email,
-                  margin: EdgeInsets.symmetric(vertical: 8.h),
-                  keyboardType: TextInputType.emailAddress,
-                  labelText: LocaleKeys.email.tr(),
-                  isRequired: false,
-                ),
+
                 AppField(
                   controller: cubit.phone,
                   margin: EdgeInsets.symmetric(vertical: 8.h),

@@ -13,7 +13,6 @@ class ContactUsCubit extends Cubit<ContactUsState> {
 
   final phone = TextEditingController(text: UserModel.i.phone);
   final name = TextEditingController(text: UserModel.i.fullname);
-  final email = TextEditingController(text: UserModel.i.email);
   final msg = TextEditingController();
 
   CountryModel? country = UserModel.i.country;
@@ -24,7 +23,6 @@ class ContactUsCubit extends Cubit<ContactUsState> {
         "full_name": name.text,
         "phone_code": country?.phoneCode,
         "phone": phone.text,
-        "email": email.text,
         "content": msg.text,
       };
 
