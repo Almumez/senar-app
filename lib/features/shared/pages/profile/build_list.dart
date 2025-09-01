@@ -11,6 +11,7 @@ import '../../../../core/services/service_locator.dart';
 import '../../../../core/utils/enums.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/phoneix.dart';
+import '../../../../core/widgets/flash_helper.dart';
 import '../../../../core/widgets/loading.dart';
 import '../../../../core/widgets/logout_sheet.dart';
 import '../navbar/cubit/navbar_cubit.dart';
@@ -235,18 +236,10 @@ void switchAccountType() async {
         LoadingDialog.hide();
         
         // إظهار رسالة نجاح
-        ScaffoldMessenger.of(navigator.currentContext!).showSnackBar(
-          SnackBar(
-            content: Text('تم تحويل الحساب إلى عميل بنجاح'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
+        FlashHelper.showToast('تم تحويل الحساب إلى عميل بنجاح', type: MessageType.success);
         
         // الانتقال إلى شاشة البداية بعد إظهار الرسالة
-        await Future.delayed(Duration(seconds: 2));
-        sl<NavbarCubit>().changeTap(0);
-        pushAndRemoveUntil(NamedRoutes.navbar);
+        
         
       } else {
         UserModel.i.userType = 'free_agent';
@@ -257,18 +250,9 @@ void switchAccountType() async {
         LoadingDialog.hide();
         
         // إظهار رسالة نجاح
-        ScaffoldMessenger.of(navigator.currentContext!).showSnackBar(
-          SnackBar(
-            content: Text('تم تحويل الحساب إلى مندوب حر بنجاح'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
+        FlashHelper.showToast('تم تحويل الحساب إلى ممثل بنجاح', type: MessageType.success);
         
         // الانتقال إلى شاشة البداية بعد إظهار الرسالة
-        await Future.delayed(Duration(seconds: 2));
-        sl<NavbarCubit>().changeTap(0);
-        pushAndRemoveUntil(NamedRoutes.navbar);
       }
     } else {
       showErrorSwitchAccountPopup(navigator.currentContext!);
