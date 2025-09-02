@@ -36,8 +36,8 @@ class AgentOrderClientItem extends StatelessWidget {
       return const SizedBox.shrink();
     }
     
-    // Verificar si el estado del pedido es "pending"
-    final bool isPending = orderStatus == 'pending';
+    // Verificar si el estado del pedido es "pending", "completed" o "canceled"
+    final bool shouldHideInfo = orderStatus == 'pending' || orderStatus == 'completed' || orderStatus == 'canceled';
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,12 +61,12 @@ class AgentOrderClientItem extends StatelessWidget {
               ).withPadding(end: 10.w),
               Expanded(
                 child: Text(
-                  data.fullname.split(' ')[0],
+                  shouldHideInfo ? "********" : data.fullname.split(' ')[0],
                   style: context.mediumText.copyWith(fontSize: 14.sp),
                 ),
               ),
-              // Solo mostrar los botones de llamada y chat si el estado NO es "pending"
-              if (!isPending) ...[
+              // Solo mostrar los botones de llamada y chat si el estado NO es "pending", "completed" o "canceled"
+              if (!shouldHideInfo) ...[
                 // Call icon
                 InkWell(
                   onTap: () => _callClient(data.phoneCode, data.phone),

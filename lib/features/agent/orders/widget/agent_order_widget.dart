@@ -48,7 +48,7 @@ class AgentOrderWidget extends StatelessWidget {
 
                     children: [
                       Text(
-                        item.clientName,
+                        (item.status == 'pending' || item.status == 'completed' || item.status == 'canceled') ? "********" : item.clientName,
                         style: context.mediumText.copyWith(fontSize: 14, color: Colors.black),
                       ),
                       SizedBox(height: 4.h),
