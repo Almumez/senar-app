@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -77,6 +78,11 @@ void main() async {
 
   // بدء خدمة تتبع الموقع للمندوب الحر
   debugPrint('تحقق من نوع الحساب عند بدء التطبيق: ${UserModel.i.userType}');
+
+  // قفل اتجاه التطبيق على الوضع العمودي فقط
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   
   if (UserModel.i.isAuth) {
     debugPrint('المستخدم مسجل الدخول، مستخدم من نوع: ${UserModel.i.userType}');
