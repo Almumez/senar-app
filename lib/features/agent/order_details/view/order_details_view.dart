@@ -95,6 +95,35 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
                         ),
                       ),
 
+                      // Order date/time row
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        margin: EdgeInsets.only(top: 8.h),
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/svg/calender.svg',
+                              height: 18.h,
+                              width: 18.w,
+                              colorFilter: ColorFilter.mode(
+                                context.primaryColor,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                            SizedBox(width: 8.w),
+                            Expanded(
+                              child: Text(
+                                cubit.order!.createdAt,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: context.mediumText.copyWith(fontSize: 13.sp, color: Colors.black54),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
                       
                       // Client information section
                       Container(
