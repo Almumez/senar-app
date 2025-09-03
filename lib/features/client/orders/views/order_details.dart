@@ -164,14 +164,65 @@ class _ClientOrderDetailsViewState extends State<ClientOrderDetailsView> {
           // Mostrar el estado del pedido (excepto para pending y accepted)
           _buildOrderStatusSection(data),
 
-          // Mostrar el mapa de seguimiento cuando el estado del pedido es 'accepted'
-          if (data.status == 'accepted')
+          // Mostrar el mapa de seguimiento cuando el estado del pedido es 'on_way'
+          if (data.status == 'on_way')
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "تتبع",
-                  style: context.mediumText.copyWith(fontSize: 14.sp),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "تتبع التوصيل",
+                      style: context.mediumText.copyWith(fontSize: 14.sp),
+                    ),
+                    // أيقونات الاتصال والرسائل
+                    Row(
+                      children: [
+                        // أيقونة الاتصال
+                        InkWell(
+                          onTap: () => _callAgent(data.agent.phoneNumber),
+                          child: Container(
+                            padding: EdgeInsets.all(8.h),
+                            decoration: BoxDecoration(
+                              color: Color(0xfff5f5f5),
+                              shape: BoxShape.circle,
+                            ),
+                            child: SvgPicture.asset(
+                              'assets/svg/call.svg',
+                              height: 20.h,
+                              width: 20.w,
+                              colorFilter: ColorFilter.mode(
+                                context.primaryColor,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        // أيقونة الرسائل
+                        InkWell(
+                          onTap: () => _openWhatsApp(data.agent.phoneNumber),
+                          child: Container(
+                            padding: EdgeInsets.all(8.h),
+                            decoration: BoxDecoration(
+                              color: Color(0xfff5f5f5),
+                              shape: BoxShape.circle,
+                            ),
+                            child: SvgPicture.asset(
+                              'assets/svg/chatbox.svg',
+                              height: 20.h,
+                              width: 20.w,
+                              colorFilter: ColorFilter.mode(
+                                context.primaryColor,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ).withPadding(horizontal: 16.w, bottom: 8.h,top: 16.h),
                 Container(
                   decoration: BoxDecoration(
@@ -243,6 +294,29 @@ class _ClientOrderDetailsViewState extends State<ClientOrderDetailsView> {
         },
       ),
     );
+  }
+
+  void _callAgent(String phoneNumber) async {
+    if(phoneNumber.isEmpty) return;
+    
+    // Format the phone number by removing any spaces or special characters
+    String formattedNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+    
+    // Check if the number starts with '+' or add the '+' if needed
+    if (!formattedNumber.startsWith('+')) {
+      formattedNumber = '+$formattedNumber';
+    }
+    
+    final Uri phoneUri = Uri(scheme: 'tel', path: formattedNumber);
+    try {
+      if (await canLaunchUrl(phoneUri)) {
+        await launchUrl(phoneUri);
+      } else {
+        debugPrint('Could not launch $phoneUri');
+      }
+    } catch (e) {
+      debugPrint('Error making call: $e');
+    }
   }
 
   void _openWhatsApp(String phoneNumber) async {
