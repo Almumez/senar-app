@@ -2,9 +2,11 @@ import 'base.dart';
 
 class SettingsModel extends Model {
   late ClosingServiceModel closingService;
+  late bool isOpened;
 
   SettingsModel.fromJson([Map<String, dynamic>? json]) {
     closingService = ClosingServiceModel.fromJson(json?["closing_service"]);
+    isOpened = boolFromJson(json, "is_opened", defaultValue: true);
   }
 }
 

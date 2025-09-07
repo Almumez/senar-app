@@ -97,6 +97,12 @@ class SettingsService {
     return _settings!.closingService.cancellationTime;
   }
 
+  // التحقق من حالة الخدمة بناءً على متغير is_opened من API
+  bool isServiceOpenedFromAPI() {
+    if (_settings == null) return true; // قيمة افتراضية
+    return _settings!.isOpened;
+  }
+
   // Método auxiliar para convertir una cadena de tiempo (HH:MM) a TimeOfDay
   TimeOfDay _parseTimeString(String timeString) {
     final parts = timeString.split(':');

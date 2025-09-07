@@ -32,10 +32,10 @@ class _SplashViewState extends State<SplashView> {
   final versionCubit = sl<VersionCubit>();
   final settingsService = sl<SettingsService>();
   bool _showUpdateDialog = false;
-  // تم إزالة المتغير _showServiceClosedDialog
+  bool _showServiceClosedDialog = false;
 
   void navigateUser() {
-    if (_showUpdateDialog) return; // لا تنتقل إذا كان هناك تحديث مطلوب
+    if (_showUpdateDialog || _showServiceClosedDialog) return; // لا تنتقل إذا كان هناك تحديث مطلوب أو الخدمة مغلقة
 
     if (!UserModel.i.isAuth) {
       replacement(NamedRoutes.onboarding);
@@ -82,7 +82,17 @@ class _SplashViewState extends State<SplashView> {
       await settingsService.getSettings();
       debugPrint('Settings loaded successfully');
       
-      // تم إزالة التحقق من إشعارات وقت الإغلاق
+      // التحقق من حالة الخدمة بناءً على متغير is_opened من API
+      if (!settingsService.isServiceOpenedFromAPI()) {
+        debugPrint('Service is closed, showing service closed dialog');
+        setState(() {
+          _showServiceClosedDialog = true;
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showServiceClosedPopup();
+        });
+        return; // لا تتابع إذا كانت الخدمة مغلقة
+      }
       
       // التحقق من الإصدار لجميع الأنظمة
       debugPrint('Checking app version...');
@@ -156,7 +166,95 @@ class _SplashViewState extends State<SplashView> {
     );
   }
   
-  // تم إزالة دالة _showServiceClosedPopup()
+  // عرض النافذة المنبثقة لإغلاق الخدمة
+  void _showServiceClosedPopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => WillPopScope(
+        onWillPop: () async => false, // منع الإغلاق بزر الرجوع
+        child: Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(24.r),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // أيقونة إغلاق الخدمة
+                Container(
+                  width: 80.w,
+                  height: 80.h,
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.warning_rounded,
+                    color: Colors.red,
+                    size: 40.r,
+                  ),
+                ),
+                SizedBox(height: 24.h),
+                
+                // عنوان إغلاق الخدمة
+                Text(
+                  "الخدمة مغلقة حالياً",
+                  style: context.boldText.copyWith(
+                    fontSize: 18.sp,
+                    color: Colors.red,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 16.h),
+                
+                // وصف إغلاق الخدمة مع وقت الفتح
+                Text(
+                  "نعتذر، الخدمة مغلقة حالياً. ستفتح في الساعة ${settingsService.settings?.closingService.openingTime ?? '08:00'} صباحاً.",
+                  style: context.regularText.copyWith(
+                    fontSize: 14.sp,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 24.h),
+                
+                // زر المتابعة
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _showServiceClosedDialog = false;
+                      });
+                      Navigator.of(context).pop();
+                      // المتابعة إلى التطبيق رغم إغلاق الخدمة
+                      navigateUser();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: context.primaryColor,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 16.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                    ),
+                    child: Text(
+                      "متابعة",
+                      style: context.boldText.copyWith(
+                        fontSize: 16.sp,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
   
   // عرض النافذة المنبثقة للتحديث
   void _showUpdatePopup() {
