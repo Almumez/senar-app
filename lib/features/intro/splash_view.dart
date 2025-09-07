@@ -209,9 +209,9 @@ class _SplashViewState extends State<SplashView> {
                 ),
                 SizedBox(height: 16.h),
                 
-                // وصف إغلاق الخدمة مع وقت الفتح
+                // وصف إغلاق الخدمة مع وقت الفتح (مطابق للنص في الصورة)
                 Text(
-                  "نعتذر، الخدمة مغلقة حالياً. ستفتح في الساعة ${settingsService.settings?.closingService.openingTime ?? '08:00'} صباحاً.",
+                  "عذراً، الخدمة غير متاحة في الوقت الحالي، سيتم إعادة فتح الخدمة في الساعة ${settingsService.settings?.closingService.openingTime ?? '08:00'}.",
                   style: context.regularText.copyWith(
                     fontSize: 14.sp,
                   ),
