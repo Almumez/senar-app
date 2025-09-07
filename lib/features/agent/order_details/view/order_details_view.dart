@@ -98,32 +98,36 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
                       // Order date/time row
                       Container(
                         width: double.infinity,
-                        padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        margin: EdgeInsets.only(top: 8.h),
+                        margin: EdgeInsets.symmetric(horizontal: 16.w),
+                        padding: EdgeInsets.all(16.w),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
                         child: Row(
                           children: [
                             SvgPicture.asset(
                               'assets/svg/calender.svg',
-                              height: 18.h,
-                              width: 18.w,
+                              height: 20.h,
+                              width: 20.w,
                               colorFilter: ColorFilter.mode(
                                 context.primaryColor,
                                 BlendMode.srcIn,
                               ),
                             ),
-                            SizedBox(width: 8.w),
+                            SizedBox(width: 12.w),
                             Expanded(
                               child: Text(
                                 cubit.order!.createdAt,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: context.mediumText.copyWith(fontSize: 13.sp, color: Colors.black54),
+                                style: context.mediumText.copyWith(fontSize: 14.sp, color: Colors.black87),
                               ),
                             ),
                           ],
                         ),
                       ),
-
+                      SizedBox(height: 16.h),
                       
                       // Client information section
                       Container(
@@ -135,16 +139,21 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
                         ),
                       ),
                       
-                      // Services list - عرض الخدمات الجديدة من API
-                      if (item.items.isNotEmpty) ...[
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
-                          child: Text(
-                            LocaleKeys.services.tr(),
-                            style: context.semiboldText.copyWith(fontSize: 16.sp),
-                          ),
-                        ),
+                       // Services list - عرض الخدمات الجديدة من API
+                       if (item.items.isNotEmpty) ...[
+                         Container(
+                           width: double.infinity,
+                           margin: EdgeInsets.symmetric(horizontal: 16.w),
+                           padding: EdgeInsets.all(16.w),
+                           decoration: BoxDecoration(
+                             color: Colors.white,
+                             borderRadius: BorderRadius.circular(12.r),
+                           ),
+                           child: Text(
+                             LocaleKeys.services.tr(),
+                             style: context.semiboldText.copyWith(fontSize: 16.sp),
+                           ),
+                         ),
                         SizedBox(height: 8.h),
                         ...List.generate(
                           item.items.length,
@@ -182,30 +191,21 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
 
                       _buildAddressCard(context, item),
                       
-                      // Payment method section
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        margin: EdgeInsets.only(bottom: 16.h, top: 8.h),
-                        child: Row(
-                          children: [
-                            SvgPicture.asset(
-                              'assets/svg/payment.svg',
-                              height: 20.h,
-                              width: 20.w,
-                              colorFilter: ColorFilter.mode(
-                                context.primaryColor,
-                                BlendMode.srcIn,
-                              ),
-                            ),
-                            SizedBox(width: 8.w),
-                            Text(
-                              LocaleKeys.payment_method.tr(),
-                              style: context.semiboldText.copyWith(fontSize: 16.sp),
-                            ),
-                          ],
-                        ),
-                      ),
+                       // Payment method section
+                       Container(
+                         width: double.infinity,
+                         margin: EdgeInsets.symmetric(horizontal: 16.w),
+                         padding: EdgeInsets.all(16.w),
+                         decoration: BoxDecoration(
+                           color: Colors.white,
+                           borderRadius: BorderRadius.circular(12.r),
+                         ),
+                         child: Text(
+                           LocaleKeys.payment_method.tr(),
+                           style: context.semiboldText.copyWith(fontSize: 16.sp),
+                         ),
+                       ),
+                       SizedBox(height: 8.h),
                       Container(
                         width: double.infinity,
                         margin: EdgeInsets.only(bottom: 16.h),
