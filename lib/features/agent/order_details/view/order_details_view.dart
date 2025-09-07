@@ -275,34 +275,60 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: Colors.white,
+        borderRadius: BorderRadius.circular(12.r),
       ),
       child: Row(
         children: [
           if (isFirst)
             SvgPicture.asset(
               'assets/svg/orders_out.svg',
-              height: 24.h,
-              width: 24.w,
+              height: 20.h,
+              width: 20.w,
               colorFilter: ColorFilter.mode(
                 context.primaryColor,
                 BlendMode.srcIn,
               ),
-            ).withPadding(end: 8.w),
+            ).withPadding(end: 12.w),
+          // عرض صورة الخدمة
+          CustomImage(
+            item.subServiceImage.isNotEmpty 
+              ? 'https://stage.senar.me/${item.subServiceImage}'
+              : '',
+            height: 40.sp,
+            width: 40.sp,
+            borderRadius: BorderRadius.circular(8.r),
+          ).withPadding(end: 12.w),
           Expanded(
-            child: Row(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  item.subServiceName,
-                  style: context.mediumText.copyWith(fontSize: 14.sp),
+                Row(
+                  children: [
+                    Text(
+                      item.subServiceName,
+                      style: context.mediumText.copyWith(fontSize: 14.sp),
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      "(${item.quantity}x)",
+                      style: context.mediumText.copyWith(
+                        fontSize: 14.sp,
+                        color: context.primaryColor,
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(width: 4.w),
-                Text(
-                  "(${item.quantity}x)",
-                  style: context.mediumText.copyWith(
-                    fontSize: 14.sp,
-                    color: context.primaryColor,
-                  ),
-                ),
+                if (item.subServiceDescription.isNotEmpty)
+                  Text(
+                    item.subServiceDescription,
+                    style: context.regularText.copyWith(
+                      fontSize: 12.sp,
+                      color: Colors.grey[600],
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ).withPadding(top: 2.h),
               ],
             ),
           ),

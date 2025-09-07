@@ -4,6 +4,7 @@ class OrderItemModel extends Model {
   late String subServiceId;
   late String subServiceName;
   late String subServiceDescription;
+  late String subServiceImage;
   late int quantity;
   late double unitPrice;
   late double lineTotal;
@@ -15,6 +16,7 @@ class OrderItemModel extends Model {
     subServiceId = stringFromJson(json["sub_service"], "id");
     subServiceName = stringFromJson(json["sub_service"], "name");
     subServiceDescription = stringFromJson(json["sub_service"], "description");
+    subServiceImage = stringFromJson(json["sub_service"], "image");
     quantity = intFromJson(json, "quantity");
     unitPrice = doubleFromJson(json, "unit_price");
     lineTotal = doubleFromJson(json, "line_total");
@@ -29,6 +31,7 @@ class OrderItemModel extends Model {
           "id": subServiceId,
           "name": subServiceName,
           "description": subServiceDescription,
+          "image": subServiceImage,
         },
         "quantity": quantity,
         "unit_price": unitPrice,
