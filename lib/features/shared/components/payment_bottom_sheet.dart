@@ -323,7 +323,10 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                         
                         SizedBox(height: 24.h),
                         
-                        // إضافة زر Apple Pay أو Google Pay
+                        //
+                        // تم تعليق عرض أزرار Apple Pay / Google Pay مؤقتاً بناءً على طلب العميل
+                        // للإعادة لاحقاً، أزل التعليق عن الكتلة أدناه
+                        /*
                         if ((Platform.isIOS && hasApplePay) || (Platform.isAndroid && hasGooglePay)) 
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,7 +344,6 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                                   },
                                 ),
                               ),
-                              // إضافة فاصل بين طرق الدفع
                               Row(
                                 children: [
                                   Expanded(child: Divider(color: Colors.grey.shade300)),
@@ -361,6 +363,8 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                               SizedBox(height: 24.h),
                             ],
                           ),
+                        */
+                        SizedBox.shrink(),
                         
                         
                         // واجهة إدخال بيانات البطاقة - تم تحسين المظهر
