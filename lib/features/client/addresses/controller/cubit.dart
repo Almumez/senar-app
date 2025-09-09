@@ -12,7 +12,6 @@ import 'state.dart';
 class AddressesCubit extends Cubit<AddressesState> {
   AddressesCubit() : super(AddressesState());
 
-  final name = TextEditingController();
   final placeTitle = TextEditingController();
   final placeDesc = TextEditingController();
 
@@ -57,7 +56,6 @@ class AddressesCubit extends Cubit<AddressesState> {
     final result = await ServerGate.i.sendToServer(
       url: 'general/address',
       body: {
-        "name": name.text,
         "place_title": placeTitle.text,
         "place_description": placeDesc.text,
         "lng": latLng.longitude,
@@ -79,7 +77,6 @@ class AddressesCubit extends Cubit<AddressesState> {
     final result = await ServerGate.i.sendToServer(
       url: 'general/address/${data.id}/update',
       body: {
-        "name": name.text,
         "place_title": placeTitle.text,
         "place_description": placeDesc.text,
         "lng": data.lat,

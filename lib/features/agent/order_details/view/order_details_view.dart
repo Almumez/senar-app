@@ -139,21 +139,21 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
                         ),
                       ),
                       
-                       // Services list - عرض الخدمات الجديدة من API
-                       if (item.items.isNotEmpty) ...[
-                         Container(
-                           width: double.infinity,
+                      // Services list - عرض الخدمات الجديدة من API
+                      if (item.items.isNotEmpty) ...[
+                        Container(
+                          width: double.infinity,
                            margin: EdgeInsets.symmetric(horizontal: 16.w),
                            padding: EdgeInsets.all(16.w),
                            decoration: BoxDecoration(
                              color: Colors.white,
                              borderRadius: BorderRadius.circular(12.r),
                            ),
-                           child: Text(
-                             LocaleKeys.services.tr(),
-                             style: context.semiboldText.copyWith(fontSize: 16.sp),
-                           ),
-                         ),
+                          child: Text(
+                            LocaleKeys.services.tr(),
+                            style: context.semiboldText.copyWith(fontSize: 16.sp),
+                          ),
+                        ),
                         SizedBox(height: 8.h),
                         ...List.generate(
                           item.items.length,
@@ -191,9 +191,9 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
 
                       _buildAddressCard(context, item),
                       
-                       // Payment method section
-                       Container(
-                         width: double.infinity,
+                      // Payment method section
+                      Container(
+                        width: double.infinity,
                          margin: EdgeInsets.symmetric(horizontal: 16.w),
                          padding: EdgeInsets.all(16.w),
                          decoration: BoxDecoration(
@@ -201,10 +201,10 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
                            borderRadius: BorderRadius.circular(12.r),
                          ),
                          child: Text(
-                           LocaleKeys.payment_method.tr(),
-                           style: context.semiboldText.copyWith(fontSize: 16.sp),
-                         ),
-                       ),
+                              LocaleKeys.payment_method.tr(),
+                              style: context.semiboldText.copyWith(fontSize: 16.sp),
+                            ),
+                        ),
                        SizedBox(height: 8.h),
                       Container(
                         width: double.infinity,
@@ -304,19 +304,19 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  children: [
-                    Text(
-                      item.subServiceName,
-                      style: context.mediumText.copyWith(fontSize: 14.sp),
-                    ),
-                    SizedBox(width: 4.w),
-                    Text(
-                      "(${item.quantity}x)",
-                      style: context.mediumText.copyWith(
-                        fontSize: 14.sp,
-                        color: context.primaryColor,
-                      ),
-                    ),
+              children: [
+                Text(
+                  item.subServiceName,
+                  style: context.mediumText.copyWith(fontSize: 14.sp),
+                ),
+                SizedBox(width: 4.w),
+                Text(
+                  "(${item.quantity}x)",
+                  style: context.mediumText.copyWith(
+                    fontSize: 14.sp,
+                    color: context.primaryColor,
+                  ),
+                ),
                   ],
                 ),
                 if (item.subServiceDescription.isNotEmpty)

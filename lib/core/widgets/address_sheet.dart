@@ -32,7 +32,6 @@ class _AddAddressSheetState extends State<AddAddressSheet> {
   void initState() {
     super.initState();
     if (widget.data != null) {
-      cubit.name.text = widget.data!.name;
       cubit.placeTitle.text = widget.data!.placeTitle;
       cubit.placeDesc.text = widget.data!.placeDescription;
     }
@@ -45,10 +44,7 @@ class _AddAddressSheetState extends State<AddAddressSheet> {
       child: CustomAppSheet(
         title: LocaleKeys.address_description.tr(),
         children: [
-          AppField(
-            labelText: LocaleKeys.place_name.tr(),
-            controller: cubit.name,
-          ),
+
           AppField(
             labelText: LocaleKeys.full_address.tr(),
             controller: cubit.placeTitle,

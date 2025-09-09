@@ -32,10 +32,6 @@ class _AddAddressSheetState extends State<AddAddressSheet> {
         title: LocaleKeys.address_description.tr(),
         children: [
           AppField(
-            labelText: LocaleKeys.place_name.tr(),
-            controller: cubit.name,
-          ),
-          AppField(
             labelText: LocaleKeys.full_address.tr(),
             controller: cubit.placeTitle,
           ),
