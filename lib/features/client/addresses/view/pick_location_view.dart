@@ -50,12 +50,17 @@ class _PickLocationViewState extends State<PickLocationView> {
       latLng = LatLng(widget.data!.lat, widget.data!.lng);
 
       _goToTheLake(latLng!);
+      // Trigger zone validation for initial location when editing an existing address
+      addressesCubit.checkZoneLocation(latLng!);
     } else {
       location.getCurrentLocation().then(
         (value) {
           final position = value.position;
           if (position != null) {
-            _goToTheLake(LatLng(position.latitude, position.longitude));
+            final currentLatLng = LatLng(position.latitude, position.longitude);
+            _goToTheLake(currentLatLng);
+            // Trigger zone validation for initial current location
+            addressesCubit.checkZoneLocation(currentLatLng);
           } else {
             FlashHelper.showToast(value.msg);
           }
@@ -328,7 +333,9 @@ class _PickLocationViewState extends State<PickLocationView> {
   Future<void> _goToTheLake(LatLng latLng) async {
     final GoogleMapController controller = await _controller.future;
     this.latLng = latLng;
-    markers.add(
+    markers
+      ..clear()
+      ..add(
       Marker(
         markerId: const MarkerId('my_location'),
         position: latLng,
