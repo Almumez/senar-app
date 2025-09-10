@@ -680,7 +680,7 @@ class SelectedItemsSummary extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          "${item.total} ${LocaleKeys.currency.tr()}",
+                          "${item.total.toStringAsFixed(2)} ${LocaleKeys.currency.tr()}",
                           style: context.mediumText.copyWith(
                             fontSize: 14.sp,
                             color: Colors.black,
