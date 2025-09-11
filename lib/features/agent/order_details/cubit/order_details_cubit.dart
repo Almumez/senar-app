@@ -42,7 +42,13 @@ class AgentOrderDetailsCubit extends Cubit<AgentOrderDetailsState> {
       } else {
         await getOrderDetails(order!.id, order!.type);
       }
-      
+      // Advance status to 'on_way' immediately after accept
+      try {
+        if (order?.status == 'accepted') {
+          await changeStatus();
+        }
+      } catch (_) {}
+
       emit(state.copyWith(acceptState: RequestState.done));
     } else {
       FlashHelper.showToast(result.msg);
