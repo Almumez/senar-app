@@ -379,7 +379,7 @@ class _ClientOrderDetailsActionsState extends State<ClientOrderDetailsActions> {
   Widget build(BuildContext context) {
     final data = widget.cubit.data;
     final isDistribution = data?.type == 'distribution' || data?.type == 'accessory' || data?.type == 'factory';
-    if (data?.status == 'pending') {
+    if (data?.status == 'pending' || data?.status == 'on_way') {
       return BlocBuilder<ClientOrderDetailsCubit, ClientOrderDetailsState>(
         bloc: widget.cubit,
         builder: (context, state) {
