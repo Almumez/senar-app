@@ -155,7 +155,7 @@ class _NotificationsViewState extends State<NotificationsView> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    item.title,
+                                    item.body,
                                     style: context.mediumText.copyWith(fontSize: 14.sp, color: Colors.black),
                                   ),
                                 ],
