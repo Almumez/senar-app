@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../core/utils/extensions.dart';
+import '../../../../../core/widgets/custom_image.dart';
 import '../../../../../gen/locale_keys.g.dart';
 import '../../../../../models/client_order.dart';
 import '../../../../shared/components/address_item.dart';
@@ -54,11 +55,20 @@ class ClientProductOrderDetails extends StatelessWidget {
             child: ClientOrderAgentItem(data: data)
           ),
           
-          _buildSectionHeader(context, LocaleKeys.products.tr(), 'assets/svg/clean.svg'),
-          _buildComponentCard(
-            context, 
-            child: ProductServiceType(data: data)
-          ),
+          // عرض الخدمات الجديدة من API
+          if (data.items.isNotEmpty) ...[
+            _buildSectionHeader(context, "الخدمات", 'assets/svg/orders_out.svg'),
+            ...List.generate(
+              data.items.length,
+              (index) => _buildNewServiceCard(context, data.items[index], isFirst: index == 0),
+            ),
+          ] else ...[
+            _buildSectionHeader(context, LocaleKeys.products.tr(), 'assets/svg/clean.svg'),
+            _buildComponentCard(
+              context, 
+              child: ProductServiceType(data: data)
+            ),
+          ],
           
           _buildSectionHeader(context, LocaleKeys.site_address.tr(), 'assets/svg/door.svg'),
           _buildComponentCard(
@@ -170,6 +180,75 @@ class ClientProductOrderDetails extends StatelessWidget {
     );
   }
   
+  Widget _buildNewServiceCard(BuildContext context, dynamic item, {bool isFirst = false}) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(vertical: 4.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.r),
+      ),
+      child: Row(
+        children: [
+          if (isFirst)
+            SvgPicture.asset(
+              'assets/svg/orders_out.svg',
+              height: 20.h,
+              width: 20.w,
+              colorFilter: ColorFilter.mode(
+                context.primaryColor,
+                BlendMode.srcIn,
+              ),
+            ).withPadding(end: 12.w),
+          // عرض صورة الخدمة
+          CustomImage(
+            item.subServiceImage.isNotEmpty 
+              ? 'https://stage.senar.me/${item.subServiceImage}'
+              : '',
+            height: 40.sp,
+            width: 40.sp,
+            borderRadius: BorderRadius.circular(8.r),
+          ).withPadding(end: 12.w),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      item.subServiceName,
+                      style: context.mediumText.copyWith(fontSize: 14.sp),
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      "(${item.quantity}x)",
+                      style: context.mediumText.copyWith(
+                        fontSize: 14.sp,
+                        color: context.primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+                if (item.subServiceDescription.isNotEmpty)
+                  Text(
+                    item.subServiceDescription,
+                    style: context.regularText.copyWith(
+                      fontSize: 12.sp,
+                      color: Colors.grey[600],
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ).withPadding(top: 2.h),
+              ],
+            ),
+          ),
+        ],
+      ).withPadding(start: isFirst ? 15.w : 45.w),
+    );
+  }
+
   Widget _buildComponentCard(BuildContext context, {required Widget child}) {
     return Container(
       width: double.infinity,

@@ -6,6 +6,7 @@ import 'agent.dart';
 import 'base.dart';
 import 'order_product.dart';
 import 'order_service.dart';
+import 'order_item.dart';
 
 class ClientOrderModel extends Model {
   late final AgentModel agent, merchant;
@@ -17,6 +18,8 @@ class ClientOrderModel extends Model {
   late bool isPaid, isRated;
   late List<OrderServiceModel> orderServices;
   late List<OrderProductModel> orderProducts;
+  late List<OrderItemModel> items;
+  late OrderSummaryModel summary;
 
   Color get color {
     switch (status) {
@@ -56,6 +59,8 @@ class ClientOrderModel extends Model {
     quantity = intFromJson(json, "quantity");
     orderServices = listFromJson(json, "details", callback: (e) => OrderServiceModel.fromJson(e));
     orderProducts = listFromJson(json, "details", callback: (e) => OrderProductModel.fromJson(e));
+    items = listFromJson(json, "items", callback: (e) => OrderItemModel.fromJson(e));
+    summary = OrderSummaryModel.fromJson(json?["summary"] ?? {});
     checkFee = doubleFromJson(json, "check_fee");
   }
 
@@ -80,6 +85,8 @@ class ClientOrderModel extends Model {
         "quantity": quantity,
         if (orderServices.isNotEmpty) "details": orderServices.map((e) => e.toJson()).toList(),
         if (orderProducts.isNotEmpty) "details": orderProducts.map((e) => e.toJson()).toList(),
+        "items": items.map((e) => e.toJson()).toList(),
+        "summary": summary.toJson(),
         "check_fee": checkFee,
         "is_rated": isRated
       };

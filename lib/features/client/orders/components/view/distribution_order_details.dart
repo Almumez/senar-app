@@ -55,23 +55,45 @@ class ClientDistributionOrderDetails extends StatelessWidget {
           children: [
             _buildAgentInfoCard(context),
             
-            ...List.generate(
-              data.orderServices.length,
-              (index) {
-                final service = data.orderServices[index];
-                if (!service.isService) return const SizedBox();
-                return _buildServiceCard(context, service, isFirst: index == 0);
-              },
-            ),
-            if (data.orderServices.any((e) => !e.isService)) ...[
+            // عرض الخدمات الجديدة من API
+            if (data.items.isNotEmpty) ...[
+              Container(
+                width: MediaQuery.of(context).size.width - 32.w,
+                margin: EdgeInsets.only(bottom: 8.h),
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Text(
+                  "الخدمات",
+                  style: context.semiboldText.copyWith(fontSize: 16.sp),
+                ),
+              ),
+              ...List.generate(
+                data.items.length,
+                (index) => _buildNewServiceCard(context, data.items[index], isFirst: index == 0),
+              ),
+            ] else ...[
+              // عرض الخدمات القديمة إذا لم تكن هناك خدمات جديدة
               ...List.generate(
                 data.orderServices.length,
                 (index) {
                   final service = data.orderServices[index];
-                  if (service.isService) return const SizedBox();
-                  return _buildAdditionalServiceCard(context, service);
+                  if (!service.isService) return const SizedBox();
+                  return _buildServiceCard(context, service, isFirst: index == 0);
                 },
               ),
+              if (data.orderServices.any((e) => !e.isService)) ...[
+                ...List.generate(
+                  data.orderServices.length,
+                  (index) {
+                    final service = data.orderServices[index];
+                    if (service.isService) return const SizedBox();
+                    return _buildAdditionalServiceCard(context, service);
+                  },
+                ),
+              ],
             ],
             
             _buildAddressCard(context),
@@ -91,6 +113,75 @@ class ClientDistributionOrderDetails extends StatelessWidget {
       width: MediaQuery.of(context).size.width - 32.w,
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: ClientOrderAgentItem(data: data),
+    );
+  }
+
+  Widget _buildNewServiceCard(BuildContext context, dynamic item, {bool isFirst = false}) {
+    return Container(
+      width: MediaQuery.of(context).size.width - 32.w,
+      margin: EdgeInsets.symmetric(vertical: 4.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.r),
+      ),
+      child: Row(
+        children: [
+          if (isFirst)
+            SvgPicture.asset(
+              'assets/svg/orders_out.svg',
+              height: 20.h,
+              width: 20.w,
+              colorFilter: ColorFilter.mode(
+                context.primaryColor,
+                BlendMode.srcIn,
+              ),
+            ).withPadding(end: 12.w),
+          // عرض صورة الخدمة
+          CustomImage(
+            item.subServiceImage.isNotEmpty 
+              ? 'https://stage.senar.me/${item.subServiceImage}'
+              : '',
+            height: 40.sp,
+            width: 40.sp,
+            borderRadius: BorderRadius.circular(8.r),
+          ).withPadding(end: 12.w),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      item.subServiceName,
+                      style: context.mediumText.copyWith(fontSize: 14.sp),
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      "(${item.quantity}x)",
+                      style: context.mediumText.copyWith(
+                        fontSize: 14.sp,
+                        color: context.primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+                if (item.subServiceDescription.isNotEmpty)
+                  Text(
+                    item.subServiceDescription,
+                    style: context.regularText.copyWith(
+                      fontSize: 12.sp,
+                      color: Colors.grey[600],
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ).withPadding(top: 2.h),
+              ],
+            ),
+          ),
+        ],
+      ).withPadding(start: isFirst ? 15.w : 45.w),
     );
   }
 

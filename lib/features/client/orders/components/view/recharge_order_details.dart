@@ -102,45 +102,54 @@ class ClientRechargeOrderDetails extends StatelessWidget {
             ),
           ).withPadding(horizontal: 16.w, bottom: 16.h),
           
-          _buildSectionHeader(context, LocaleKeys.service_type.tr(), 'assets/svg/clean.svg'),
-          Container(
-            width: context.w,
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 15.h),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.r),
-              color: Colors.white,
+          // عرض الخدمات الجديدة من API
+          if (data.items.isNotEmpty) ...[
+            _buildSectionHeader(context, "الخدمات", 'assets/svg/orders_out.svg'),
+            ...List.generate(
+              data.items.length,
+              (index) => _buildNewServiceCard(context, data.items[index], isFirst: index == 0),
             ),
-            child: Row(
-              children: [
-                // Mostrar la imagen directamente sin fondo
-                CustomImage(
-                  Assets.svg.clientRefill, 
-                  height: 50.h,
-                  width: 50.h,
-                  borderRadius: BorderRadius.circular(8.r),
-                ).withPadding(end: 16.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        LocaleKeys.refilling_a_small_cylinder.tr(), 
-                        style: context.semiboldText.copyWith(fontSize: 16.sp)
-                      ).withPadding(bottom: 8.h),
-                      // Eliminar el contenedor de fondo y mostrar solo el texto
-                      Text(
-                        "${LocaleKeys.quantity.tr()} : ${data.daforaCount}",
-                        style: context.mediumText.copyWith(
-                          fontSize: 14.sp,
-                          color: context.primaryColor,
+          ] else ...[
+            _buildSectionHeader(context, LocaleKeys.service_type.tr(), 'assets/svg/clean.svg'),
+            Container(
+              width: context.w,
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 15.h),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.r),
+                color: Colors.white,
+              ),
+              child: Row(
+                children: [
+                  // Mostrar la imagen directamente sin fondo
+                  CustomImage(
+                    Assets.svg.clientRefill, 
+                    height: 50.h,
+                    width: 50.h,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ).withPadding(end: 16.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          LocaleKeys.refilling_a_small_cylinder.tr(), 
+                          style: context.semiboldText.copyWith(fontSize: 16.sp)
+                        ).withPadding(bottom: 8.h),
+                        // Eliminar el contenedor de fondo y mostrar solo el texto
+                        Text(
+                          "${LocaleKeys.quantity.tr()} : ${data.daforaCount}",
+                          style: context.mediumText.copyWith(
+                            fontSize: 14.sp,
+                            color: context.primaryColor,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ).withPadding(horizontal: 16.w, bottom: 16.h),
+                ],
+              ),
+            ).withPadding(horizontal: 16.w, bottom: 16.h),
+          ],
           
           _buildSectionHeader(context, LocaleKeys.site_address.tr(), 'assets/svg/door.svg'),
           _buildComponentCard(
@@ -256,6 +265,75 @@ class ClientRechargeOrderDetails extends StatelessWidget {
     );
   }
   
+  Widget _buildNewServiceCard(BuildContext context, dynamic item, {bool isFirst = false}) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(vertical: 4.h, horizontal: 16.w),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.r),
+      ),
+      child: Row(
+        children: [
+          if (isFirst)
+            SvgPicture.asset(
+              'assets/svg/orders_out.svg',
+              height: 20.h,
+              width: 20.w,
+              colorFilter: ColorFilter.mode(
+                context.primaryColor,
+                BlendMode.srcIn,
+              ),
+            ).withPadding(end: 12.w),
+          // عرض صورة الخدمة
+          CustomImage(
+            item.subServiceImage.isNotEmpty 
+              ? 'https://stage.senar.me/${item.subServiceImage}'
+              : '',
+            height: 40.sp,
+            width: 40.sp,
+            borderRadius: BorderRadius.circular(8.r),
+          ).withPadding(end: 12.w),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      item.subServiceName,
+                      style: context.mediumText.copyWith(fontSize: 14.sp),
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      "(${item.quantity}x)",
+                      style: context.mediumText.copyWith(
+                        fontSize: 14.sp,
+                        color: context.primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+                if (item.subServiceDescription.isNotEmpty)
+                  Text(
+                    item.subServiceDescription,
+                    style: context.regularText.copyWith(
+                      fontSize: 12.sp,
+                      color: Colors.grey[600],
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ).withPadding(top: 2.h),
+              ],
+            ),
+          ),
+        ],
+      ).withPadding(start: isFirst ? 15.w : 45.w),
+    );
+  }
+
   // Widget para crear tarjetas de componentes con estilo unificado
   Widget _buildComponentCard(BuildContext context, {required Widget child}) {
     return Container(
