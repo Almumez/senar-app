@@ -26,6 +26,8 @@ class SettingsService {
         debugPrint('Closing time: ${_settings!.closingService.closingTime}');
         debugPrint('Notification start time: ${_settings!.closingService.notificationStartTime}');
         debugPrint('Cancellation time: ${_settings!.closingService.cancellationTime} minutes');
+        debugPrint('Is notification time start: ${_settings!.isNotificationTimeStart}');
+        debugPrint('Is service opened: ${_settings!.isOpened}');
         return _settings;
       } else {
         debugPrint('Error al obtener los ajustes: ${response.msg}');
@@ -76,19 +78,11 @@ class SettingsService {
       return false;
     }
     
-    final now = TimeOfDay.now();
-    final notificationStartTime = _parseTimeString(_settings!.closingService.notificationStartTime);
+    // استخدام المتغير الجديد من API بدلاً من الحساب التقليدي
+    debugPrint('isNotificationTimeStart from API: ${_settings!.isNotificationTimeStart}');
     
-    // تحويل إلى دقائق للمقارنة بسهولة
-    final nowMinutes = now.hour * 60 + now.minute;
-    final notificationStartMinutes = notificationStartTime.hour * 60 + notificationStartTime.minute;
-    
-    debugPrint('Current time: ${now.hour}:${now.minute} (${nowMinutes} minutes)');
-    debugPrint('Notification start time: ${notificationStartTime.hour}:${notificationStartTime.minute} (${notificationStartMinutes} minutes)');
-    debugPrint('Should show notification: ${nowMinutes >= notificationStartMinutes}');
-    
-    // إذا كان الوقت الحالي يساوي أو أكبر من وقت بدء الإشعار
-    return nowMinutes >= notificationStartMinutes;
+    // إرجاع القيمة مباشرة من API
+    return _settings!.isNotificationTimeStart;
   }
   
   // الحصول على وقت الإلغاء التلقائي بالدقائق
