@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io'; // Añadir importación para detectar la plataforma
+import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,6 +34,7 @@ class _SplashViewState extends State<SplashView> {
   final settingsService = sl<SettingsService>();
   bool _showUpdateDialog = false;
   bool _showServiceClosedDialog = false;
+  bool _showMaintenanceDialog = false;
 
   void navigateUser() {
     if (_showUpdateDialog || _showServiceClosedDialog) return; // لا تنتقل إذا كان هناك تحديث مطلوب أو الخدمة مغلقة
@@ -82,6 +84,18 @@ class _SplashViewState extends State<SplashView> {
       await settingsService.getSettings();
       debugPrint('Settings loaded successfully');
       
+      // التحقق من وضع الصيانة من API
+      if (settingsService.isMaintenanceEnabled) {
+        debugPrint('Maintenance mode enabled, showing maintenance dialog');
+        setState(() {
+          _showMaintenanceDialog = true;
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showMaintenancePopup();
+        });
+        return; // لا تتابع إذا كان وضع الصيانة مفعل
+      }
+
       // التحقق من حالة الخدمة بناءً على متغير is_opened من API
       if (!settingsService.isServiceOpenedFromAPI()) {
         debugPrint('Service is closed, showing service closed dialog');
@@ -330,6 +344,91 @@ class _SplashViewState extends State<SplashView> {
                     ),
                     child: Text(
                       buttonText,
+                      style: context.boldText.copyWith(
+                        fontSize: 16.sp,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // عرض النافذة المنبثقة لوضع الصيانة
+  void _showMaintenancePopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => WillPopScope(
+        onWillPop: () async => false,
+        child: Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(24.r),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 80.w,
+                  height: 80.h,
+                  decoration: BoxDecoration(
+                    color: context.primaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.build_circle_rounded,
+                    color: context.primaryColor,
+                    size: 40.r,
+                  ),
+                ),
+                SizedBox(height: 24.h),
+                Text(
+                  "صيانة",
+                  style: context.boldText.copyWith(
+                    fontSize: 18.sp,
+                    color: context.primaryColor,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  settingsService.maintenanceText.isNotEmpty
+                      ? settingsService.maintenanceText
+                      : "نقوم حالياً بأعمال صيانة لتحسين تجربتك. سنعود قريباً.",
+                  style: context.regularText.copyWith(
+                    fontSize: 14.sp,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 24.h),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _showMaintenanceDialog = false;
+                      });
+                      Navigator.of(context).pop();
+                      // الخروج من التطبيق عند النقر على حسناً
+                      SystemNavigator.pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: context.primaryColor,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 16.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                    ),
+                    child: Text(
+                      "حسناً",
                       style: context.boldText.copyWith(
                         fontSize: 16.sp,
                         color: Colors.white,

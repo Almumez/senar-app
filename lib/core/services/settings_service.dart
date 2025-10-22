@@ -12,6 +12,9 @@ class SettingsService {
 
   // Getter para los ajustes
   SettingsModel? get settings => _settings;
+  bool get isMaintenanceEnabled => _settings?.isMaintenance == true || _settings?.maintenanceMode.isEnabled == true;
+  String get maintenanceText =>
+      (_settings?.maintenanceMessage?.isNotEmpty == true ? _settings!.maintenanceMessage : _settings?.maintenanceMode.message) ?? '';
 
   // Método para obtener los ajustes desde la API
   Future<SettingsModel?> getSettings() async {
@@ -28,6 +31,8 @@ class SettingsService {
         debugPrint('Cancellation time: ${_settings!.closingService.cancellationTime} minutes');
         debugPrint('Is notification time start: ${_settings!.isNotificationTimeStart}');
         debugPrint('Is service opened: ${_settings!.isOpened}');
+        debugPrint('Is maintenance enabled: ${isMaintenanceEnabled}');
+        debugPrint('Maintenance message: ${maintenanceText}');
         return _settings;
       } else {
         debugPrint('Error al obtener los ajustes: ${response.msg}');
